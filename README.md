@@ -1,5 +1,4 @@
-# draw-sign-pdf [![Tests](https://github.com/syropian/vue-3-package-skeleton/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/syropian/vue-3-package-skeleton/actions/workflows/test.yml)
-
+# draw-sign-pdf
 A description of your new library.
 
 ## Install
@@ -50,4 +49,4 @@ Usage instructions here.
 
 ## License
 
-MIT © [Collin Henderson](https://github.com/syropian)
+MIT © 

@@ -1,14 +1,14 @@
 import { render, screen } from '@testing-library/vue'
-import { MyComponent } from '..'
+import { DrawSignPdf } from "..";
 
 /* eslint-disable vue/one-component-per-file */
 
-describe('DrawSignPDF — MyComponent', () => {
-  test('renders', async () => {
-    render(MyComponent)
+describe("DrawSignPDF — DrawSignPdf", () => {
+  test("renders", async () => {
+    render(DrawSignPdf);
 
-    const el = await screen.findByText(/hello world/)
+    const el = await screen.findByText(/hello world/);
 
-    expect(el).toBeTruthy()
-  })
-})
+    expect(el).toBeTruthy();
+  });
+});
