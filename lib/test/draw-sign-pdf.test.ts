@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/vue'
+import { render, screen } from "@testing-library/vue";
 import { DrawSignPdf } from "..";
 
 /* eslint-disable vue/one-component-per-file */
