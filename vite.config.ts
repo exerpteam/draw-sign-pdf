@@ -21,23 +21,24 @@ const devConfig = defineConfig({
 })
 
 const prodConfig = defineConfig({
+  plugins: [vue()],
   build: {
     lib: {
-      entry: resolvePath('lib/index.ts'),
-      name: 'draw-sign-pdf',
-      fileName: format => `draw-sign-pdf.${format}.js`,
+      entry: resolvePath("lib/index.ts"),
+      name: "draw-sign-pdf",
+      fileName: (format) => `draw-sign-pdf.${format}.js`,
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ["vue"],
 
       output: {
-        exports: 'named',
+        exports: "named",
         globals: {
-          vue: 'Vue',
+          vue: "Vue",
         },
       },
     },
   },
-})
+});
 
 export default isProd ? prodConfig : devConfig

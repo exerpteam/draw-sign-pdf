@@ -26,7 +26,12 @@
     "lint": "eslint --ext .ts,.vue --ignore-path .gitignore ./lib ./demo --fix",
     "format": "prettier ./lib ./demo  -w -u"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@fullhuman/postcss-purgecss": "^5.0.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "pdfjs-dist": "^4.0.379"
+  },
   "devDependencies": {
     "@highlightjs/vue-plugin": "^2.1.0",
     "@tailwindcss/forms": "^0.4.0",

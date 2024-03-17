@@ -1,11 +1,14 @@
-import type { App, Plugin } from 'vue'
-import { MyComponent } from './draw-sign-pdf'
+import type { App, Plugin } from "vue";
+import DrawSignPdf from "./App.vue";
+import { getAsset } from "./utils/prepareAssets";
+
+getAsset("pdfjsLib");
 
 const install = (app: App) => {
-  app.component(MyComponent.name, MyComponent)
-}
+  app.component(DrawSignPdf.name, DrawSignPdf);
+};
 
-MyComponent.install = install
+DrawSignPdf.install = install;
 
-export { MyComponent }
-export default MyComponent as unknown as Plugin
+export { DrawSignPdf };
+export default DrawSignPdf as unknown as Plugin;

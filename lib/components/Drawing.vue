@@ -1,0 +1,140 @@
+<template>
+  <div
+    :style="{ width: `${width + dw}px`, height: `${(width + dw) / ratio}px`, transform: `translate(${x + dx}px, ${y + dy}px)` }"
+    class="absolute left-0 top-0 select-none">
+    <div @mousedown="handlePanStart" @touchstart="handlePanStart" @mousemove="handlePanMove" @touchmove="handlePanMove"
+      @mouseup="handlePanEnd" @touchend="handlePanEnd"
+      class="absolute w-full h-full cursor-grab border border-gray-400 border-dashed"
+      :class="{ 'cursor-grabbing': operation === 'move', operation }">
+      <div data-direction="left-top"
+        class="absolute left-0 top-0 w-10 h-10 bg-green-400 rounded-full cursor-nwse-resize transform -translate-x-1/2 -translate-y-1/2 md:scale-25">
+      </div>
+      <div data-direction="right-bottom"
+        class="absolute right-0 bottom-0 w-10 h-10 bg-green-400 rounded-full cursor-nwse-resize transform translate-x-1/2 translate-y-1/2 md:scale-25">
+      </div>
+    </div>
+    <div @click="onDelete"
+      class="absolute left-0 top-0 right-0 w-12 h-12 m-auto rounded-full bg-white cursor-pointer transform -translate-y-1/2 md:scale-25">
+      <img class="w-full h-full" src="../assets/images/delete.svg" alt="delete object" />
+    </div>
+    <svg v-bind="svg" width="100%" height="100%">
+      <path stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke="black" fill="none" :d="path" />
+    </svg>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue';
+// import { pannable } from '../utils/pannable';
+
+export default {
+  props: {
+    originWidth: Number,
+    originHeight: Number,
+    width: Number,
+    x: Number,
+    y: Number,
+    pageScale: {
+      type: Number,
+      default: 1,
+    },
+    path: String,
+  },
+  setup(props, { emit }) {
+    const dx = ref(0);
+    const dy = ref(0);
+    const dw = ref(0);
+    const direction = ref('');
+    const operation = ref('');
+    const startX = ref(0);
+    const startY = ref(0);
+    const svg = ref(null);
+
+
+    const ratio = props.originWidth / props.originHeight;
+    onMounted(async () => {
+      // svg.value.setAttribute("viewBox", `0 0 ${props.originWidth} ${props.originHeight}`);
+    });
+
+    function handlePanStart(event) {
+      startX.value = event.type.startsWith('mouse') ? event.clientX : event.touches[0].clientX;
+      startY.value = event.type.startsWith('mouse') ? event.clientY : event.touches[0].clientY;
+      if (event.target === event.currentTarget) {
+        operation.value = 'move';
+      } else {
+        operation.value = 'scale';
+        direction.value = event.target.dataset.direction;
+      }
+    }
+
+    function handlePanMove(event) {
+      const _dx = (event.type.startsWith('mouse') ? event.clientX : event.touches[0].clientX) - startX.value;
+      const _dy = (event.type.startsWith('mouse') ? event.clientY : event.touches[0].clientY) - startY.value;
+      if (operation.value === 'move') {
+        dx.value = _dx / props.pageScale;
+        dy.value = _dy / props.pageScale;
+      } else if (operation.value === 'scale') {
+        if (direction.value === 'left-top') {
+          const d = Math.min(_dx, _dy * ratio);
+          dx.value = d;
+          dw.value = -d;
+          dy.value = d / ratio;
+        }
+        if (direction.value === 'right-bottom') {
+          const d = Math.max(_dx, _dy * ratio);
+          dw.value = d;
+        }
+      }
+    }
+
+    function handlePanEnd() {
+      if (operation.value === 'move') {
+        emit('update', {
+          x: props.x + dx.value,
+          y: props.y + dy.value
+        });
+        dx.value = 0;
+        dy.value = 0;
+      } else if (operation.value === 'scale') {
+        emit('update', {
+          x: props.x + dx.value,
+          y: props.y + dy.value,
+          width: props.width + dw.value,
+          scale: (props.width + dw.value) / props.originWidth
+        });
+        dx.value = 0;
+        dy.value = 0;
+        dw.value = 0;
+        direction.value = '';
+      }
+      operation.value = '';
+    }
+
+    function onDelete() {
+      emit('delete');
+    }
+
+    return {
+      dx,
+      dy,
+      dw,
+      direction,
+      operation,
+      startX,
+      startY,
+      svg,
+      ratio,
+      handlePanStart,
+      handlePanMove,
+      handlePanEnd,
+      onDelete
+    };
+  },
+};
+</script>
+
+<style>
+.operation {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+</style>
