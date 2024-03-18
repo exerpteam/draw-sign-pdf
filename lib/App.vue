@@ -78,7 +78,7 @@
                 <Drawing
                   v-if="object.type === 'drawing'"
                   @update="(e) => updateObject(object.id, e)"
-                  @delete="deleteObject(object.id)"
+                  @delete="() => deleteObject(object.id)"
                   :path="object.path"
                   :x="object.x"
                   :y="object.y"

@@ -1,5 +1,5 @@
 import type { App, Plugin } from "vue";
-import DrawSignPdf from "./App.vue";
+import { DrawSignPdf } from "./main";
 import { getAsset } from "./utils/prepareAssets";
 
 getAsset("pdfjsLib");
