@@ -66,29 +66,26 @@
             class="relative shadow-lg"
             :class="{ 'shadow-outline': pIndex === selectedPageIndex }"
           >
-            <PDFPage @measure="onMeasure" :page="page" />
+            <PDFPage @measure="(e) => onMeasure(e, pIndex)" :page="page" />
             <div
               class="absolute left-0 top-0 origin-top-left transform"
               :style="{
-                transform: `scale(${pagesScale[pIndex]})`,
+                transform: `scale(${pagesScale[pIndex].scale})`,
                 touchAction: 'none',
               }"
             >
               <div v-for="object in allObjects[pIndex]" :key="object.id">
-                <!-- <Drawing v-for="object in allObjects[pIndex]" :key="object.id" :is="object.type"
-                                :object="object" :page-scale="pagesScale[pIndex]" @update="updateObject"
-                                @delete="deleteObject" /> -->
                 <Drawing
                   v-if="object.type === 'drawing'"
                   @update="(e) => updateObject(object.id, e)"
-                  @delete="() => deleteObject(object.id)"
+                  @delete="deleteObject(object.id)"
                   :path="object.path"
                   :x="object.x"
                   :y="object.y"
                   :width="object.width"
                   :originWidth="object.originWidth"
                   :originHeight="object.originHeight"
-                  :pageScale="pagesScale[pIndex]"
+                  :pageScale="pagesScale[pIndex]?.scale"
                 />
               </div>
             </div>
@@ -106,10 +103,9 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
-// import { fly } from '@vue/transition'; // Assuming you have a similar transition in Vue
-import PDFPage from "./components/PDFPage.vue"; // Assuming your component files have the .vue extension
-import Drawing from "./components/Drawing.vue"; // Assuming your component files have the .vue extension
-import DrawingCanvas from "./components/DrawingCanvas.vue"; // Assuming your component files have the .vue extension
+import PDFPage from "./components/PDFPage.vue";
+import Drawing from "./components/Drawing.vue";
+import DrawingCanvas from "./components/DrawingCanvas.vue";
 import prepareAssets from "./utils/prepareAssets";
 import {
   readAsArrayBuffer,
@@ -149,13 +145,11 @@ export default defineComponent({
         const res = await fetch("/test.pdf");
         const pdfBlob = await res.blob();
 
-        await addPDF(pdfBlob);
+        // await addPDF(pdfBlob);
         selectedPageIndex.value = 0;
         setTimeout(() => {
-          // fetchFont(currentFont.value);
           prepareAssets();
-        }, 5000);
-        // addDrawing(200, 100, "M30,30 L100,50 L50,70", 0.5);
+        }, 1000);
       } catch (e) {
         console.log(e);
       }
@@ -186,7 +180,7 @@ export default defineComponent({
           .fill()
           .map(async (_, i) => await pdf.getPage(i + 1));
         allObjects.value = Array(numPages).fill([]);
-        pagesScale.value = Array(numPages).fill(1);
+        pagesScale.value = Array(numPages).fill({ scale: 1 });
       } catch (e) {
         console.log("Failed to add pdf.");
         throw e;
@@ -266,8 +260,6 @@ export default defineComponent({
     };
 
     const onMeasure = (scale, i) => {
-      console.log("measure", scale, i);
-
       pagesScale.value[i] = scale;
     };
 

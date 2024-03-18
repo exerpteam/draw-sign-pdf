@@ -43,7 +43,7 @@ export function prepareAsset({
     const script = document.createElement("script");
     script.src = src;
     script.onload = () => {
-      scriptRef.value = window[name];
+      scriptRef.value = window[name as keyof Window];
       console.log(`${name} is loaded.`);
       resolve(scriptRef);
     };

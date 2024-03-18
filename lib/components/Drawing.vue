@@ -36,7 +36,7 @@
         alt="delete object"
       />
     </div>
-    <svg v-bind="svg" width="100%" height="100%">
+    <svg ref="svg" width="100%" height="100%">
       <path
         stroke-width="5"
         stroke-linejoin="round"
@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, nextTick } from "vue";
 // import { pannable } from '../utils/pannable';
 
 export default {
@@ -78,7 +78,13 @@ export default {
 
     const ratio = props.originWidth / props.originHeight;
     onMounted(async () => {
-      // svg.value.setAttribute("viewBox", `0 0 ${props.originWidth} ${props.originHeight}`);
+      await nextTick();
+      if (svg.value) {
+        svg.value.setAttribute(
+          "viewBox",
+          `0 0 ${props.originWidth} ${props.originHeight}`
+        );
+      }
     });
 
     function handlePanStart(event) {
