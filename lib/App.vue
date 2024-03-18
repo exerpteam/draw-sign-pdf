@@ -127,7 +127,7 @@ export default defineComponent({
   setup(props) {
     // Your reactive variables and methods
     const genID = ggID();
-    const pdfFile = ref(null);
+    const pdfFile = ref<File | null>(null);
     const pdfName = ref("");
     const pages = ref([]);
     const pagesScale = ref([]);
@@ -168,7 +168,7 @@ export default defineComponent({
       }
     };
 
-    const addPDF = async (file) => {
+    const addPDF = async (file: any) => {
       try {
         const pdf = await readAsPDF(file);
 
@@ -176,9 +176,9 @@ export default defineComponent({
         pdfFile.value = file;
         const numPages = pdf.numPages;
 
-        pages.value = Array(numPages)
-          .fill()
-          .map(async (_, i) => await pdf.getPage(i + 1));
+        pages.value = Array.from({ length: numPages }).map(
+          async (_, i) => await pdf.getPage(i + 1)
+        );
         allObjects.value = Array(numPages).fill([]);
         pagesScale.value = Array(numPages).fill({ scale: 1 });
       } catch (e) {
