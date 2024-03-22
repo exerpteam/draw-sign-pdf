@@ -1,1 +1,1 @@
-export { default as DrawSignPdf } from "./App.vue";
+export { default as DrawSignPdf } from "./DrawSignPdf.vue";
