@@ -39,11 +39,16 @@
 </template>
 <script lang="ts">
 import { onMounted, onBeforeUnmount, reactive, ref } from "vue";
+import { TouchEventDetails, TouchMoveData } from "../utils/pdfTypes";
 
 export default {
-  setup(props, { emit }) {
+  setup(
+    props: Readonly<{ [key: string]: any }>,
+    { emit }: { emit: (event: string, ...args: any[]) => void }
+  ) {
     const signatureCanvas = ref();
-    const paths = ref([]);
+    type PathElement = ["M" | "L", number, number];
+    const paths = ref<PathElement[]>([]);
     const path = ref("");
     const data = reactive({
       drawing: false,
@@ -55,7 +60,7 @@ export default {
       maxY: 0,
     });
 
-    const handleMousedown = (event) => {
+    const handleMousedown = (event: MouseEvent) => {
       data.x = event.clientX;
       data.y = event.clientY;
       const target = event.target;
@@ -69,7 +74,7 @@ export default {
       signatureCanvas.value.addEventListener("mouseup", handleMouseup);
     };
 
-    const handleMousemove = (event) => {
+    const handleMousemove = (event: MouseEvent) => {
       const dx = event.clientX - data.x;
       const dy = event.clientY - data.y;
       data.x = event.clientX;
@@ -82,7 +87,7 @@ export default {
       });
     };
 
-    const handleMouseup = (event) => {
+    const handleMouseup = (event: MouseEvent) => {
       data.x = event.clientX;
       data.y = event.clientY;
       handlePanEnd();
@@ -90,18 +95,23 @@ export default {
       signatureCanvas.value.removeEventListener("mouseup", handleMouseup);
     };
 
-    const handleTouchStart = (event) => {
+    const handleTouchStart = (event: TouchEvent) => {
       if (event.touches.length > 1) return;
       const touch = event.touches[0];
       data.x = touch.clientX;
       data.y = touch.clientY;
       const target = touch.target;
-      handlePanStart({ x: data.x, y: data.y, target });
+      handlePanStart({
+        x: data.x,
+        y: data.y,
+        target,
+        currentTarget: signatureCanvas.value,
+      });
       signatureCanvas.value.addEventListener("touchmove", handleTouchmove);
       signatureCanvas.value.addEventListener("touchend", handleTouchend);
     };
 
-    const handleTouchmove = (event) => {
+    const handleTouchmove = (event: TouchEvent) => {
       event.preventDefault();
       if (event.touches.length > 1) return;
       const touch = event.touches[0];
@@ -112,7 +122,7 @@ export default {
       handlePanMove({ x: data.x, y: data.y, dx, dy });
     };
 
-    const handleTouchend = (event) => {
+    const handleTouchend = (event: TouchEvent) => {
       const touch = event.changedTouches[0];
       data.x = touch.clientX;
       data.y = touch.clientY;
@@ -121,7 +131,7 @@ export default {
       signatureCanvas.value.removeEventListener("touchend", handleTouchend);
     };
 
-    const handlePanStart = (event) => {
+    const handlePanStart = (event: TouchEventDetails) => {
       if (event.target !== event.currentTarget) {
         data.drawing = false;
         return;
@@ -138,7 +148,7 @@ export default {
       path.value += `M${data.x},${data.y}`;
     };
 
-    const handlePanMove = (event) => {
+    const handlePanMove = (event: TouchMoveData) => {
       if (!data.drawing) return;
 
       data.x = event.x;

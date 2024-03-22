@@ -19,16 +19,16 @@
     >
       <div
         data-direction="left-top"
-        class="absolute left-0 top-0 h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform cursor-nwse-resize rounded-full bg-green-400 md:scale-25"
+        class="absolute left-0 top-0 h-4 w-4 -translate-x-1/2 -translate-y-1/2 transform cursor-nwse-resize rounded-full bg-green-400 md:scale-25"
       ></div>
       <div
         data-direction="right-bottom"
-        class="absolute bottom-0 right-0 h-10 w-10 translate-x-1/2 translate-y-1/2 transform cursor-nwse-resize rounded-full bg-green-400 md:scale-25"
+        class="absolute bottom-0 right-0 h-4 w-4 translate-x-1/2 translate-y-1/2 transform cursor-nwse-resize rounded-full bg-green-400 md:scale-25"
       ></div>
     </div>
     <div
       @click="onDelete"
-      class="absolute left-0 right-0 top-0 m-auto h-12 w-12 -translate-y-1/2 transform cursor-pointer rounded-full bg-white md:scale-25"
+      class="absolute left-0 right-0 top-0 m-auto h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full bg-white md:scale-25"
     >
       <img
         class="h-full w-full"
@@ -49,7 +49,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { ref, onMounted, nextTick } from "vue";
 // import { pannable } from '../utils/pannable';
 

@@ -1,4 +1,4 @@
-import { readAsArrayBuffer } from "./asyncReader.js";
+import { readAsArrayBuffer } from "./asyncReader";
 import { getAsset } from "./prepareAssets";
 
 export async function save(pdfFile: Blob, objects: any, name: string) {
@@ -23,7 +23,7 @@ export async function save(pdfFile: Blob, objects: any, name: string) {
       const pageHeight = page.getHeight();
       const embedProcesses = pageObjects.map(async (object: any) => {
         if (object.type === "drawing") {
-          let { x, y, path, scale } = object;
+          const { x, y, path, scale } = object;
           const {
             pushGraphicsState,
             setLineCap,

@@ -69,7 +69,7 @@
             class="relative shadow-lg"
             :class="{ 'shadow-outline': pIndex === selectedPageIndex }"
           >
-            <PDFPage @measure="(e) => onMeasure(e, pIndex)" :page="page" />
+            <PDFPage @measure="(e: any) => onMeasure(e, pIndex)" :page="page" />
             <div
               class="absolute left-0 top-0 origin-top-left transform"
               :style="{
@@ -80,7 +80,7 @@
               <div v-for="object in allObjects[pIndex]" :key="object.id">
                 <Drawing
                   v-if="object.type === 'drawing'"
-                  @update="(e) => updateObject(object.id, e)"
+                  @update="(e: any) => updateObject(object.id, e)"
                   @delete="() => deleteObject(object.id)"
                   :path="object.path"
                   :x="object.x"
@@ -110,6 +110,9 @@ import PDFPage from "./components/PDFPage.vue";
 import Drawing from "./components/Drawing.vue";
 import DrawingCanvas from "./components/DrawingCanvas.vue";
 import prepareAssets from "./utils/prepareAssets";
+import { getAsset } from "./utils/prepareAssets";
+
+import { DrawingObject, DrawingPayload } from "./utils/pdfTypes";
 import {
   readAsArrayBuffer,
   readAsPDF,
@@ -132,9 +135,9 @@ export default defineComponent({
     const genID = ggID();
     const pdfFile = ref<File | null>(null);
     const pdfName = ref("");
-    const pages = ref([]);
-    const pagesScale = ref([]);
-    const allObjects = ref([]);
+    const pages = ref<Promise<any>[]>([]);
+    const pagesScale = ref<any[]>([]);
+    const allObjects = ref<any[]>([]);
     const currentFont = ref("Times-Roman");
     const focusId = ref(null);
     const selectedPageIndex = ref(-1);
@@ -143,6 +146,7 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
+        getAsset("pdfjsLib");
         console.log(props.url);
 
         const res = await fetch("/test.pdf");
@@ -158,7 +162,7 @@ export default defineComponent({
       }
     });
 
-    const onUploadPDF = async (e) => {
+    const onUploadPDF = async (e: any) => {
       const files = e.target.files || (e.dataTransfer && e.dataTransfer.files);
       const file = files[0];
       if (!file || file.type !== "application/pdf") return;
@@ -171,7 +175,7 @@ export default defineComponent({
       }
     };
 
-    const addPDF = async (file) => {
+    const addPDF = async (file: any) => {
       try {
         const pdf = await readAsPDF(file);
 
@@ -190,7 +194,7 @@ export default defineComponent({
       }
     };
 
-    const onFinishDrawing = async (e) => {
+    const onFinishDrawing = async (e: any) => {
       console.log(e);
 
       const { originWidth, originHeight, path } = e;
@@ -208,9 +212,14 @@ export default defineComponent({
       }
     };
 
-    const addDrawing = (originWidth, originHeight, path, scale = 1) => {
+    const addDrawing = (
+      originWidth: number,
+      originHeight: number,
+      path: string,
+      scale = 1
+    ) => {
       const id = genID();
-      const object = {
+      const object: DrawingObject = {
         id,
         path,
         type: "drawing",
@@ -227,11 +236,11 @@ export default defineComponent({
       );
     };
 
-    const selectPage = (index) => {
+    const selectPage = (index: number) => {
       selectedPageIndex.value = index;
     };
 
-    const updateObject = (objectId, payload) => {
+    const updateObject = (objectId: number, payload: DrawingPayload) => {
       console.log(
         objectId,
         payload,
@@ -242,22 +251,22 @@ export default defineComponent({
 
       allObjects.value = allObjects.value.map((objects, pIndex) =>
         pIndex == selectedPageIndex.value
-          ? objects.map((object) =>
+          ? objects.map((object: DrawingObject) =>
               object.id === objectId ? { ...object, ...payload } : object
             )
           : objects
       );
     };
 
-    const deleteObject = (objectId) => {
+    const deleteObject = (objectId: number) => {
       allObjects.value = allObjects.value.map((objects, pIndex) =>
         pIndex == selectedPageIndex.value
-          ? objects.filter((object) => object.id !== objectId)
+          ? objects.filter((object: DrawingObject) => object.id !== objectId)
           : objects
       );
     };
 
-    const onMeasure = (scale, i) => {
+    const onMeasure = (scale: number, i: number) => {
       pagesScale.value[i] = scale;
     };
 
