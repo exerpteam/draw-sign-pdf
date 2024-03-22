@@ -104,7 +104,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { defineComponent, onMounted, ref } from "vue";
 import PDFPage from "./components/PDFPage.vue";
 import Drawing from "./components/Drawing.vue";
@@ -130,7 +130,7 @@ export default defineComponent({
   setup(props) {
     // Your reactive variables and methods
     const genID = ggID();
-    const pdfFile = ref<File | null>(null);
+    const pdfFile = (ref < File) | (null > null);
     const pdfName = ref("");
     const pages = ref([]);
     const pagesScale = ref([]);

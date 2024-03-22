@@ -10,8 +10,9 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"],
-    "types": ["node", "vitest/globals"]
+    "types": ["node", "vitest/globals"],
+    "experimentalDecorators": true,
   },
   "include": ["vite.config.ts", "env.d.ts", "lib/**/*.ts", "demo/**/*.ts", "demo/**/*.vue"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules","lib"]
 }

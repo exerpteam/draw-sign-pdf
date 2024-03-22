@@ -8,7 +8,8 @@ const install = (app: App) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
 };
 
-DrawSignPdf.install = install;
+// DrawSignPdf.install = install;
+(DrawSignPdf as any).install = install;
 
 export { DrawSignPdf };
 export default DrawSignPdf as unknown as Plugin;

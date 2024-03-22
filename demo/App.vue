@@ -1,10 +1,10 @@
 <template>
   <div>
-    <DrawSignPdf url="new test"></DrawSignPdf>
+    <DrawSignPdf></DrawSignPdf>
   </div>
 </template>
-<script setup lang="ts">
-import DrawSignPdf from "../lib";
+<script setup>
+import DrawSignPdf from "draw-sign-pdf";
 </script>
 <style global>
 @tailwind base;
