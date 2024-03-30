@@ -1,104 +1,51 @@
 <template>
   <div>
-    <main class="flex min-h-screen flex-col items-center bg-gray-100 py-16">
-      <div
-        class="left-0 right-0 top-0 z-10 flex h-12 items-center justify-center border-b border-gray-300 bg-gray-200"
-      >
-        <input
-          type="file"
-          name="pdf"
-          id="pdf"
-          @change="onUploadPDF"
-          class="hidden"
-        />
+    <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
+      <div class="left-0 right-0 top-0 z-10 flex h-12 items-center justify-center">
+        <!-- <input type="file" name="pdf" id="pdf" @change="onUploadPDF" class="hidden" />
         <label
           class="whitespace-no-wrap mr-3 cursor-pointer rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-          for="pdf"
-        >
+          for="pdf">
           Choose PDF
-        </label>
-        <div
-          class="relative mr-3 flex h-8 overflow-hidden rounded-sm bg-gray-400 md:mr-4"
-        >
-          <label
-            class="flex h-full w-8 cursor-pointer items-center justify-center hover:bg-gray-500"
-            @click="onAddDrawing"
-            :class="{
-              'cursor-not-allowed': selectedPageIndex < 0,
-              'bg-gray-500': selectedPageIndex < 0,
-            }"
-          >
-            <img
-              src="./assets/images/gesture.svg"
-              alt="An icon for adding drawing"
-            />
-          </label>
-        </div>
-        <button
-          @click="savePDF"
-          class="mr-3 w-20 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-          :class="{
-            'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
-            'bg-blue-700': pages.length === 0 || saving || !pdfFile,
-          }"
-        >
+        </label> -->
+        <button @click="onAddDrawing"
+          class="mr-3 w-60 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4">
+          Update Signature
+        </button>
+        <button @click="savePDF"
+          class="mr-3 w-20 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4" :class="{
+          'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
+          'bg-blue-700': pages.length === 0 || saving || !pdfFile,
+        }">
           {{ saving ? "Saving" : "Save" }}
         </button>
       </div>
-      <div
-        transition:fly="{ y: -200, duration: 500 }"
-        class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg"
-        style="height: 50%"
-        v-if="addingDrawing"
-      >
-        <DrawingCanvas
-          @finish="onFinishDrawing"
-          @cancel="addingDrawing = false"
-        />
+      <div transition:fly="{ y: -200, duration: 500 }"
+        class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg" style="height: 50%"
+        v-if="addingDrawing">
+        <DrawingCanvas @finish="onFinishDrawing" @cancel="addingDrawing = false" />
       </div>
-      {{ pages.length }}
       <div class="w-full" v-if="pages.length">
-        <div
-          v-for="(page, pIndex) in pages"
-          :key="pIndex"
-          class="flex w-full flex-col items-center overflow-hidden p-5"
-          @mousedown="selectPage(pIndex)"
-          @touchstart="selectPage(pIndex)"
-        >
-          <div
-            class="relative shadow-lg"
-            :class="{ 'shadow-outline': pIndex === selectedPageIndex }"
-          >
+        <div v-for="(page, pIndex) in pages" :key="pIndex" class="flex w-full flex-col items-center overflow-hidden p-5"
+          @mousedown="selectPage(pIndex)" @touchstart="selectPage(pIndex)">
+          <div class="relative shadow-lg" :class="{ 'shadow-outline': pIndex === selectedPageIndex }">
             <PDFPage @measure="(e: any) => onMeasure(e, pIndex)" :page="page" />
-            <div
-              class="absolute left-0 top-0 origin-top-left transform"
-              :style="{
-                transform: `scale(${pagesScale[pIndex].scale})`,
-                touchAction: 'none',
-              }"
-            >
+            <div class="absolute left-0 top-0 origin-top-left transform" :style="{
+          transform: `scale(${pagesScale[pIndex].scale})`,
+          touchAction: 'none',
+        }">
               <div v-for="object in allObjects[pIndex]" :key="object.id">
-                <Drawing
-                  v-if="object.type === 'drawing'"
-                  @update="(e: any) => updateObject(object.id, e)"
-                  @delete="() => deleteObject(object.id)"
-                  :path="object.path"
-                  :x="object.x"
-                  :y="object.y"
-                  :width="object.width"
-                  :originWidth="object.originWidth"
-                  :originHeight="object.originHeight"
-                  :pageScale="pagesScale[pIndex]?.scale"
-                />
+                <Drawing v-if="object.type === 'drawing'" @update="(e: any) => updateObject(object.id, e)"
+                  @delete="() => deleteObject(object.id)" :path="object.path" :x="object.x" :y="object.y"
+                  :width="object.width" :originWidth="object.originWidth" :originHeight="object.originHeight"
+                  :pageScale="pagesScale[pIndex]?.scale" />
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="flex w-full flex-grow items-center justify-center" v-else>
-        <span class="text-3xl font-bold text-gray-500"
-          >Drag something here</span
-        >
+        <span class="text-3xl font-bold text-gray-500">Drag something here</span>
       </div>
     </main>
   </div>
@@ -112,7 +59,7 @@ import DrawingCanvas from "./components/DrawingCanvas.vue";
 import prepareAssets from "./utils/prepareAssets";
 import { getAsset } from "./utils/prepareAssets";
 
-import { DrawingObject, DrawingPayload } from "./utils/pdfTypes";
+import { DrawingObject, DrawingPayload, PdfSignatureData } from "./utils/pdfTypes";
 import {
   readAsArrayBuffer,
   readAsPDF,
@@ -129,12 +76,12 @@ export default defineComponent({
     DrawingCanvas,
     Drawing,
   },
-  props: { url: String },
-  setup(props) {
+  props: { pdfData: String, signatureData: Array<PdfSignatureData> },
+  setup(props, { emit }) {
     // Your reactive variables and methods
     const genID = ggID();
     const pdfFile = ref<File | null>(null);
-    const pdfName = ref("");
+    const pdfName = ref('');
     const pages = ref<Promise<any>[]>([]);
     const pagesScale = ref<any[]>([]);
     const allObjects = ref<any[]>([]);
@@ -143,20 +90,20 @@ export default defineComponent({
     const selectedPageIndex = ref(-1);
     const saving = ref(false);
     const addingDrawing = ref(false);
+    const signatureImageData = ref('');
+    const signedDocument = ref('');
 
     onMounted(async () => {
       try {
         getAsset("pdfjsLib");
-        console.log(props.url);
 
-        const res = await fetch("/test.pdf");
-        const pdfBlob = await res.blob();
-
-        // await addPDF(pdfBlob);
+        // const res = await fetch("/test.pdf");
+        // const pdfBlob = await res.blob();
         selectedPageIndex.value = 0;
-        setTimeout(() => {
-          prepareAssets();
-        }, 1000);
+        prepareAssets();
+        
+        await addPDF(props.pdfData, 'string');
+        onAddDrawing();
       } catch (e) {
         console.log(e);
       }
@@ -168,16 +115,16 @@ export default defineComponent({
       if (!file || file.type !== "application/pdf") return;
       selectedPageIndex.value = -1;
       try {
-        await addPDF(file);
+        await addPDF(file, 'arrayBuffer');
         selectedPageIndex.value = 0;
       } catch (e) {
         console.log(e);
       }
     };
 
-    const addPDF = async (file: any) => {
+    const addPDF = async (file: any, type: string) => {
       try {
-        const pdf = await readAsPDF(file);
+        const pdf = await readAsPDF(file, type);
 
         pdfName.value = file.name;
         pdfFile.value = file;
@@ -196,6 +143,7 @@ export default defineComponent({
 
     const onFinishDrawing = async (e: any) => {
       console.log(e);
+      signatureImageData.value = e.signatureImageData;
 
       const { originWidth, originHeight, path } = e;
       let scale = 1;
@@ -212,28 +160,39 @@ export default defineComponent({
       }
     };
 
-    const addDrawing = (
-      originWidth: number,
-      originHeight: number,
-      path: string,
-      scale = 1
-    ) => {
-      const id = genID();
-      const object: DrawingObject = {
-        id,
-        path,
-        type: "drawing",
-        x: 0,
-        y: 0,
-        originWidth,
-        originHeight,
-        width: originWidth * scale,
-        scale,
-      };
+    const addDrawing = (originWidth: number, originHeight: number, path: string, scale = 1) => {
+      allObjects.value = Array(allObjects.value.length).fill([]);
+      console.log(props.signatureData?.length, props.signatureData);
 
-      allObjects.value = allObjects.value.map((objects, pIndex) =>
-        pIndex === selectedPageIndex.value ? [...objects, object] : objects
-      );
+      props.signatureData?.forEach((signData) => {
+        const id = genID();
+        scale = cmToPx(signData.width) / originWidth;
+        const object: DrawingObject = {
+          id,
+          path,
+          type: "drawing",
+          // x: signData.left,
+          // y: signData.top,
+          x: cmToPx(signData.left),
+          y: cmToPx(signData.top),
+          originWidth,
+          originHeight,
+          width: cmToPx(signData.width),
+          scale,
+        };
+        console.log(cmToPx(signData.left), "left", cmToPx(signData.top), "top", cmToPx(signData.width), "width");
+
+
+        allObjects.value = allObjects.value.map((objects, pIndex) =>
+          signData.page === pIndex + 1 ? [...objects, object] : objects
+        );
+        // console.log(allObjects.value.length, allObjects.value);
+
+      });
+
+      // allObjects.value = allObjects.value.map((objects, pIndex) =>
+      //   pIndex === selectedPageIndex.value ? [...objects, object] : objects
+      // );
     };
 
     const selectPage = (index: number) => {
@@ -241,19 +200,11 @@ export default defineComponent({
     };
 
     const updateObject = (objectId: number, payload: DrawingPayload) => {
-      console.log(
-        objectId,
-        payload,
-        "hit",
-        allObjects.value,
-        selectedPageIndex.value
-      );
-
       allObjects.value = allObjects.value.map((objects, pIndex) =>
         pIndex == selectedPageIndex.value
           ? objects.map((object: DrawingObject) =>
-              object.id === objectId ? { ...object, ...payload } : object
-            )
+            object.id === objectId ? { ...object, ...payload } : object
+          )
           : objects
       );
     };
@@ -270,11 +221,21 @@ export default defineComponent({
       pagesScale.value[i] = scale;
     };
 
+    const cmToPx = (cm: number) => {
+
+      const dpi = 96; // dots per inch
+      const cpi = 2.54; // centimeters per inch
+      const ppd = 1; // pixels per dot (default to 1 if undefined)
+      return ((cm * dpi) / cpi) * ppd;
+    };
+
     const savePDF = async () => {
       if (!pdfFile.value || saving.value || !pages.value.length) return;
       saving.value = true;
       try {
-        await save(pdfFile.value, allObjects.value, pdfName.value);
+        const signatureImagetype = 'image/svg+xml';
+        signedDocument.value = await save(pdfFile.value, allObjects.value, pdfName.value);
+
       } catch (e) {
         console.log(e);
       } finally {

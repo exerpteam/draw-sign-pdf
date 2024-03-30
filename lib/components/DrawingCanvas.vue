@@ -1,38 +1,17 @@
 <template>
-  <div
-    style="height: 50%"
-    class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg"
-  >
-    <div
-      ref="signatureCanvas"
-      @panstart="handlePanStart"
-      @panmove="handlePanMove"
-      @panend="handlePanEnd"
-      class="relative h-full w-full select-none"
-    >
+  <div style="height: 50%" class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg ">
+    <div ref="signatureCanvas" @panstart="handlePanStart" @panmove="handlePanMove" @panend="handlePanEnd"
+      class="relative h-full w-full select-none">
       <div class="absolute bottom-0 right-0 mb-4 mr-4 flex">
-        <button
-          @click="cancel"
-          class="mr-4 w-24 rounded bg-red-500 px-4 py-1 font-bold text-white hover:bg-red-700"
-        >
+        <button @click="cancel" class="mr-4 w-24 rounded bg-red-500 px-4 py-1 font-bold text-white hover:bg-red-700">
           Cancel
         </button>
-        <button
-          @click="finish"
-          class="w-24 rounded bg-blue-600 px-4 py-1 font-bold text-white hover:bg-blue-700"
-        >
+        <button @click="finish" class="w-24 rounded bg-blue-600 px-4 py-1 font-bold text-white hover:bg-blue-700">
           Done
         </button>
       </div>
       <svg class="pointer-events-none h-full w-full">
-        <path
-          stroke-width="5"
-          stroke-linejoin="round"
-          stroke-linecap="round"
-          :d="path"
-          stroke="black"
-          fill="none"
-        />
+        <path stroke-width="5" stroke-linejoin="round" stroke-linecap="round" :d="path" stroke="black" fill="none" />
       </svg>
     </div>
   </div>
@@ -42,14 +21,11 @@ import { onMounted, onBeforeUnmount, reactive, ref } from "vue";
 import { TouchEventDetails, TouchMoveData } from "../utils/pdfTypes";
 
 export default {
-  setup(
-    props: Readonly<{ [key: string]: any }>,
-    { emit }: { emit: (event: string, ...args: any[]) => void }
-  ) {
+  setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const signatureCanvas = ref();
-    type PathElement = ["M" | "L", number, number];
+    type PathElement = ['M' | 'L', number, number];
     const paths = ref<PathElement[]>([]);
-    const path = ref("");
+    const path = ref('');
     const data = reactive({
       drawing: false,
       x: 0,
@@ -101,12 +77,7 @@ export default {
       data.x = touch.clientX;
       data.y = touch.clientY;
       const target = touch.target;
-      handlePanStart({
-        x: data.x,
-        y: data.y,
-        target,
-        currentTarget: signatureCanvas.value,
-      });
+      handlePanStart({ x: data.x, y: data.y, target, currentTarget: signatureCanvas.value });
       signatureCanvas.value.addEventListener("touchmove", handleTouchmove);
       signatureCanvas.value.addEventListener("touchend", handleTouchend);
     };
@@ -171,20 +142,33 @@ export default {
       const dy = -(data.minY - 10);
       const originWidth = data.maxX - data.minX + 20;
       const originHeight = data.maxY - data.minY + 20;
+      let base64 = '';
 
       let scale = 1;
       if (originWidth > 500) {
         scale = 500 / originWidth;
       }
+      const updatedPaths = paths.value.reduce((acc, cur) => {
+        return acc + cur[0] + (cur[1] + dx) + "," + (cur[2] + dy);
+      }, "");
+
+      const svgElement = document.querySelector('svg');
+      if (svgElement) {
+        svgElement.removeAttribute('viewBox');
+        svgElement.querySelector('path')?.setAttribute('d', updatedPaths);
+        const svgString = new XMLSerializer().serializeToString(svgElement);
+        base64 = btoa(svgString);
+      }
 
       emit("finish", {
         originWidth,
         originHeight,
-        path: paths.value.reduce((acc, cur) => {
-          return acc + cur[0] + (cur[1] + dx) + "," + (cur[2] + dy);
-        }, ""),
+        path: updatedPaths,
         scale,
+        signatureImageData: base64,
       });
+
+
     };
 
     const cancel = () => {
@@ -215,3 +199,4 @@ export default {
   },
 };
 </script>
+<style scoped></style>

@@ -30,3 +30,11 @@ export interface TouchMoveData {
   dx: number;
   dy: number;
 }
+
+export interface PdfSignatureData {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  page: number;
+}

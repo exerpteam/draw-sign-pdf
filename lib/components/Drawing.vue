@@ -1,55 +1,31 @@
 <template>
-  <div
-    :style="{
-      width: `${width + dw}px`,
-      height: `${(width + dw) / ratio}px`,
-      transform: `translate(${x + dx}px, ${y + dy}px)`,
-    }"
-    class="absolute left-0 top-0 select-none"
-  >
-    <div
-      @mousedown="handlePanStart"
-      @touchstart="handlePanStart"
-      @mousemove="handlePanMove"
-      @touchmove="handlePanMove"
-      @mouseup="handlePanEnd"
-      @touchend="handlePanEnd"
+  <div :style="{
+    width: `${width + dw}px`,
+    height: `${(width + dw) / ratio}px`,
+    transform: `translate(${x + dx}px, ${y + dy}px)`,
+  }" class="absolute left-0 top-0 select-none">
+    <div @mousedown="handlePanStart" @touchstart="handlePanStart" @mousemove="handlePanMove" @touchmove="handlePanMove"
+      @mouseup="handlePanEnd" @touchend="handlePanEnd"
       class="absolute h-full w-full cursor-grab border border-dashed border-gray-400"
-      :class="{ 'cursor-grabbing': operation === 'move', operation }"
-    >
-      <div
-        data-direction="left-top"
-        class="absolute left-0 top-0 h-4 w-4 -translate-x-1/2 -translate-y-1/2 transform cursor-nwse-resize rounded-full bg-green-400 md:scale-25"
-      ></div>
-      <div
-        data-direction="right-bottom"
-        class="absolute bottom-0 right-0 h-4 w-4 translate-x-1/2 translate-y-1/2 transform cursor-nwse-resize rounded-full bg-green-400 md:scale-25"
-      ></div>
+      :class="{ 'cursor-grabbing': operation === 'move', operation }">
+      <div data-direction="left-top"
+        class="absolute left-0 top-0 h-4 w-4 -translate-x-1/2 -translate-y-1/2 transform cursor-nwse-resize rounded-full bg-green-400 md:scale-25">
+      </div>
+      <div data-direction="right-bottom"
+        class="absolute bottom-0 right-0 h-4 w-4 translate-x-1/2 translate-y-1/2 transform cursor-nwse-resize rounded-full bg-green-400 md:scale-25">
+      </div>
     </div>
-    <div
-      @click="onDelete"
-      class="absolute left-0 right-0 top-0 m-auto h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full bg-white md:scale-25"
-    >
-      <img
-        class="h-full w-full"
-        src="../assets/images/delete.svg"
-        alt="delete object"
-      />
+    <div @click="onDelete"
+      class="absolute left-0 right-0 top-0 m-auto h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full bg-white md:scale-25">
+      <img class="h-full w-full" src="../assets/images/delete.svg" alt="delete object" />
     </div>
     <svg ref="svg" width="100%" height="100%">
-      <path
-        stroke-width="5"
-        stroke-linejoin="round"
-        stroke-linecap="round"
-        stroke="black"
-        fill="none"
-        :d="path"
-      />
+      <path stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke="black" fill="none" :d="path" />
     </svg>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import { ref, onMounted, nextTick } from "vue";
 // import { pannable } from '../utils/pannable';
 

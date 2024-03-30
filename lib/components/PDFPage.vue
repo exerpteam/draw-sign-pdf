@@ -1,13 +1,7 @@
 <template>
   <div>
-    <canvas
-      ref="canvas"
-      id="canvas"
-      class="max-w-full"
-      :style="{ width: `${width}px` }"
-      :width="width"
-      :height="height"
-    />
+    <canvas ref="canvas" id="canvas" class="max-w-full" :style="{ width: `${width}px` }" :width="width"
+      :height="height" />
   </div>
 </template>
 
@@ -18,18 +12,15 @@ export default {
   props: {
     page: Object,
   },
-  setup(
-    props: Readonly<{ [key: string]: any }>,
-    { emit }: { emit: (event: string, ...args: any[]) => void }
-  ) {
+  setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const canvas = ref<HTMLCanvasElement | null>(null);
     const width = ref(0);
     const height = ref(0);
 
     const measure = () => {
-      emit("measure", {
-        scale: canvas.value!.clientWidth / width.value,
-      });
+        emit("measure", {
+          scale: canvas.value!.clientWidth / width.value,
+        });
     };
 
     onMounted(async () => {
