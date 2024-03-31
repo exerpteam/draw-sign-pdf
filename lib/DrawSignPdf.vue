@@ -100,10 +100,11 @@ export default defineComponent({
         // const res = await fetch("/test.pdf");
         // const pdfBlob = await res.blob();
         selectedPageIndex.value = 0;
+        // setTimeout(async () => {
         prepareAssets();
-        
         await addPDF(props.pdfData, 'string');
         onAddDrawing();
+        // }, 1000);
       } catch (e) {
         console.log(e);
       }
