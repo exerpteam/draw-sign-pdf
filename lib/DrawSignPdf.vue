@@ -76,7 +76,7 @@ export default defineComponent({
     DrawingCanvas,
     Drawing,
   },
-  props: { pdfData: String, signatureData: Array<PdfSignatureData> },
+  props: { pdfData: String, signatureData: Array<PdfSignatureData>, isDownload: Boolean, finish: Function },
   setup(props, { emit }) {
     // Your reactive variables and methods
     const genID = ggID();
@@ -143,7 +143,6 @@ export default defineComponent({
     };
 
     const onFinishDrawing = async (e: any) => {
-      console.log(e);
       signatureImageData.value = e.signatureImageData;
 
       const { originWidth, originHeight, path } = e;
@@ -163,8 +162,6 @@ export default defineComponent({
 
     const addDrawing = (originWidth: number, originHeight: number, path: string, scale = 1) => {
       allObjects.value = Array(allObjects.value.length).fill([]);
-      console.log(props.signatureData?.length, props.signatureData);
-
       props.signatureData?.forEach((signData) => {
         const id = genID();
         scale = cmToPx(signData.width) / originWidth;
@@ -172,8 +169,6 @@ export default defineComponent({
           id,
           path,
           type: "drawing",
-          // x: signData.left,
-          // y: signData.top,
           x: cmToPx(signData.left),
           y: cmToPx(signData.top),
           originWidth,
@@ -181,13 +176,10 @@ export default defineComponent({
           width: cmToPx(signData.width),
           scale,
         };
-        console.log(cmToPx(signData.left), "left", cmToPx(signData.top), "top", cmToPx(signData.width), "width");
-
 
         allObjects.value = allObjects.value.map((objects, pIndex) =>
           signData.page === pIndex + 1 ? [...objects, object] : objects
         );
-        // console.log(allObjects.value.length, allObjects.value);
 
       });
 
@@ -223,7 +215,6 @@ export default defineComponent({
     };
 
     const cmToPx = (cm: number) => {
-
       const dpi = 96; // dots per inch
       const cpi = 2.54; // centimeters per inch
       const ppd = 1; // pixels per dot (default to 1 if undefined)
@@ -235,7 +226,12 @@ export default defineComponent({
       saving.value = true;
       try {
         const signatureImagetype = 'image/svg+xml';
-        signedDocument.value = await save(pdfFile.value, allObjects.value, pdfName.value);
+        signedDocument.value = await save(pdfFile.value, allObjects.value, pdfName.value, props.isDownload);
+
+        emit("finish", {
+          signedDocument: signedDocument.value,
+          signatureImageData: signatureImageData.value,
+        });
 
       } catch (e) {
         console.log(e);

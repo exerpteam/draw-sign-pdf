@@ -1,7 +1,7 @@
 import { readAsArrayBuffer, readAsPDF } from './asyncReader';
 import { getAsset } from './prepareAssets';
 
-export async function save(pdfFile: Blob, objects: any, name: string) {
+export async function save(pdfFile: Blob, objects: any, name: string, isDownload = false) {
   const PDFLib = await getAsset('PDFLib');
 
   const download = await getAsset('download');
@@ -9,7 +9,6 @@ export async function save(pdfFile: Blob, objects: any, name: string) {
   try {
     pdfDoc = await PDFLib.value.PDFDocument.load(pdfFile);
     // pdfDoc = await readAsPDF(pdfFile, 'string');
-    console.log(pdfDoc);
   } catch (e) {
     console.log('Failed to load PDF.');
     throw e;
@@ -21,8 +20,6 @@ export async function save(pdfFile: Blob, objects: any, name: string) {
     const embedProcesses = pageObjects.map(async (object: any) => {
       if (object.type === 'drawing') {
         const { x, y, path, scale } = object;
-        console.log(object.scale, 'scale', 'position', x, y);
-
         const { pushGraphicsState, setLineCap, popGraphicsState, setLineJoin, LineCapStyle, LineJoinStyle } = PDFLib.value;
         return () => {
           page.pushOperators(pushGraphicsState(), setLineCap(LineCapStyle.Round), setLineJoin(LineJoinStyle.Round));
@@ -43,9 +40,9 @@ export async function save(pdfFile: Blob, objects: any, name: string) {
   await Promise.all(pagesProcesses);
   try {
     const pdfBytes = await pdfDoc.save();
-    console.log(pdfBytes);
-
-    download.value(pdfBytes, name, 'application/pdf');
+    if (isDownload) {
+      download.value(pdfBytes, name, 'application/pdf');
+    }
     return pdfBytes;
   } catch (e) {
     console.log('Failed to save PDF.');

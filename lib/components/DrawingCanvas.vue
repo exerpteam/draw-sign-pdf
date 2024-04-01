@@ -165,7 +165,10 @@ export default {
         originHeight,
         path: updatedPaths,
         scale,
-        signatureImageData: base64,
+        signatureImageData: {
+          data: base64,
+          type: 'image/svg+xml'
+        },
       });
 
 
