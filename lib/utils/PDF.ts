@@ -43,7 +43,7 @@ export async function save(pdfFile: Blob, objects: any, name: string, isDownload
     if (isDownload) {
       download.value(pdfBytes, name, 'application/pdf');
     }
-    return pdfBytes;
+    return await pdfDoc.saveAsBase64();
   } catch (e) {
     console.log('Failed to save PDF.');
     throw e;

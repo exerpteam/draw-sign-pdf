@@ -20,9 +20,9 @@
           {{ saving ? "Saving" : "Save" }}
         </button>
       </div>
-      <div transition:fly="{ y: -200, duration: 500 }"
-        class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg" style="height: 50%"
-        v-if="addingDrawing">
+      <div
+        class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center"
+        style="height: 200px" v-if="addingDrawing">
         <DrawingCanvas @finish="onFinishDrawing" @cancel="addingDrawing = false" />
       </div>
       <div class="w-full" v-if="pages.length">
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="flex w-full flex-grow items-center justify-center" v-else>
-        <span class="text-3xl font-bold text-gray-500">Drag something here</span>
+        <span class="text-3xl font-bold text-gray-500">PDF Load here</span>
       </div>
     </main>
   </div>
@@ -91,7 +91,7 @@ export default defineComponent({
     const saving = ref(false);
     const addingDrawing = ref(false);
     const signatureImageData = ref('');
-    const signedDocument = ref('');
+    const signedDocument = ref<{ data: string, type: string }>({ data: '', type: 'application/pdf' });
 
     onMounted(async () => {
       try {
@@ -225,12 +225,13 @@ export default defineComponent({
       if (!pdfFile.value || saving.value || !pages.value.length) return;
       saving.value = true;
       try {
-        const signatureImagetype = 'image/svg+xml';
-        signedDocument.value = await save(pdfFile.value, allObjects.value, pdfName.value, props.isDownload);
+        const pdfData = await save(pdfFile.value, allObjects.value, pdfName.value, props.isDownload);
+
+        signedDocument.value = { type: 'application/pdf', data: pdfData };
 
         emit("finish", {
           signedDocument: signedDocument.value,
-          signatureImageData: signatureImageData.value,
+          signatureImage: signatureImageData.value,
         });
 
       } catch (e) {
