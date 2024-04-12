@@ -18,9 +18,9 @@ export default {
     const height = ref(0);
 
     const measure = () => {
-        emit("measure", {
-          scale: canvas.value!.clientWidth / width.value,
-        });
+      emit("measure", {
+        scale: canvas.value!.clientWidth / width.value,
+      });
     };
 
     onMounted(async () => {

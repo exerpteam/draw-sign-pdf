@@ -1,8 +1,8 @@
 <template>
   <div :style="{
-    width: `${width + dw}px`,
-    height: `${(width + dw) / ratio}px`,
-    transform: `translate(${x + dx}px, ${y + dy}px)`,
+    width: `${width! + dw}px`,
+    height: `${(width! + dw) / ratio}px`,
+    transform: `translate(${x! + dx}px, ${y! + dy}px)`,
   }" class="absolute left-0 top-0 select-none">
     <div @mousedown="handlePanStart" @touchstart="handlePanStart" @mousemove="handlePanMove" @touchmove="handlePanMove"
       @mouseup="handlePanEnd" @touchend="handlePanEnd"
@@ -25,11 +25,10 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted, nextTick } from "vue";
-// import { pannable } from '../utils/pannable';
+<script lang="ts">
+import { defineComponent, ref, onMounted, nextTick } from "vue";
 
-export default {
+export default defineComponent({
   props: {
     originWidth: Number,
     originHeight: Number,
@@ -42,7 +41,7 @@ export default {
     },
     path: String,
   },
-  setup(props, { emit }) {
+  setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const dx = ref(0);
     const dy = ref(0);
     const dw = ref(0);
@@ -50,7 +49,7 @@ export default {
     const operation = ref("");
     const startX = ref(0);
     const startY = ref(0);
-    const svg = ref(null);
+    const svg = ref<SVGElement | null>(null);
 
     const ratio = props.originWidth / props.originHeight;
     onMounted(async () => {
@@ -63,30 +62,30 @@ export default {
       }
     });
 
-    function handlePanStart(event) {
+    function handlePanStart(event: MouseEvent | TouchEvent) {
       startX.value = event.type.startsWith("mouse")
-        ? event.clientX
-        : event.touches[0].clientX;
+        ? (event as MouseEvent).clientX
+        : (event as TouchEvent).touches[0].clientX;
       startY.value = event.type.startsWith("mouse")
-        ? event.clientY
-        : event.touches[0].clientY;
+        ? (event as MouseEvent).clientY
+        : (event as TouchEvent).touches[0].clientY;
       if (event.target === event.currentTarget) {
         operation.value = "move";
       } else {
         operation.value = "scale";
-        direction.value = event.target.dataset.direction;
+        direction.value = (event.target as HTMLElement).dataset.direction || "";
       }
     }
 
-    function handlePanMove(event) {
+    function handlePanMove(event: MouseEvent | TouchEvent) {
       const _dx =
         (event.type.startsWith("mouse")
-          ? event.clientX
-          : event.touches[0].clientX) - startX.value;
+          ? (event as MouseEvent).clientX
+          : (event as TouchEvent).touches[0].clientX) - startX.value;
       const _dy =
         (event.type.startsWith("mouse")
-          ? event.clientY
-          : event.touches[0].clientY) - startY.value;
+          ? (event as MouseEvent).clientY
+          : (event as TouchEvent).touches[0].clientY) - startY.value;
       if (operation.value === "move") {
         dx.value = _dx / props.pageScale;
         dy.value = _dy / props.pageScale;
@@ -147,10 +146,10 @@ export default {
       onDelete,
     };
   },
-};
+});
 </script>
 
-<style>
+<style scoped>
 .operation {
   background-color: rgba(0, 0, 0, 0.1);
 }

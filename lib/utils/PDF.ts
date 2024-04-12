@@ -1,4 +1,3 @@
-import { readAsArrayBuffer, readAsPDF } from './asyncReader';
 import { getAsset } from './prepareAssets';
 
 export async function save(pdfFile: Blob, objects: any, name: string, isDownload = false) {
@@ -8,7 +7,6 @@ export async function save(pdfFile: Blob, objects: any, name: string, isDownload
   let pdfDoc;
   try {
     pdfDoc = await PDFLib.value.PDFDocument.load(pdfFile);
-    // pdfDoc = await readAsPDF(pdfFile, 'string');
   } catch (e) {
     console.log('Failed to load PDF.');
     throw e;

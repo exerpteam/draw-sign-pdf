@@ -31,8 +31,7 @@
   "dependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "pdfjs-dist": "^4.0.379"
+    "@rollup/plugin-node-resolve": "^15.2.3"
   },
   "devDependencies": {
     "@highlightjs/vue-plugin": "^2.1.0",

@@ -2,14 +2,8 @@
   <div>
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div class="left-0 right-0 top-0 z-10 flex h-12 items-center justify-center">
-        <!-- <input type="file" name="pdf" id="pdf" @change="onUploadPDF" class="hidden" />
-        <label
-          class="whitespace-no-wrap mr-3 cursor-pointer rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-          for="pdf">
-          Choose PDF
-        </label> -->
         <button @click="onAddDrawing"
-          class="mr-3 w-60 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4">
+          class="mr-3 ml-3 w-60 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4">
           Update Signature
         </button>
         <button @click="savePDF"
@@ -35,7 +29,7 @@
           touchAction: 'none',
         }">
               <div v-for="object in allObjects[pIndex]" :key="object.id">
-                <Drawing v-if="object.type === 'drawing'" @update="(e: any) => updateObject(object.id, e)"
+                <DrawingSignature v-if="object.type === 'drawing'" @update="(e: any) => updateObject(object.id, e) "
                   @delete="() => deleteObject(object.id)" :path="object.path" :x="object.x" :y="object.y"
                   :width="object.width" :originWidth="object.originWidth" :originHeight="object.originHeight"
                   :pageScale="pagesScale[pIndex]?.scale" />
@@ -54,30 +48,32 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "vue";
 import PDFPage from "./components/PDFPage.vue";
-import Drawing from "./components/Drawing.vue";
+import DrawingSignature from "./components/DrawingSignature.vue";
 import DrawingCanvas from "./components/DrawingCanvas.vue";
 import prepareAssets from "./utils/prepareAssets";
 import { getAsset } from "./utils/prepareAssets";
 
 import { DrawingObject, DrawingPayload, PdfSignatureData } from "./utils/pdfTypes";
-import {
-  readAsArrayBuffer,
-  readAsPDF,
-  readAsDataURL,
-} from "./utils/asyncReader";
-import { ggID } from "./utils/helper";
+import { readAsPDF, ggID } from "./utils/asyncReader";
 import { save } from "./utils/PDF";
 
-export default defineComponent({
+export default {
   name: "DrawSignPdf",
   components: {
-    // Tailwind,
     PDFPage,
     DrawingCanvas,
-    Drawing,
+    DrawingSignature
   },
-  props: { pdfData: String, signatureData: Array<PdfSignatureData>, isDownload: Boolean, finish: Function },
-  setup(props, { emit }) {
+  props: {
+    pdfData: String,
+    signatureData: Array as () => PdfSignatureData[],
+    isDownload: {
+      type: Boolean,
+      default: false
+    },
+    finish: Function
+  },
+  setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     // Your reactive variables and methods
     const genID = ggID();
     const pdfFile = ref<File | null>(null);
@@ -96,15 +92,10 @@ export default defineComponent({
     onMounted(async () => {
       try {
         getAsset("pdfjsLib");
-
-        // const res = await fetch("/test.pdf");
-        // const pdfBlob = await res.blob();
         selectedPageIndex.value = 0;
-        // setTimeout(async () => {
         prepareAssets();
         await addPDF(props.pdfData, 'string');
         onAddDrawing();
-        // }, 1000);
       } catch (e) {
         console.log(e);
       }
@@ -162,7 +153,7 @@ export default defineComponent({
 
     const addDrawing = (originWidth: number, originHeight: number, path: string, scale = 1) => {
       allObjects.value = Array(allObjects.value.length).fill([]);
-      props.signatureData?.forEach((signData) => {
+      props.signatureData?.forEach((signData: PdfSignatureData) => {
         const id = genID();
         scale = cmToPx(signData.width) / originWidth;
         const object: DrawingObject = {
@@ -180,7 +171,6 @@ export default defineComponent({
         allObjects.value = allObjects.value.map((objects, pIndex) =>
           signData.page === pIndex + 1 ? [...objects, object] : objects
         );
-
       });
 
       // allObjects.value = allObjects.value.map((objects, pIndex) =>
@@ -265,7 +255,7 @@ export default defineComponent({
       onFinishDrawing,
     };
   },
-});
+};
 </script>
 <style scoped>
 @tailwind base;
