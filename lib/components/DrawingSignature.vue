@@ -62,7 +62,7 @@ export default defineComponent({
       }
     });
 
-    function handlePanStart(event: MouseEvent | TouchEvent) {
+    const handlePanStart = (event: MouseEvent | TouchEvent) => {
       startX.value = event.type.startsWith("mouse")
         ? (event as MouseEvent).clientX
         : (event as TouchEvent).touches[0].clientX;
@@ -77,7 +77,7 @@ export default defineComponent({
       }
     }
 
-    function handlePanMove(event: MouseEvent | TouchEvent) {
+    const handlePanMove = (event: MouseEvent | TouchEvent) => {
       const _dx =
         (event.type.startsWith("mouse")
           ? (event as MouseEvent).clientX
@@ -103,7 +103,7 @@ export default defineComponent({
       }
     }
 
-    function handlePanEnd() {
+    const handlePanEnd = () => {
       if (operation.value === "move") {
         emit("update", {
           x: props.x + dx.value,
@@ -126,7 +126,7 @@ export default defineComponent({
       operation.value = "";
     }
 
-    function onDelete() {
+    const onDelete = () => {
       emit("delete");
     }
 

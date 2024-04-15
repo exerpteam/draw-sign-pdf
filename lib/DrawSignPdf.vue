@@ -3,11 +3,11 @@
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div class="left-0 right-0 top-0 z-10 flex h-12 items-center justify-center">
         <button @click="onAddDrawing"
-          class="mr-3 ml-3 w-60 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4">
+          class="mr-3 ml-3 w-60 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive">
           Update Signature
         </button>
         <button @click="savePDF"
-          class="mr-3 w-20 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4" :class="{
+          class="mr-3 w-20 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive" :class="{
           'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
           'bg-blue-700': pages.length === 0 || saving || !pdfFile,
         }">
