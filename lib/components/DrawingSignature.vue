@@ -17,7 +17,7 @@
     </div>
     <div @click="onDelete"
       class="absolute left-0 right-0 top-0 m-auto h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full bg-white md:scale-25">
-      <img class="h-full w-full" src="../assets/images/delete.svg" alt="delete object" />
+      <img class="h-full w-full" src="../assets/images/delete.svg" alt="delete" data-cy="delete-sign" />
     </div>
     <svg ref="svg" width="100%" height="100%">
       <path stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke="black" fill="none" :d="path" />

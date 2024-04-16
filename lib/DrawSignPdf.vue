@@ -3,25 +3,28 @@
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div class="left-0 right-0 top-0 z-10 flex h-12 items-center justify-center">
         <button @click="onAddDrawing"
-          class="mr-3 ml-3 w-60 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive">
+          class="mr-3 ml-3 w-60 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive"
+          data-cy="update-sign">
           Update Signature
         </button>
         <button @click="savePDF"
-          class="mr-3 w-20 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive" :class="{
+          class="mr-3 w-20 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive"
+          :class="{
           'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
           'bg-blue-700': pages.length === 0 || saving || !pdfFile,
-        }">
+}
+" data-cy="save-sign">
           {{ saving ? "Saving" : "Save" }}
         </button>
       </div>
       <div
         class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center"
-        style="height: 200px" v-if="addingDrawing">
+        style="height: 200px" v-if="addingDrawing" data-cy="sign-drawing-canvas">
         <DrawingCanvas @finish="onFinishDrawing" @cancel="addingDrawing = false" />
       </div>
       <div class="w-full" v-if="pages.length">
         <div v-for="(page, pIndex) in pages" :key="pIndex" class="flex w-full flex-col items-center overflow-hidden p-5"
-          @mousedown="selectPage(pIndex)" @touchstart="selectPage(pIndex)">
+          @mousedown="selectPage(pIndex)" @touchstart="selectPage(pIndex)" :data-cy="'page-' + pIndex">
           <div class="relative shadow-lg" :class="{ 'shadow-outline': pIndex === selectedPageIndex }">
             <PDFPage @measure="(e: any) => onMeasure(e, pIndex)" :page="page" />
             <div class="absolute left-0 top-0 origin-top-left transform" :style="{
@@ -32,7 +35,7 @@
                 <DrawingSignature v-if="object.type === 'drawing'" @update="(e: any) => updateObject(object.id, e) "
                   @delete="() => deleteObject(object.id)" :path="object.path" :x="object.x" :y="object.y"
                   :width="object.width" :originWidth="object.originWidth" :originHeight="object.originHeight"
-                  :pageScale="pagesScale[pIndex]?.scale" />
+                  :pageScale="pagesScale[pIndex]?.scale" :data-cy="'sign-pos-' + object.id" />
               </div>
             </div>
           </div>
