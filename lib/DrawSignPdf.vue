@@ -1,4 +1,45 @@
 <template>
+  <!-- Modal -->
+  <div v-if="isOpenConfirm" id="modelConfirm"
+    class="fixed z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4">
+    <div id="headlessui-dialog-overlay-16" aria-hidden="true" data-headlessui-state="open"
+      class="fixed inset-0 bg-gray-500 opacity-30"></div>
+    <div class="confirm-modal relative top-40 mx-auto shadow-xl rounded-md bg-white max-w-md mt-40">
+      <div class="flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto">
+        <div class="flex justify-between items-center py-3 px-4 border-b">
+          <h3 class="font-bold text-gray-800">
+            Confirm Saving
+          </h3>
+          <button @click="closeModal" type="button"
+            class="flex justify-center items-center size-7 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none">
+            <span class="sr-only">Close</span>
+            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 overflow-y-auto">
+          <p class="mt-1 text-gray-800">
+            Are you sure you want to save the signed document?
+          </p>
+        </div>
+        <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
+          <button @click="closeModal" type="button" data-cy="close-confirm"
+            class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none btn-negative">
+            Close
+          </button>
+          <button @click="confirmSave" type="button" data-cy="confirm-save"
+            class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none ml-2 btn-positive">
+            Save changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div>
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div class="left-0 right-0 top-0 z-10 flex h-12 items-center justify-center">
@@ -7,13 +48,12 @@
           data-cy="update-sign">
           Update Signature
         </button>
-        <button @click="savePDF"
+        <button @click="openModal"
           class="mr-3 w-20 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive"
           :class="{
-          'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
-          'bg-blue-700': pages.length === 0 || saving || !pdfFile,
-}
-" data-cy="save-sign">
+    'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
+    'bg-blue-700': pages.length === 0 || saving || !pdfFile,
+  }" data-cy="save-sign">
           {{ saving ? "Saving" : "Save" }}
         </button>
       </div>
@@ -28,11 +68,11 @@
           <div class="relative shadow-lg" :class="{ 'shadow-outline': pIndex === selectedPageIndex }">
             <PDFPage @measure="(e: any) => onMeasure(e, pIndex)" :page="page" />
             <div class="absolute left-0 top-0 origin-top-left transform" :style="{
-          transform: `scale(${pagesScale[pIndex].scale})`,
-          touchAction: 'none',
-        }">
+    transform: `scale(${pagesScale[pIndex].scale})`,
+    touchAction: 'none',
+  }">
               <div v-for="object in allObjects[pIndex]" :key="object.id">
-                <DrawingSignature v-if="object.type === 'drawing'" @update="(e: any) => updateObject(object.id, e) "
+                <DrawingSignature v-if="object.type === 'drawing'" @update="(e: any) => updateObject(object.id, e)"
                   @delete="() => deleteObject(object.id)" :path="object.path" :x="object.x" :y="object.y"
                   :width="object.width" :originWidth="object.originWidth" :originHeight="object.originHeight"
                   :pageScale="pagesScale[pIndex]?.scale" :data-cy="'sign-pos-' + object.id" />
@@ -49,7 +89,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 import PDFPage from "./components/PDFPage.vue";
 import DrawingSignature from "./components/DrawingSignature.vue";
 import DrawingCanvas from "./components/DrawingCanvas.vue";
@@ -91,6 +131,7 @@ export default {
     const addingDrawing = ref(false);
     const signatureImageData = ref('');
     const signedDocument = ref<{ data: string, type: string }>({ data: '', type: 'application/pdf' });
+    const isOpenConfirm = ref(false);
 
     onMounted(async () => {
       try {
@@ -99,10 +140,15 @@ export default {
         prepareAssets();
         await addPDF(props.pdfData, 'string');
         onAddDrawing();
+        document.addEventListener('keydown', handleEscapeKey);
       } catch (e) {
         console.log(e);
       }
     });
+
+    onBeforeUnmount(() => {
+      document.addEventListener('keydown', handleEscapeKey);
+    })
 
     const onUploadPDF = async (e: any) => {
       const files = e.target.files || (e.dataTransfer && e.dataTransfer.files);
@@ -234,6 +280,24 @@ export default {
       }
     };
 
+    const openModal = () => {
+      isOpenConfirm.value = true;
+      document.body.classList.add('overflow-y-hidden');
+    }
+    const closeModal = () => {
+      isOpenConfirm.value = false;
+      document.body.classList.remove('overflow-y-hidden');
+    }
+    const confirmSave = () => {
+      savePDF();
+      closeModal();
+    }
+    const handleEscapeKey = (event) => {
+      if (event.key === 'Escape' || event.key === 'Esc') {
+        closeModal();
+      }
+    }
+
     return {
       genID,
       pdfFile,
@@ -246,6 +310,7 @@ export default {
       selectedPageIndex,
       saving,
       addingDrawing,
+      isOpenConfirm,
       onUploadPDF,
       addPDF,
       onAddDrawing,
@@ -256,6 +321,9 @@ export default {
       onMeasure,
       savePDF,
       onFinishDrawing,
+      openModal,
+      closeModal,
+      confirmSave
     };
   },
 };
@@ -267,5 +335,10 @@ export default {
 
 .shadow-outline {
   box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+}
+
+body.modal-active {
+  overflow-x: hidden;
+  overflow-y: visible !important;
 }
 </style>
