@@ -8,11 +8,11 @@
       <div class="flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto">
         <div class="flex justify-between items-center py-3 px-4 border-b">
           <h3 class="font-bold text-gray-800">
-            Confirm Saving
+            {{ getTranslation.confirmBoxTitle }}
           </h3>
           <button @click="closeModal" type="button"
             class="flex justify-center items-center size-7 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none">
-            <span class="sr-only">Close</span>
+            <span class="sr-only">{{ getTranslation.confirmBoxClose }}</span>
             <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
               stroke-linejoin="round">
@@ -23,44 +23,45 @@
         </div>
         <div class="p-4 overflow-y-auto">
           <p class="mt-1 text-gray-800">
-            Are you sure you want to save the signed document?
+            {{ getTranslation.confirmBoxDesc }}
           </p>
         </div>
         <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
           <button @click="closeModal" type="button" data-cy="close-confirm"
             class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none btn-negative">
-            Close
+            {{ getTranslation.confirmBoxClose }}
           </button>
           <button @click="confirmSave" type="button" data-cy="confirm-save"
             class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none ml-2 btn-positive">
-            Save changes
+            {{ getTranslation.confirmBoxSaveChanges }}
           </button>
         </div>
       </div>
     </div>
   </div>
+  <!-- Modal end -->
 
   <div>
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div class="left-0 right-0 top-0 z-10 flex h-12 items-center justify-center">
         <button @click="onAddDrawing"
-          class="mr-3 ml-3 w-60 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive"
+          class="mr-3 ml-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive"
           data-cy="update-sign">
-          Update Signature
+          {{ getTranslation.updateSign }}
         </button>
         <button @click="openModal"
-          class="mr-3 w-20 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive"
+          class="mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive"
           :class="{
     'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
     'bg-blue-700': pages.length === 0 || saving || !pdfFile,
   }" data-cy="save-sign">
-          {{ saving ? "Saving" : "Save" }}
+          {{ saving ? getTranslation.saving : getTranslation.save }}
         </button>
       </div>
       <div
         class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center"
         style="height: 200px" v-if="addingDrawing" data-cy="sign-drawing-canvas">
-        <DrawingCanvas @finish="onFinishDrawing" @cancel="addingDrawing = false" />
+        <DrawingCanvas @finish="onFinishDrawing" @cancel="addingDrawing = false" :translations="getTranslation" />
       </div>
       <div class="w-full" v-if="pages.length">
         <div v-for="(page, pIndex) in pages" :key="pIndex" class="flex w-full flex-col items-center overflow-hidden p-5"
@@ -82,7 +83,7 @@
         </div>
       </div>
       <div class="flex w-full flex-grow items-center justify-center" v-else>
-        <span class="text-3xl font-bold text-gray-500">PDF Load here</span>
+        <span class="text-3xl font-bold text-gray-500">{{ getTranslation.pdfLoading }}</span>
       </div>
     </main>
   </div>
@@ -114,8 +115,32 @@ export default {
       type: Boolean,
       default: false
     },
-    finish: Function
+    finish: Function,
+    translations: {
+      type: Object,
+      default: () => ({})
+    }
   },
+  computed: {
+    getTranslation() {
+      const defaultTranslation = {
+        updateSign: "Update Signature",
+        save: "Save",
+        saving: "Saving",
+        drawLabel: "Draw the signature here",
+        drawDone: "Done",
+        drawCancel: "Cancel",
+        confirmBoxTitle: "Confirm Saving",
+        confirmBoxDesc: "Are you sure you want to save the signed document?",
+        confirmBoxClose: "Close",
+        confirmBoxSaveChanges: "Save Changes",
+        pdfLoading: "PDF will load here"
+      };
+
+      return { ...defaultTranslation, ...this.translations };
+    }
+  },
+  emits: ["finish"],
   setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     // Your reactive variables and methods
     const genID = ggID();
@@ -221,10 +246,6 @@ export default {
           signData.page === pIndex + 1 ? [...objects, object] : objects
         );
       });
-
-      // allObjects.value = allObjects.value.map((objects, pIndex) =>
-      //   pIndex === selectedPageIndex.value ? [...objects, object] : objects
-      // );
     };
 
     const selectPage = (index: number) => {

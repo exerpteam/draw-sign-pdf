@@ -48,6 +48,7 @@ export default defineComponent({
     },
     path: String,
   },
+  emits: ["delete", "update"],
   setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const dx = ref(0);
     const dy = ref(0);

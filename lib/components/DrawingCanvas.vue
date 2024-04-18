@@ -1,16 +1,21 @@
 <template>
-  <div style="height: 210px;" class="left-0 right-0 top-0 z-0 border-b border-gray-300 bg-white shadow-lg " data-cy="sign-area">
+  <div style="height: 210px;" class="left-0 right-0 top-0 z-0 border-b border-gray-300 bg-white shadow-lg "
+    data-cy="sign-area">
     <div ref="signatureCanvas" @panstart="handlePanStart" @panmove="handlePanMove" @panend="handlePanEnd"
       class="relative h-full w-full select-none">
       <div class="absolute bottom-0 right-0 mb-4 mx-4 flex">
         <div class="flex w-full flex-grow items-center justify-center">
-          <p class="text-black-600">Draw the signature here</p>
+          <p class="text-black-600">{{ getTranslation.drawLabel }}</p>
         </div>
-        <button @click="finish" class="mx-4 w-24 rounded bg-blue-600 px-4 py-1 font-bold text-white hover:bg-blue-700 btn-positive" data-cy="sign-done">
-          Done
+        <button @click="finish"
+          class="mx-4 w-24 rounded bg-blue-600 px-4 py-1 font-bold text-white hover:bg-blue-700 btn-positive"
+          data-cy="sign-done">
+          {{ getTranslation.drawDone }}
         </button>
-        <button @click="cancel" class="w-24 rounded bg-red-500 px-4 py-1 font-bold text-white hover:bg-red-700 btn-negative" data-cy="sign-cancel">
-          Cancel
+        <button @click="cancel"
+          class="w-24 rounded bg-red-500 px-4 py-1 font-bold text-white hover:bg-red-700 btn-negative"
+          data-cy="sign-cancel">
+          {{ getTranslation.drawCancel }}
         </button>
       </div>
       <svg class="pointer-events-none h-full w-full">
@@ -24,6 +29,23 @@ import { onMounted, onBeforeUnmount, reactive, ref } from "vue";
 import { TouchEventDetails, TouchMoveData } from "../utils/pdfTypes";
 
 export default {
+  props: {
+    translations: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+  computed: {
+    getTranslation() {
+      const defaultTranslation = {
+        drawLabel: "Draw the signature here",
+        drawDone: "Done",
+        drawCancel: "Cancel",
+      };
+      return { ...defaultTranslation, ...this.translations };
+    }
+  },
+  emits: ["finish", "cancel"],
   setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const signatureCanvas = ref();
     type PathElement = ['M' | 'L', number, number];
