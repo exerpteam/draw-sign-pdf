@@ -32,18 +32,38 @@ use the below methods to import
 ``` vue
 <template>
   <div>
-    <DrawSignPdf></DrawSignPdf>
+    <DrawSignPdf :pdfData="pdfData" :signatureData="signatureData" :isDownload="false" @finish="getSignedData" :translations="translations" />
   </div>
 </template>
 <script setup>
 import { Options, Vue } from 'vue-class-component';
 import DrawSignPdf from "draw-sign-pdf";
+import { pdfData, signatureData } from "./pdfData";
+
+//optional
+const translations = {
+  updateSign: "Update Signature",
+  save: "Save",
+  saving: "Saving",
+  drawLabel: "Draw the signature here",
+  drawDone: "Done",
+  drawCancel: "Cancel",
+  confirmBoxTitle: "Confirm Saving",
+  confirmBoxDesc: "Are you sure you want to save the signed document?",
+  confirmBoxClose: "Close",
+  confirmBoxSaveChanges: "Save Changes",
+  pdfLoading: "PDF will load here"
+}
 
 @Options({
   components: {
     DrawSignPdf,
   },
 })
+
+const getSignedData = (SignedDocumentData) => {
+  console.log(SignedDocumentData, "SignedDocumentData");
+}
 </script>
 <style scoped>
 </style>
