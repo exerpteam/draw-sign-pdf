@@ -102,7 +102,7 @@ export default {
         confirmBoxClose: "Close",
         confirmBoxSaveChanges: "Save Changes",
         warningTitle: "Missing Signature",
-        warningDesc: "The required Signature is missing. Sign to continue",
+        warningDesc: "The required signature is missing. Please sign to continue",
         warningClose: "Close",
         pdfLoading: "PDF will load here"
       };
