@@ -2,42 +2,7 @@
   <!-- Modal -->
   <div v-if="isOpenConfirm" id="modelConfirm"
     class="fixed z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4">
-    <div id="headlessui-dialog-overlay-16" aria-hidden="true" data-headlessui-state="open"
-      class="fixed inset-0 bg-gray-500 opacity-30"></div>
-    <div class="confirm-modal relative top-40 mx-auto shadow-xl rounded-md bg-white max-w-md mt-40">
-      <div class="flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto">
-        <div class="flex justify-between items-center py-3 px-4 border-b">
-          <h3 class="font-bold text-gray-800">
-            {{ getTranslation.confirmBoxTitle }}
-          </h3>
-          <button @click="closeModal" type="button"
-            class="flex justify-center items-center size-7 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none">
-            <span class="sr-only">{{ getTranslation.confirmBoxClose }}</span>
-            <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round">
-              <path d="M18 6 6 18"></path>
-              <path d="m6 6 12 12"></path>
-            </svg>
-          </button>
-        </div>
-        <div class="p-4 overflow-y-auto">
-          <p class="mt-1 text-gray-800">
-            {{ getTranslation.confirmBoxDesc }}
-          </p>
-        </div>
-        <div class="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
-          <button @click="closeModal" type="button" data-cy="close-confirm"
-            class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none btn-negative">
-            {{ getTranslation.confirmBoxClose }}
-          </button>
-          <button @click="confirmSave" type="button" data-cy="confirm-save"
-            class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none ml-2 btn-positive">
-            {{ getTranslation.confirmBoxSaveChanges }}
-          </button>
-        </div>
-      </div>
-    </div>
+    <DialogBox :translations="getTranslation" :type="isConfirmOrWarning" @cancel="closeModal" @finish="confirmSave" />
   </div>
   <!-- Modal end -->
 
@@ -93,6 +58,7 @@
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import PDFPage from "./components/PDFPage.vue";
 import DrawingSignature from "./components/DrawingSignature.vue";
+import DialogBox from "./components/DialogBox.vue";
 import DrawingCanvas from "./components/DrawingCanvas.vue";
 import prepareAssets from "./utils/prepareAssets";
 import { getAsset } from "./utils/prepareAssets";
@@ -106,7 +72,8 @@ export default {
   components: {
     PDFPage,
     DrawingCanvas,
-    DrawingSignature
+    DrawingSignature,
+    DialogBox
   },
   props: {
     pdfData: String,
@@ -134,11 +101,14 @@ export default {
         confirmBoxDesc: "Are you sure you want to save the signed document?",
         confirmBoxClose: "Close",
         confirmBoxSaveChanges: "Save Changes",
+        warningTitle: "Missing Signature",
+        warningDesc: "The required Signature is missing. Sign to continue",
+        warningClose: "Close",
         pdfLoading: "PDF will load here"
       };
 
       return { ...defaultTranslation, ...this.translations };
-    }
+    },
   },
   emits: ["finish"],
   setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
@@ -157,6 +127,7 @@ export default {
     const signatureImageData = ref('');
     const signedDocument = ref<{ data: string, type: string }>({ data: '', type: 'application/pdf' });
     const isOpenConfirm = ref(false);
+    const isConfirmOrWarning = ref("warning");
 
     onMounted(async () => {
       try {
@@ -302,17 +273,25 @@ export default {
     };
 
     const openModal = () => {
+      if (signatureImageData.value !== '') {
+        isConfirmOrWarning.value = "confirm";
+      } else {
+        isConfirmOrWarning.value = "warning";
+      } 
       isOpenConfirm.value = true;
       document.body.classList.add('overflow-y-hidden');
     }
+
     const closeModal = () => {
       isOpenConfirm.value = false;
       document.body.classList.remove('overflow-y-hidden');
     }
+
     const confirmSave = () => {
       savePDF();
       closeModal();
     }
+
     const handleEscapeKey = (event) => {
       if (event.key === 'Escape' || event.key === 'Esc') {
         closeModal();
@@ -344,7 +323,8 @@ export default {
       onFinishDrawing,
       openModal,
       closeModal,
-      confirmSave
+      confirmSave,
+      isConfirmOrWarning
     };
   },
 };
