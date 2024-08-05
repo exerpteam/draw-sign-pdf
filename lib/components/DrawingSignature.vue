@@ -1,10 +1,9 @@
 <template>
   <div :style="{
     width: `${width! + dw}px`,
-    height: `${(width! + dw) / ratio}px`,
+    height: `${(height! + dw)}px`,
     transform: `translate(${x! + dx}px, ${y! + dy}px)`,
   }" class="absolute left-0 top-0 select-none">
-
     <div class="absolute h-full w-full cursor-grab border border-dashed border-gray-400">
       <!-- 
             <div 
@@ -40,6 +39,7 @@ export default defineComponent({
     originWidth: Number,
     originHeight: Number,
     width: Number,
+    height: Number,
     x: Number,
     y: Number,
     pageScale: {

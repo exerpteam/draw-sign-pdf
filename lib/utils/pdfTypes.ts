@@ -2,6 +2,7 @@ export interface DrawingPayload {
   x: number;
   y: number;
   width?: number;
+  height?: number;
   scale?: number;
 }
 
@@ -14,6 +15,7 @@ export interface DrawingObject {
   originWidth: number;
   originHeight: number;
   width: number;
+  height: number;
   scale: number;
 }
 

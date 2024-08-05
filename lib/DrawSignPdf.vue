@@ -24,7 +24,7 @@
         </button>
       </div>
       <div
-        class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center"
+        class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center sign-drawing-canvas"
         style="height: 200px" v-if="addingDrawing" data-cy="sign-drawing-canvas">
         <DrawingCanvas @finish="onFinishDrawing" @cancel="addingDrawing = false" :translations="getTranslation" />
       </div>
@@ -40,8 +40,9 @@
               <div v-for="object in allObjects[pIndex]" :key="object.id">
                 <DrawingSignature v-if="object.type === 'drawing'" @update="(e: any) => updateObject(object.id, e)"
                   @delete="() => deleteObject(object.id)" :path="object.path" :x="object.x" :y="object.y"
-                  :width="object.width" :originWidth="object.originWidth" :originHeight="object.originHeight"
-                  :pageScale="pagesScale[pIndex]?.scale" :data-cy="'sign-pos-' + object.id" />
+                  :width="object.width" :height="object.height" :originWidth="object.originWidth"
+                  :originHeight="object.originHeight" :pageScale="pagesScale[pIndex]?.scale"
+                  :data-cy="'sign-pos-' + object.id" />
               </div>
             </div>
           </div>
@@ -210,6 +211,7 @@ export default {
           originWidth,
           originHeight,
           width: cmToPx(signData.width),
+          height: cmToPx(signData.height),
           scale,
         };
 
@@ -341,5 +343,9 @@ export default {
 body.modal-active {
   overflow-x: hidden;
   overflow-y: visible !important;
+}
+.sign-drawing-canvas {
+  width: 100%;
+  z-index: 60;
 }
 </style>

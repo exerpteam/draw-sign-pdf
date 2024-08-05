@@ -67,6 +67,7 @@ const _sfc_main$3 = defineComponent({
     originWidth: Number,
     originHeight: Number,
     width: Number,
+    height: Number,
     x: Number,
     y: Number,
     pageScale: {
@@ -166,7 +167,7 @@ const _sfc_main$3 = defineComponent({
     };
   }
 });
-const _withScopeId$1 = (n) => (pushScopeId("data-v-d9ea6894"), n = n(), popScopeId(), n);
+const _withScopeId$1 = (n) => (pushScopeId("data-v-08f91d4b"), n = n(), popScopeId(), n);
 const _hoisted_1$3 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ createElementVNode("div", { class: "absolute h-full w-full cursor-grab border border-dashed border-gray-400" }, null, -1));
 const _hoisted_2$3 = {
   ref: "svg",
@@ -178,7 +179,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     style: normalizeStyle({
       width: `${_ctx.width + _ctx.dw}px`,
-      height: `${(_ctx.width + _ctx.dw) / _ctx.ratio}px`,
+      height: `${_ctx.height + _ctx.dw}px`,
       transform: `translate(${_ctx.x + _ctx.dx}px, ${_ctx.y + _ctx.dy}px)`
     }),
     class: "absolute left-0 top-0 select-none"
@@ -196,7 +197,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     ], 512))
   ], 4);
 }
-var DrawingSignature = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-d9ea6894"]]);
+var DrawingSignature = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-08f91d4b"]]);
 var DialogBox_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$2 = {
   props: {
@@ -785,6 +786,7 @@ const _sfc_main = {
           originWidth,
           originHeight,
           width: cmToPx(signData.width),
+          height: cmToPx(signData.height),
           scale
         };
         allObjects.value = allObjects.value.map(
@@ -894,7 +896,7 @@ const _hoisted_2 = { class: "flex min-h-screen flex-col items-center bg-gray-100
 const _hoisted_3 = { class: "left-0 right-0 top-0 z-10 flex h-12 items-center justify-center" };
 const _hoisted_4 = {
   key: 0,
-  class: "fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center",
+  class: "fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center sign-drawing-canvas",
   style: { "height": "200px" },
   "data-cy": "sign-drawing-canvas"
 };
@@ -982,11 +984,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         x: object.x,
                         y: object.y,
                         width: object.width,
+                        height: object.height,
                         originWidth: object.originWidth,
                         originHeight: object.originHeight,
                         pageScale: (_a = $setup.pagesScale[pIndex]) == null ? void 0 : _a.scale,
                         "data-cy": "sign-pos-" + object.id
-                      }, null, 8, ["onUpdate", "onDelete", "path", "x", "y", "width", "originWidth", "originHeight", "pageScale", "data-cy"])) : createCommentVNode("", true)
+                      }, null, 8, ["onUpdate", "onDelete", "path", "x", "y", "width", "height", "originWidth", "originHeight", "pageScale", "data-cy"])) : createCommentVNode("", true)
                     ]);
                   }), 128))
                 ], 4)
@@ -1000,7 +1003,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-39084184"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-4b8eede2"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
