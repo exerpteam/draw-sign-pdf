@@ -897,7 +897,7 @@ const _hoisted_3 = { class: "left-0 right-0 top-0 z-10 flex h-12 items-center ju
 const _hoisted_4 = {
   key: 0,
   class: "fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center sign-drawing-canvas",
-  style: { "height": "200px" },
+  style: { "height": "200px", "z-index": "60" },
   "data-cy": "sign-drawing-canvas"
 };
 const _hoisted_5 = {
@@ -1003,7 +1003,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-4b8eede2"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2f8e727e"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
