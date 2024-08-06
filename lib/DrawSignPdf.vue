@@ -25,7 +25,7 @@
       </div>
       <div
         class="fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center sign-drawing-canvas"
-        style="height: 200px; z-index: 60;" v-if="addingDrawing" data-cy="sign-drawing-canvas">
+        style="height: 200px; z-index: 60; width:100%" v-if="addingDrawing" data-cy="sign-drawing-canvas">
         <DrawingCanvas @finish="onFinishDrawing" @cancel="addingDrawing = false" :translations="getTranslation" />
       </div>
       <div class="w-full" v-if="pages.length">
@@ -345,7 +345,7 @@ body.modal-active {
   overflow-y: visible !important;
 }
 .sign-drawing-canvas {
-  width: 100%;
-  z-index: 60;
+  width: 100% !important;
+  z-index: 60 !important;
 }
 </style>
