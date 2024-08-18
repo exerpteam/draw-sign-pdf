@@ -30,7 +30,6 @@ const _sfc_main$4 = {
         canvasContext: context,
         viewport
       }).promise.then(function() {
-        console.log("Page rendered");
       });
       emit("measure", {
         scale: canvas.value.clientWidth / width.value
@@ -60,7 +59,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 12, _hoisted_1$4)
   ]);
 }
-var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-0feec4f0"]]);
+var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-98024af6"]]);
 var DrawingSignature_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$3 = defineComponent({
   props: {
@@ -443,6 +442,7 @@ const _sfc_main$1 = {
       const originWidth = data.maxX - data.minX + 20;
       const originHeight = data.maxY - data.minY + 20;
       let base64 = "";
+      let pngBase64 = "";
       let scale = 1;
       if (originWidth > 500) {
         scale = 500 / originWidth;
@@ -456,17 +456,28 @@ const _sfc_main$1 = {
         (_a = svgElement.querySelector("path")) == null ? void 0 : _a.setAttribute("d", updatedPaths);
         const svgString = new XMLSerializer().serializeToString(svgElement);
         base64 = btoa(svgString);
+        const img = new Image();
+        img.src = "data:image/svg+xml;base64," + base64;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const context = canvas.getContext("2d");
+          context == null ? void 0 : context.drawImage(img, 0, 0);
+          pngBase64 = canvas.toDataURL("image/png");
+          pngBase64 = pngBase64.replace("data:image/png;base64,", "");
+          emit("finish", {
+            originWidth,
+            originHeight,
+            path: updatedPaths,
+            scale,
+            signatureImageData: {
+              data: pngBase64,
+              type: "image/png"
+            }
+          });
+        };
       }
-      emit("finish", {
-        originWidth,
-        originHeight,
-        path: updatedPaths,
-        scale,
-        signatureImageData: {
-          data: base64,
-          type: "image/svg+xml"
-        }
-      });
     };
     const cancel = () => {
       emit("cancel");
@@ -575,7 +586,6 @@ function prepareAsset({
     script.src = src;
     script.onload = () => {
       scriptRef.value = window[name];
-      console.log(`${name} is loaded.`);
       resolve(scriptRef);
     };
     script.onerror = () => {
@@ -615,7 +625,6 @@ async function save(pdfFile, objects, name, isDownload = false) {
   try {
     pdfDoc = await PDFLib.value.PDFDocument.load(pdfFile);
   } catch (e) {
-    console.log("Failed to load PDF.");
     throw e;
   }
   const pagesProcesses = pdfDoc.getPages().map(async (page, pageIndex) => {
@@ -648,7 +657,6 @@ async function save(pdfFile, objects, name, isDownload = false) {
     }
     return await pdfDoc.saveAsBase64();
   } catch (e) {
-    console.log("Failed to save PDF.");
     throw e;
   }
 }
@@ -721,7 +729,6 @@ const _sfc_main = {
         onAddDrawing();
         document.addEventListener("keydown", handleEscapeKey);
       } catch (e) {
-        console.log(e);
       }
     });
     onBeforeUnmount(() => {
@@ -737,7 +744,6 @@ const _sfc_main = {
         await addPDF(file, "arrayBuffer");
         selectedPageIndex.value = 0;
       } catch (e2) {
-        console.log(e2);
       }
     };
     const addPDF = async (file, type) => {
@@ -752,7 +758,6 @@ const _sfc_main = {
         allObjects.value = Array(numPages).fill([]);
         pagesScale.value = Array(numPages).fill({ scale: 1 });
       } catch (e) {
-        console.log("Failed to add pdf.");
         throw e;
       }
     };
@@ -830,7 +835,6 @@ const _sfc_main = {
           signatureImage: signatureImageData.value
         });
       } catch (e) {
-        console.log(e);
       } finally {
         saving.value = false;
       }
@@ -1003,7 +1007,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7cf5775e"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-021830a2"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);

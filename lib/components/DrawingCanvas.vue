@@ -168,6 +168,7 @@ export default {
       const originWidth = data.maxX - data.minX + 20;
       const originHeight = data.maxY - data.minY + 20;
       let base64 = '';
+      let pngBase64 = '';
 
       let scale = 1;
       if (originWidth > 500) {
@@ -183,18 +184,31 @@ export default {
         svgElement.querySelector('path')?.setAttribute('d', updatedPaths);
         const svgString = new XMLSerializer().serializeToString(svgElement);
         base64 = btoa(svgString);
-      }
 
-      emit("finish", {
-        originWidth,
-        originHeight,
-        path: updatedPaths,
-        scale,
-        signatureImageData: {
-          data: base64,
-          type: 'image/svg+xml'
-        },
-      });
+        const img = new Image();
+        img.src = 'data:image/svg+xml;base64,' + base64;
+
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const context = canvas.getContext('2d');
+          context?.drawImage(img, 0, 0);
+          pngBase64 = canvas.toDataURL('image/png');
+          pngBase64 = pngBase64.replace('data:image/png;base64,', '');
+
+          emit("finish", {
+            originWidth,
+            originHeight,
+            path: updatedPaths,
+            scale,
+            signatureImageData: {
+              data: pngBase64,
+              type: 'image/png'
+            },
+          });
+        };
+      }
     };
 
     const cancel = () => {

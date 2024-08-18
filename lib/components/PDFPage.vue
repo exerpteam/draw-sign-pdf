@@ -35,7 +35,6 @@ export default {
           viewport,
         })
         .promise.then(function () {
-          console.log("Page rendered");
         });
       emit("measure", {
         scale: canvas.value!.clientWidth / width.value,

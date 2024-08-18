@@ -139,7 +139,6 @@ export default {
         onAddDrawing();
         document.addEventListener('keydown', handleEscapeKey);
       } catch (e) {
-        console.log(e);
       }
     });
 
@@ -156,7 +155,6 @@ export default {
         await addPDF(file, 'arrayBuffer');
         selectedPageIndex.value = 0;
       } catch (e) {
-        console.log(e);
       }
     };
 
@@ -174,7 +172,6 @@ export default {
         allObjects.value = Array(numPages).fill([]);
         pagesScale.value = Array(numPages).fill({ scale: 1 });
       } catch (e) {
-        console.log("Failed to add pdf.");
         throw e;
       }
     };
@@ -268,7 +265,6 @@ export default {
         });
 
       } catch (e) {
-        console.log(e);
       } finally {
         saving.value = false;
       }

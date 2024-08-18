@@ -8,7 +8,6 @@ export async function save(pdfFile: Blob, objects: any, name: string, isDownload
   try {
     pdfDoc = await PDFLib.value.PDFDocument.load(pdfFile);
   } catch (e) {
-    console.log('Failed to load PDF.');
     throw e;
   }
   const pagesProcesses = pdfDoc.getPages().map(async (page: any, pageIndex: number) => {
@@ -39,11 +38,10 @@ export async function save(pdfFile: Blob, objects: any, name: string, isDownload
   try {
     const pdfBytes = await pdfDoc.save();
     if (isDownload) {
-      download.value(pdfBytes, name, 'application/pdf');
+      download.value(pdfBytes, name, "application/pdf");
     }
     return await pdfDoc.saveAsBase64();
   } catch (e) {
-    console.log('Failed to save PDF.');
     throw e;
   }
 }
