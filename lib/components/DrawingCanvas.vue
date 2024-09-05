@@ -196,6 +196,9 @@ export default {
           context?.drawImage(img, 0, 0);
           pngBase64 = canvas.toDataURL('image/png');
           pngBase64 = pngBase64.replace('data:image/png;base64,', '');
+          canvas.remove();
+          svgElement.innerHTML = '';
+          paths.value = [];
 
           emit("finish", {
             originWidth,
@@ -212,6 +215,7 @@ export default {
     };
 
     const cancel = () => {
+      paths.value = [];
       emit("cancel");
     };
 
