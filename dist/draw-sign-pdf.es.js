@@ -590,9 +590,6 @@ function prepareAsset({
     };
     script.onerror = () => {
       reject(`The script ${name} didn't load correctly.`);
-      alert(
-        `Some scripts did not load correctly. Please reload and try again.`
-      );
     };
     document.body.appendChild(script);
   });
@@ -632,14 +629,30 @@ async function save(pdfFile, objects, name, isDownload = false) {
     const pageHeight = page.getHeight();
     const embedProcesses = pageObjects.map(async (object) => {
       if (object.type === "drawing") {
-        const { x, y, path, scale } = object;
-        const { pushGraphicsState, setLineCap, popGraphicsState, setLineJoin, LineCapStyle, LineJoinStyle } = PDFLib.value;
+        const { x, y, path, originWidth, originHeight, width, height } = object;
+        const scaleX = width / originWidth;
+        const scaleY = height / originHeight;
+        const finalScale = Math.min(scaleX, scaleY, 1);
+        const scaledWidth = originWidth * finalScale;
+        const centeredX = x + (width - scaledWidth) / 2;
+        const {
+          pushGraphicsState,
+          setLineCap,
+          popGraphicsState,
+          setLineJoin,
+          LineCapStyle,
+          LineJoinStyle
+        } = PDFLib.value;
         return () => {
-          page.pushOperators(pushGraphicsState(), setLineCap(LineCapStyle.Round), setLineJoin(LineJoinStyle.Round));
+          page.pushOperators(
+            pushGraphicsState(),
+            setLineCap(LineCapStyle.Round),
+            setLineJoin(LineJoinStyle.Round)
+          );
           page.drawSvgPath(path, {
             borderWidth: 5,
-            scale,
-            x,
+            scale: finalScale,
+            x: centeredX,
             y: pageHeight - y
           });
           page.pushOperators(popGraphicsState());
