@@ -180,6 +180,7 @@ export default {
 
       const svgElement = document.querySelector('svg');
       if (svgElement) {
+        svgElement.style.display = 'none';
         svgElement.removeAttribute('viewBox');
         svgElement.querySelector('path')?.setAttribute('d', updatedPaths);
         const svgString = new XMLSerializer().serializeToString(svgElement);
@@ -190,6 +191,7 @@ export default {
 
         img.onload = () => {
           const canvas = document.createElement('canvas');
+          canvas.style.display = 'none';
           canvas.width = img.width;
           canvas.height = img.height;
           const context = canvas.getContext('2d');

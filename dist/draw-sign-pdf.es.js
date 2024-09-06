@@ -452,6 +452,7 @@ const _sfc_main$1 = {
       }, "");
       const svgElement = document.querySelector("svg");
       if (svgElement) {
+        svgElement.style.display = "none";
         svgElement.removeAttribute("viewBox");
         (_a = svgElement.querySelector("path")) == null ? void 0 : _a.setAttribute("d", updatedPaths);
         const svgString = new XMLSerializer().serializeToString(svgElement);
@@ -460,6 +461,7 @@ const _sfc_main$1 = {
         img.src = "data:image/svg+xml;base64," + base64;
         img.onload = () => {
           const canvas = document.createElement("canvas");
+          canvas.style.display = "none";
           canvas.width = img.width;
           canvas.height = img.height;
           const context = canvas.getContext("2d");
