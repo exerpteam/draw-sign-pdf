@@ -23,7 +23,13 @@ const translations = {
 }
 
 const getSignedData = (SignedDocumentData) => {
-  console.log(SignedDocumentData, "SignedDocumentData");
+  const pdfData = SignedDocumentData.signedDocument.data;
+  const fullData = 'data:application/pdf;base64, ' + encodeURI(pdfData);
+  let pdfWindow = window.open("")
+  pdfWindow.document.write(
+    "<iframe width='100%' height='100%' src='" + fullData + "'></iframe>"
+  );
+
 }
 </script>
 <style global>

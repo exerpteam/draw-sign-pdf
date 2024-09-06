@@ -452,6 +452,7 @@ const _sfc_main$1 = {
       }, "");
       const svgElement = document.querySelector("svg");
       if (svgElement) {
+        svgElement.style.display = "none";
         svgElement.removeAttribute("viewBox");
         (_a = svgElement.querySelector("path")) == null ? void 0 : _a.setAttribute("d", updatedPaths);
         const svgString = new XMLSerializer().serializeToString(svgElement);
@@ -460,12 +461,16 @@ const _sfc_main$1 = {
         img.src = "data:image/svg+xml;base64," + base64;
         img.onload = () => {
           const canvas = document.createElement("canvas");
+          canvas.style.display = "none";
           canvas.width = img.width;
           canvas.height = img.height;
           const context = canvas.getContext("2d");
           context == null ? void 0 : context.drawImage(img, 0, 0);
           pngBase64 = canvas.toDataURL("image/png");
           pngBase64 = pngBase64.replace("data:image/png;base64,", "");
+          canvas.remove();
+          svgElement.innerHTML = "";
+          paths.value = [];
           emit("finish", {
             originWidth,
             originHeight,
@@ -480,6 +485,7 @@ const _sfc_main$1 = {
       }
     };
     const cancel = () => {
+      paths.value = [];
       emit("cancel");
     };
     onMounted(() => {
@@ -590,9 +596,6 @@ function prepareAsset({
     };
     script.onerror = () => {
       reject(`The script ${name} didn't load correctly.`);
-      alert(
-        `Some scripts did not load correctly. Please reload and try again.`
-      );
     };
     document.body.appendChild(script);
   });
@@ -632,14 +635,30 @@ async function save(pdfFile, objects, name, isDownload = false) {
     const pageHeight = page.getHeight();
     const embedProcesses = pageObjects.map(async (object) => {
       if (object.type === "drawing") {
-        const { x, y, path, scale } = object;
-        const { pushGraphicsState, setLineCap, popGraphicsState, setLineJoin, LineCapStyle, LineJoinStyle } = PDFLib.value;
+        const { x, y, path, originWidth, originHeight, width, height } = object;
+        const scaleX = width / originWidth;
+        const scaleY = height / originHeight;
+        const finalScale = Math.min(scaleX, scaleY, 1);
+        const scaledWidth = originWidth * finalScale;
+        const centeredX = x + (width - scaledWidth) / 2;
+        const {
+          pushGraphicsState,
+          setLineCap,
+          popGraphicsState,
+          setLineJoin,
+          LineCapStyle,
+          LineJoinStyle
+        } = PDFLib.value;
         return () => {
-          page.pushOperators(pushGraphicsState(), setLineCap(LineCapStyle.Round), setLineJoin(LineJoinStyle.Round));
+          page.pushOperators(
+            pushGraphicsState(),
+            setLineCap(LineCapStyle.Round),
+            setLineJoin(LineJoinStyle.Round)
+          );
           page.drawSvgPath(path, {
             borderWidth: 5,
-            scale,
-            x,
+            scale: finalScale,
+            x: centeredX,
             y: pageHeight - y
           });
           page.pushOperators(popGraphicsState());

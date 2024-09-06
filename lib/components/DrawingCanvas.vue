@@ -180,6 +180,7 @@ export default {
 
       const svgElement = document.querySelector('svg');
       if (svgElement) {
+        svgElement.style.display = 'none';
         svgElement.removeAttribute('viewBox');
         svgElement.querySelector('path')?.setAttribute('d', updatedPaths);
         const svgString = new XMLSerializer().serializeToString(svgElement);
@@ -190,12 +191,16 @@ export default {
 
         img.onload = () => {
           const canvas = document.createElement('canvas');
+          canvas.style.display = 'none';
           canvas.width = img.width;
           canvas.height = img.height;
           const context = canvas.getContext('2d');
           context?.drawImage(img, 0, 0);
           pngBase64 = canvas.toDataURL('image/png');
           pngBase64 = pngBase64.replace('data:image/png;base64,', '');
+          canvas.remove();
+          svgElement.innerHTML = '';
+          paths.value = [];
 
           emit("finish", {
             originWidth,
@@ -212,6 +217,7 @@ export default {
     };
 
     const cancel = () => {
+      paths.value = [];
       emit("cancel");
     };
 
