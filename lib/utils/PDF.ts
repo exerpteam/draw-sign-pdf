@@ -23,19 +23,16 @@ export async function save(
       const pageHeight = page.getHeight();
       const embedProcesses = pageObjects.map(async (object: any) => {
         if (object.type === "drawing") {
-          const { x, y, path, originWidth, originHeight, width, height } =
+          const { x, y, path, originWidth, originHeight, width, height, scale } =
             object;
 
-          // Calculate the scale to fit the drawing within the predefined square
-          const scaleX = width / originWidth;
-          const scaleY = height / originHeight;
-          const finalScale = Math.min(scaleX, scaleY, 1); // Scale down only if necessary
-
           // Calculate the actual width and height after scaling
-          const scaledWidth = originWidth * finalScale;
+          const scaledWidth = originWidth * scale;
+          const scaledHeight = originHeight * scale;
 
           // Center the drawing within the desired square
           const centeredX = x + (width - scaledWidth) / 2;
+          const centeredY = y + (height - scaledHeight) / 2;
 
           const {
             pushGraphicsState,
@@ -54,9 +51,9 @@ export async function save(
 
             page.drawSvgPath(path, {
               borderWidth: 5,
-              scale: finalScale,
+              scale,
               x: centeredX,
-              y: pageHeight - y,
+              y: pageHeight - centeredY,
             });
             page.pushOperators(popGraphicsState());
           };
