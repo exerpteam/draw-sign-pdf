@@ -180,11 +180,7 @@ export default {
       signatureImageData.value = e.signatureImageData;
 
       const { originWidth, originHeight, path } = e;
-      let scale = 1;
-      if (originWidth > 500) {
-        scale = 500 / originWidth;
-      }
-      await addDrawing(originWidth, originHeight, path, scale);
+      await addDrawing(originWidth, originHeight, path);
       addingDrawing.value = false;
     };
 
@@ -194,11 +190,18 @@ export default {
       }
     };
 
-    const addDrawing = (originWidth: number, originHeight: number, path: string, scale = 1) => {
+    const addDrawing = (originWidth: number, originHeight: number, path: string) => {
       allObjects.value = Array(allObjects.value.length).fill([]);
       props.signatureData?.forEach((signData: PdfSignatureData) => {
         const id = genID();
-        scale = cmToPx(signData.width) / originWidth;
+
+        const width = cmToPx(signData.width);
+        const height = cmToPx(signData.height);
+
+        // Calculate the scale to fit the drawing within the predefined square
+        const scaleX = width / originWidth;
+        const scaleY = height / originHeight;
+        const finalScale = Math.min(scaleX, scaleY);
         const object: DrawingObject = {
           id,
           path,
@@ -207,9 +210,9 @@ export default {
           y: cmToPx(signData.top),
           originWidth,
           originHeight,
-          width: cmToPx(signData.width),
-          height: cmToPx(signData.height),
-          scale,
+          width,
+          height,
+          scale: finalScale,
         };
 
         allObjects.value = allObjects.value.map((objects, pIndex) =>

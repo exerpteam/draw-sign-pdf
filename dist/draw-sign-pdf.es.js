@@ -635,12 +635,11 @@ async function save(pdfFile, objects, name, isDownload = false) {
     const pageHeight = page.getHeight();
     const embedProcesses = pageObjects.map(async (object) => {
       if (object.type === "drawing") {
-        const { x, y, path, originWidth, originHeight, width, height } = object;
-        const scaleX = width / originWidth;
-        const scaleY = height / originHeight;
-        const finalScale = Math.min(scaleX, scaleY, 1);
-        const scaledWidth = originWidth * finalScale;
+        const { x, y, path, originWidth, originHeight, width, height, scale } = object;
+        const scaledWidth = originWidth * scale;
+        const scaledHeight = originHeight * scale;
         const centeredX = x + (width - scaledWidth) / 2;
+        const centeredY = y + (height - scaledHeight) / 2;
         const {
           pushGraphicsState,
           setLineCap,
@@ -657,9 +656,9 @@ async function save(pdfFile, objects, name, isDownload = false) {
           );
           page.drawSvgPath(path, {
             borderWidth: 5,
-            scale: finalScale,
+            scale,
             x: centeredX,
-            y: pageHeight - y
+            y: pageHeight - centeredY
           });
           page.pushOperators(popGraphicsState());
         };
@@ -783,11 +782,7 @@ const _sfc_main = {
     const onFinishDrawing = async (e) => {
       signatureImageData.value = e.signatureImageData;
       const { originWidth, originHeight, path } = e;
-      let scale = 1;
-      if (originWidth > 500) {
-        scale = 500 / originWidth;
-      }
-      await addDrawing(originWidth, originHeight, path, scale);
+      await addDrawing(originWidth, originHeight, path);
       addingDrawing.value = false;
     };
     const onAddDrawing = () => {
@@ -795,12 +790,16 @@ const _sfc_main = {
         addingDrawing.value = true;
       }
     };
-    const addDrawing = (originWidth, originHeight, path, scale = 1) => {
+    const addDrawing = (originWidth, originHeight, path) => {
       var _a;
       allObjects.value = Array(allObjects.value.length).fill([]);
       (_a = props.signatureData) == null ? void 0 : _a.forEach((signData) => {
         const id = genID();
-        scale = cmToPx(signData.width) / originWidth;
+        const width = cmToPx(signData.width);
+        const height = cmToPx(signData.height);
+        const scaleX = width / originWidth;
+        const scaleY = height / originHeight;
+        const finalScale = Math.min(scaleX, scaleY);
         const object = {
           id,
           path,
@@ -809,9 +808,9 @@ const _sfc_main = {
           y: cmToPx(signData.top),
           originWidth,
           originHeight,
-          width: cmToPx(signData.width),
-          height: cmToPx(signData.height),
-          scale
+          width,
+          height,
+          scale: finalScale
         };
         allObjects.value = allObjects.value.map(
           (objects, pIndex) => signData.page === pIndex + 1 ? [...objects, object] : objects
@@ -1026,7 +1025,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-021830a2"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7d476000"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
