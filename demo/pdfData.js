@@ -3,6 +3,7 @@ const signatureData = [
     { left: 10.16, top: 11, width: 4, height: 2, page: 1 },
     { left: 2, top: 6, width: 5, height: 2.5, page: 2 },
     { left: 4.6, top: 7.2, width: 3.96, height: 1.9, page: 3 },
+    { left: 5, top: 10, width: 5, height: 10, page: 1 }    
   ];
   
 

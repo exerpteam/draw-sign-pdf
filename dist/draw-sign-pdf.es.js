@@ -443,10 +443,6 @@ const _sfc_main$1 = {
       const originHeight = data.maxY - data.minY + 20;
       let base64 = "";
       let pngBase64 = "";
-      let scale = 1;
-      if (originWidth > 500) {
-        scale = 500 / originWidth;
-      }
       const updatedPaths = paths.value.reduce((acc, cur) => {
         return acc + cur[0] + (cur[1] + dx) + "," + (cur[2] + dy);
       }, "");
@@ -462,8 +458,8 @@ const _sfc_main$1 = {
         img.onload = () => {
           const canvas = document.createElement("canvas");
           canvas.style.display = "none";
-          canvas.width = img.width;
-          canvas.height = img.height;
+          canvas.width = originWidth;
+          canvas.height = originHeight;
           const context = canvas.getContext("2d");
           context == null ? void 0 : context.drawImage(img, 0, 0);
           pngBase64 = canvas.toDataURL("image/png");
@@ -475,7 +471,6 @@ const _sfc_main$1 = {
             originWidth,
             originHeight,
             path: updatedPaths,
-            scale,
             signatureImageData: {
               data: pngBase64,
               type: "image/png"
