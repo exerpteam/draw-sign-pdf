@@ -22,11 +22,15 @@ const translations = {
   pdfLoading: "PDF will load here"
 }
 
-const getSignedData = (SignedDocumentData) => {
-  const pdfData = SignedDocumentData.signedDocument.data;
+const getSignedData = (signedDocumentData) => {
+  console.log(signedDocumentData);
+
+  const imageData = 'data:image/png;base64, ' + encodeURI(signedDocumentData.signatureImage.data);
+  const pdfData = signedDocumentData.signedDocument.data;
   const fullData = 'data:application/pdf;base64, ' + encodeURI(pdfData);
   let pdfWindow = window.open("")
   pdfWindow.document.write(
+    "<img src='" + imageData + "'/> <br/>" +
     "<iframe width='100%' height='100%' src='" + fullData + "'></iframe>"
   );
 
