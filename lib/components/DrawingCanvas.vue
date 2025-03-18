@@ -18,7 +18,7 @@
           {{ getTranslation.drawCancel }}
         </button>
       </div>
-      <svg class="pointer-events-none h-full w-full">
+      <svg class="pointer-events-none h-full w-full" id="signature-path-data">
         <path stroke-width="5" stroke-linejoin="round" stroke-linecap="round" :d="path" stroke="black" fill="none" />
       </svg>
     </div>
@@ -174,7 +174,7 @@ export default {
         return acc + cur[0] + (cur[1] + dx) + "," + (cur[2] + dy);
       }, "");
 
-      const svgElement = document.querySelector('svg');
+      const svgElement = document.getElementById('signature-path-data');
       if (svgElement) {
         svgElement.style.display = 'none';
         svgElement.removeAttribute('viewBox');

@@ -446,7 +446,7 @@ const _sfc_main$1 = {
       const updatedPaths = paths.value.reduce((acc, cur) => {
         return acc + cur[0] + (cur[1] + dx) + "," + (cur[2] + dy);
       }, "");
-      const svgElement = document.querySelector("svg");
+      const svgElement = document.getElementById("signature-path-data");
       if (svgElement) {
         svgElement.style.display = "none";
         svgElement.removeAttribute("viewBox");
@@ -512,7 +512,10 @@ const _hoisted_1$1 = {
 const _hoisted_2$1 = { class: "absolute bottom-0 right-0 mb-4 mx-4 flex" };
 const _hoisted_3$1 = { class: "flex w-full flex-grow items-center justify-center" };
 const _hoisted_4$1 = { class: "text-black-600" };
-const _hoisted_5$1 = { class: "pointer-events-none h-full w-full" };
+const _hoisted_5$1 = {
+  class: "pointer-events-none h-full w-full",
+  id: "signature-path-data"
+};
 const _hoisted_6$1 = ["d"];
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1$1, [
