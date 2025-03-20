@@ -733,7 +733,10 @@ const _sfc_main = {
     const saving = ref(false);
     const addingDrawing = ref(false);
     const signatureImageData = ref("");
-    const signedDocument = ref({ data: "", type: "application/pdf" });
+    const signedDocument = ref({
+      data: "",
+      type: "application/pdf"
+    });
     const isOpenConfirm = ref(false);
     const isConfirmOrWarning = ref("warning");
     onMounted(async () => {
@@ -834,17 +837,21 @@ const _sfc_main = {
       pagesScale.value[i] = scale;
     };
     const cmToPx = (cm) => {
-      const dpi = 96;
-      const cpi = 2.54;
-      const ppd = 1;
-      return cm * dpi / cpi * ppd;
+      const pointsPerInch = 72;
+      const centimetersPerInch = 2.54;
+      return cm * pointsPerInch / centimetersPerInch;
     };
     const savePDF = async () => {
       if (!pdfFile.value || saving.value || !pages.value.length)
         return;
       saving.value = true;
       try {
-        const pdfData = await save(pdfFile.value, allObjects.value, pdfName.value, props.isDownload);
+        const pdfData = await save(
+          pdfFile.value,
+          allObjects.value,
+          pdfName.value,
+          props.isDownload
+        );
         signedDocument.value = { type: "application/pdf", data: pdfData };
         emit("finish", {
           signedDocument: signedDocument.value,
@@ -910,13 +917,13 @@ const _sfc_main = {
 const _hoisted_1 = {
   key: 0,
   id: "modelConfirm",
-  class: "fixed z-50 inset-0 bg-gray-900 bg-opacity-60 overflow-y-auto h-full w-full px-4"
+  class: "fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-900 bg-opacity-60 px-4"
 };
 const _hoisted_2 = { class: "flex min-h-screen flex-col items-center bg-gray-100 py-5" };
 const _hoisted_3 = { class: "left-0 right-0 top-0 z-10 flex h-12 items-center justify-center" };
 const _hoisted_4 = {
   key: 0,
-  class: "fixed left-0 right-0 top-0 z-10 border-b border-gray-300 bg-white shadow-lg items-center justify-center sign-drawing-canvas",
+  class: "sign-drawing-canvas fixed left-0 right-0 top-0 z-10 items-center justify-center border-b border-gray-300 bg-white shadow-lg",
   style: { "height": "200px", "z-index": "60", "width": "100%" },
   "data-cy": "sign-drawing-canvas"
 };
@@ -949,12 +956,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         createElementVNode("div", _hoisted_3, [
           createElementVNode("button", {
             onClick: _cache[0] || (_cache[0] = (...args) => $setup.onAddDrawing && $setup.onAddDrawing(...args)),
-            class: "mr-3 ml-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive",
+            class: "btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4",
             "data-cy": "update-sign"
           }, toDisplayString($options.getTranslation.updateSign), 1),
           createElementVNode("button", {
             onClick: _cache[1] || (_cache[1] = (...args) => $setup.openModal && $setup.openModal(...args)),
-            class: normalizeClass(["mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4 btn-positive", {
+            class: normalizeClass(["btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4", {
               "cursor-not-allowed": $setup.pages.length === 0 || $setup.saving || !$setup.pdfFile,
               "bg-blue-700": $setup.pages.length === 0 || $setup.saving || !$setup.pdfFile
             }]),
@@ -1023,7 +1030,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7d476000"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-94926d04"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
