@@ -44,6 +44,7 @@ export function prepareAsset({
     script.src = src;
     script.onload = () => {
       scriptRef.value = window[name as keyof Window];
+      console.log(`${name} is loaded. log added`);
       resolve(scriptRef);
     };
     script.onerror = () => {

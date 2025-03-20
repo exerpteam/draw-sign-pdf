@@ -590,6 +590,7 @@ function prepareAsset({
     script.src = src;
     script.onload = () => {
       scriptRef.value = window[name];
+      console.log(`${name} is loaded. log added`);
       resolve(scriptRef);
     };
     script.onerror = () => {
