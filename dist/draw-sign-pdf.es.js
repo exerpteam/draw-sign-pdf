@@ -590,7 +590,6 @@ function prepareAsset({
     script.src = src;
     script.onload = () => {
       scriptRef.value = window[name];
-      console.log(`${name} is loaded. log added`);
       resolve(scriptRef);
     };
     script.onerror = () => {
@@ -814,8 +813,6 @@ const _sfc_main = {
           height,
           scale: finalScale
         };
-        console.log("HERE");
-        console.log(object);
         const pageIndex = signData.page - 1;
         if (allObjects.value[pageIndex]) {
           allObjects.value[pageIndex] = [
@@ -1037,7 +1034,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-356f9e97"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3f7faf0e"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
