@@ -272,7 +272,10 @@ export default {
           height,
           scale: finalScale,
         };
-
+        console.log('HERE');
+        
+        console.log(object);
+        
         // Append to the specific page rather than resetting all pages
         const pageIndex = signData.page - 1;
         // Ensure the page exists in allObjects
