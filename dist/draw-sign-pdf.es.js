@@ -813,9 +813,13 @@ const _sfc_main = {
           height,
           scale: finalScale
         };
-        allObjects.value = allObjects.value.map(
-          (objects, pIndex) => signData.page === pIndex + 1 ? [...objects, object] : objects
-        );
+        const pageIndex = signData.page - 1;
+        if (allObjects.value[pageIndex]) {
+          allObjects.value[pageIndex] = [
+            ...allObjects.value[pageIndex],
+            object
+          ];
+        }
       });
     };
     const selectPage = (index) => {
@@ -1030,7 +1034,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-94926d04"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-56dca614"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);

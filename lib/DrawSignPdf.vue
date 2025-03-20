@@ -273,9 +273,15 @@ export default {
           scale: finalScale,
         };
 
-        allObjects.value = allObjects.value.map((objects, pIndex) =>
-          signData.page === pIndex + 1 ? [...objects, object] : objects
-        );
+        // Append to the specific page rather than resetting all pages
+        const pageIndex = signData.page - 1;
+        // Ensure the page exists in allObjects
+        if (allObjects.value[pageIndex]) {
+          allObjects.value[pageIndex] = [
+            ...allObjects.value[pageIndex],
+            object,
+          ];
+        }
       });
     };
 
