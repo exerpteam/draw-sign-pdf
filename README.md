@@ -1,3 +1,10 @@
+# Note
+For updating the package with new changes we need to do the following :
+  1. npm build to create dist files with changes
+  2. update the version in package.json
+  3. Merge and add the new commit hash to the project that uses this
+  4. npm install
+     
 # draw-sign-pdf
 A description of your new library.
 
