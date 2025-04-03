@@ -7,6 +7,7 @@
         <div class="flex w-full flex-grow items-center justify-center">
           <p class="text-black-600">{{ getTranslation.drawLabel }}</p>
         </div>
+        <span>{{ getTranslation.additionalTextField}} </span>
         <button @click="finish"
           class="mx-4 w-24 rounded bg-blue-600 px-4 py-1 font-bold text-white hover:bg-blue-700 btn-positive"
           data-cy="sign-done">
@@ -41,6 +42,7 @@ export default {
         drawLabel: "Draw the signature here",
         drawDone: "Done",
         drawCancel: "Cancel",
+        additionalTextField: "",
       };
       return { ...defaultTranslation, ...this.translations };
     }

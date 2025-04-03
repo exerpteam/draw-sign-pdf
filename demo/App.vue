@@ -14,6 +14,7 @@ const translations = {
   saving: "Saving",
   drawLabel: "Draw the signature here",
   drawDone: "Done",
+  additionalTextField: "",
   drawCancel: "Cancel",
   confirmBoxTitle: "Confirm Saving",
   confirmBoxDesc: "Are you sure you want to save the signed document?",

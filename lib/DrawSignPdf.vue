@@ -156,6 +156,7 @@ export default {
           "The required signature is missing. Please sign to continue",
         warningClose: "Close",
         pdfLoading: "PDF will load here",
+        additionalTextField: "",
       };
 
       return { ...defaultTranslation, ...this.translations };
