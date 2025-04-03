@@ -24,8 +24,6 @@ const translations = {
 }
 
 const getSignedData = (signedDocumentData) => {
-  console.log(signedDocumentData);
-
   const imageData = 'data:image/png;base64, ' + encodeURI(signedDocumentData.signatureImage.data);
   const pdfData = signedDocumentData.signedDocument.data;
   const fullData = 'data:application/pdf;base64, ' + encodeURI(pdfData);
