@@ -322,7 +322,8 @@ const _sfc_main$1 = {
       const defaultTranslation = {
         drawLabel: "Draw the signature here",
         drawDone: "Done",
-        drawCancel: "Cancel"
+        drawCancel: "Cancel",
+        additionalTextField: ""
       };
       return { ...defaultTranslation, ...this.translations };
     }
@@ -530,6 +531,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         createElementVNode("div", _hoisted_3$1, [
           createElementVNode("p", _hoisted_4$1, toDisplayString($options.getTranslation.drawLabel), 1)
         ]),
+        createElementVNode("span", null, toDisplayString($options.getTranslation.additionalTextField), 1),
         createElementVNode("button", {
           onClick: _cache[0] || (_cache[0] = (...args) => $setup.finish && $setup.finish(...args)),
           class: "mx-4 w-24 rounded bg-blue-600 px-4 py-1 font-bold text-white hover:bg-blue-700 btn-positive",
@@ -714,7 +716,8 @@ const _sfc_main = {
         warningTitle: "Missing Signature",
         warningDesc: "The required signature is missing. Please sign to continue",
         warningClose: "Close",
-        pdfLoading: "PDF will load here"
+        pdfLoading: "PDF will load here",
+        additionalTextField: ""
       };
       return { ...defaultTranslation, ...this.translations };
     }
@@ -1034,7 +1037,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3f7faf0e"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-5db2334e"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
