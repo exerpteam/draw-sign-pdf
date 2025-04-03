@@ -253,7 +253,7 @@ const _hoisted_3$2 = { class: "flex flex-col bg-white border shadow-sm rounded-x
 const _hoisted_4$2 = { class: "flex justify-between items-center py-3 px-4 border-b" };
 const _hoisted_5$2 = { class: "font-bold text-gray-800" };
 const _hoisted_6$2 = { class: "sr-only" };
-const _hoisted_7$1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("svg", {
+const _hoisted_7$2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("svg", {
   class: "flex-shrink-0 size-4",
   xmlns: "http://www.w3.org/2000/svg",
   width: "24",
@@ -268,7 +268,7 @@ const _hoisted_7$1 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createEl
   /* @__PURE__ */ createElementVNode("path", { d: "M18 6 6 18" }),
   /* @__PURE__ */ createElementVNode("path", { d: "m6 6 12 12" })
 ], -1));
-const _hoisted_8$1 = { class: "p-4 overflow-y-auto" };
+const _hoisted_8$2 = { class: "p-4 overflow-y-auto" };
 const _hoisted_9 = { class: "mt-1 text-gray-800" };
 const _hoisted_10 = { class: "flex justify-end items-center gap-x-2 py-3 px-4 border-t" };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
@@ -284,10 +284,10 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
             class: "flex justify-center items-center size-7 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
           }, [
             createElementVNode("span", _hoisted_6$2, toDisplayString($options.getTranslation.close), 1),
-            _hoisted_7$1
+            _hoisted_7$2
           ])
         ]),
-        createElementVNode("div", _hoisted_8$1, [
+        createElementVNode("div", _hoisted_8$2, [
           createElementVNode("p", _hoisted_9, toDisplayString($options.getTranslation.desc), 1)
         ]),
         createElementVNode("div", _hoisted_10, [
@@ -322,7 +322,8 @@ const _sfc_main$1 = {
       const defaultTranslation = {
         drawLabel: "Draw the signature here",
         drawDone: "Done",
-        drawCancel: "Cancel"
+        drawCancel: "Cancel",
+        additionalTextField: ""
       };
       return { ...defaultTranslation, ...this.translations };
     }
@@ -509,14 +510,16 @@ const _hoisted_1$1 = {
   class: "left-0 right-0 top-0 z-0 border-b border-gray-300 bg-white shadow-lg",
   "data-cy": "sign-area"
 };
-const _hoisted_2$1 = { class: "absolute bottom-0 right-0 mb-4 mx-4 flex" };
-const _hoisted_3$1 = { class: "flex w-full flex-grow items-center justify-center" };
-const _hoisted_4$1 = { class: "text-black-600" };
-const _hoisted_5$1 = {
+const _hoisted_2$1 = { class: "absolute flex w-full flex-grow items-center justify-center" };
+const _hoisted_3$1 = { class: "text-black-600" };
+const _hoisted_4$1 = { class: "absolute bottom-0 right-0 mb-4 mx-4 flex" };
+const _hoisted_5$1 = { class: "flex w-full flex-grow items-center justify-center" };
+const _hoisted_6$1 = { class: "text-black-600" };
+const _hoisted_7$1 = {
   class: "pointer-events-none h-full w-full",
   id: "signature-path-data"
 };
-const _hoisted_6$1 = ["d"];
+const _hoisted_8$1 = ["d"];
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1$1, [
     createElementVNode("div", {
@@ -527,8 +530,11 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
       class: "relative h-full w-full select-none"
     }, [
       createElementVNode("div", _hoisted_2$1, [
-        createElementVNode("div", _hoisted_3$1, [
-          createElementVNode("p", _hoisted_4$1, toDisplayString($options.getTranslation.drawLabel), 1)
+        createElementVNode("p", _hoisted_3$1, toDisplayString($options.getTranslation.drawLabel), 1)
+      ]),
+      createElementVNode("div", _hoisted_4$1, [
+        createElementVNode("div", _hoisted_5$1, [
+          createElementVNode("p", _hoisted_6$1, toDisplayString($options.getTranslation.additionalTextField), 1)
         ]),
         createElementVNode("button", {
           onClick: _cache[0] || (_cache[0] = (...args) => $setup.finish && $setup.finish(...args)),
@@ -541,7 +547,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
           "data-cy": "sign-cancel"
         }, toDisplayString($options.getTranslation.drawCancel), 1)
       ]),
-      (openBlock(), createElementBlock("svg", _hoisted_5$1, [
+      (openBlock(), createElementBlock("svg", _hoisted_7$1, [
         createElementVNode("path", {
           "stroke-width": "5",
           "stroke-linejoin": "round",
@@ -549,7 +555,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
           d: $setup.path,
           stroke: "black",
           fill: "none"
-        }, null, 8, _hoisted_6$1)
+        }, null, 8, _hoisted_8$1)
       ]))
     ], 544)
   ]);
@@ -714,7 +720,8 @@ const _sfc_main = {
         warningTitle: "Missing Signature",
         warningDesc: "The required signature is missing. Please sign to continue",
         warningClose: "Close",
-        pdfLoading: "PDF will load here"
+        pdfLoading: "PDF will load here",
+        additionalTextField: ""
       };
       return { ...defaultTranslation, ...this.translations };
     }
@@ -1034,7 +1041,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3f7faf0e"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-5db2334e"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
