@@ -2,6 +2,10 @@
   <div>
     <canvas ref="canvas" id="canvas" class="max-w-full" :style="{ width: `${width}px` }" :width="width"
       :height="height" />
+    <div>
+      <button>Zoom +</button>
+      <button>Zoom -</button>
+    </div>
   </div>
 </template>
 
@@ -11,6 +15,7 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 export default {
   props: {
     page: Object,
+    currentScale: Number
   },
   setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const canvas = ref<HTMLCanvasElement | null>(null);
@@ -24,9 +29,11 @@ export default {
     };
 
     onMounted(async () => {
+      console.log('PDFPage component mount')
+      console.log('props to PDFPage component', props)
       const _page = await props.page;
       const context = canvas.value!.getContext("2d");
-      const viewport = _page.getViewport({ scale: 1, rotation: 0 });
+      const viewport = _page.getViewport({ scale: props.currentScale || 1, rotation: 0 });
       width.value = viewport.width;
       height.value = viewport.height;
       await _page

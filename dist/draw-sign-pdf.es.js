@@ -1,4 +1,4 @@
-import { ref, onMounted, onBeforeUnmount, openBlock, createElementBlock, createElementVNode, normalizeStyle, defineComponent, nextTick, pushScopeId, popScopeId, Fragment, toDisplayString, createCommentVNode, reactive, resolveComponent, createVNode, normalizeClass, renderList, createBlock } from "vue";
+import { ref, onMounted, onBeforeUnmount, openBlock, createElementBlock, createElementVNode, normalizeStyle, pushScopeId, popScopeId, defineComponent, nextTick, Fragment, toDisplayString, createCommentVNode, reactive, resolveComponent, createVNode, normalizeClass, renderList, createBlock } from "vue";
 var PDFPage_vue_vue_type_style_index_0_scoped_true_lang = "";
 var _export_sfc = (sfc, props) => {
   const target = sfc.__vccOpts || sfc;
@@ -9,7 +9,8 @@ var _export_sfc = (sfc, props) => {
 };
 const _sfc_main$4 = {
   props: {
-    page: Object
+    page: Object,
+    currentScale: Number
   },
   setup(props, { emit }) {
     const canvas = ref(null);
@@ -21,9 +22,11 @@ const _sfc_main$4 = {
       });
     };
     onMounted(async () => {
+      console.log("PDFPage component mount");
+      console.log("props to PDFPage component", props);
       const _page = await props.page;
       const context = canvas.value.getContext("2d");
-      const viewport = _page.getViewport({ scale: 1, rotation: 0 });
+      const viewport = _page.getViewport({ scale: props.currentScale || 1, rotation: 0 });
       width.value = viewport.width;
       height.value = viewport.height;
       await _page.render({
@@ -46,7 +49,12 @@ const _sfc_main$4 = {
     };
   }
 };
+const _withScopeId$2 = (n) => (pushScopeId("data-v-761fdc5e"), n = n(), popScopeId(), n);
 const _hoisted_1$4 = ["width", "height"];
+const _hoisted_2$4 = /* @__PURE__ */ _withScopeId$2(() => /* @__PURE__ */ createElementVNode("div", null, [
+  /* @__PURE__ */ createElementVNode("button", null, "Zoom +"),
+  /* @__PURE__ */ createElementVNode("button", null, "Zoom -")
+], -1));
 function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", null, [
     createElementVNode("canvas", {
@@ -56,10 +64,11 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
       style: normalizeStyle({ width: `${$setup.width}px` }),
       width: $setup.width,
       height: $setup.height
-    }, null, 12, _hoisted_1$4)
+    }, null, 12, _hoisted_1$4),
+    _hoisted_2$4
   ]);
 }
-var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-98024af6"]]);
+var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-761fdc5e"]]);
 var DrawingSignature_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$3 = defineComponent({
   props: {
@@ -746,6 +755,10 @@ const _sfc_main = {
     });
     const isOpenConfirm = ref(false);
     const isConfirmOrWarning = ref("warning");
+    const currentScale = ref(1);
+    const ZOOM_STEP = 0.25;
+    const MIN_SCALE = 0.5;
+    const MAX_SCALE = 3;
     onMounted(async () => {
       try {
         getAsset("pdfjsLib");
@@ -895,6 +908,13 @@ const _sfc_main = {
         closeModal();
       }
     };
+    const zoomPDF = (direction) => {
+      if (direction === "in") {
+        currentScale.value = Math.min(currentScale.value + ZOOM_STEP, MAX_SCALE);
+      } else if (direction === "out") {
+        currentScale.value = Math.max(currentScale.value - ZOOM_STEP, MIN_SCALE);
+      }
+    };
     return {
       genID,
       pdfFile,
@@ -921,7 +941,9 @@ const _sfc_main = {
       openModal,
       closeModal,
       confirmSave,
-      isConfirmOrWarning
+      isConfirmOrWarning,
+      currentScale,
+      zoomPDF
     };
   }
 };
@@ -987,9 +1009,17 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           }, null, 8, ["onFinish", "translations"])
         ])) : createCommentVNode("", true),
         $setup.pages.length ? (openBlock(), createElementBlock("div", _hoisted_5, [
+          createElementVNode("div", null, [
+            createElementVNode("button", {
+              onClick: _cache[3] || (_cache[3] = ($event) => $setup.zoomPDF("in"))
+            }, "Zoom in"),
+            createElementVNode("button", {
+              onClick: _cache[4] || (_cache[4] = ($event) => $setup.zoomPDF("out"))
+            }, "Zoom out")
+          ]),
           (openBlock(true), createElementBlock(Fragment, null, renderList($setup.pages, (page, pIndex) => {
             return openBlock(), createElementBlock("div", {
-              key: pIndex,
+              key: pIndex + $setup.currentScale,
               class: "flex w-full flex-col items-center overflow-hidden p-5",
               onMousedown: ($event) => $setup.selectPage(pIndex),
               onTouchstart: ($event) => $setup.selectPage(pIndex),
@@ -1000,8 +1030,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }, [
                 createVNode(_component_PDFPage, {
                   onMeasure: (e) => $setup.onMeasure(e, pIndex),
-                  page
-                }, null, 8, ["onMeasure", "page"]),
+                  page,
+                  currentScale: $setup.currentScale
+                }, null, 8, ["onMeasure", "page", "currentScale"]),
                 createElementVNode("div", {
                   class: "absolute left-0 top-0 origin-top-left transform",
                   style: normalizeStyle({
@@ -1041,7 +1072,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-5db2334e"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-a04d8e68"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);

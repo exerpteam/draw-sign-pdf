@@ -51,9 +51,13 @@
         />
       </div>
       <div class="w-full" v-if="pages.length">
+        <div>
+          <button @click="zoomPDF('in')">Zoom in</button>
+          <button @click="zoomPDF('out')">Zoom out</button>
+        </div>
         <div
           v-for="(page, pIndex) in pages"
-          :key="pIndex"
+          :key="pIndex + currentScale"
           class="flex w-full flex-col items-center overflow-hidden p-5"
           @mousedown="selectPage(pIndex)"
           @touchstart="selectPage(pIndex)"
@@ -63,7 +67,7 @@
             class="relative shadow-lg"
             :class="{ 'shadow-outline': pIndex === selectedPageIndex }"
           >
-            <PDFPage @measure="(e: any) => onMeasure(e, pIndex)" :page="page" />
+            <PDFPage @measure="(e: any) => onMeasure(e, pIndex)" :page="page" :currentScale="currentScale"/>
             <div
               class="absolute left-0 top-0 origin-top-left transform"
               :style="{
@@ -186,6 +190,11 @@ export default {
     });
     const isOpenConfirm = ref(false);
     const isConfirmOrWarning = ref("warning");
+
+    const currentScale = ref(1);
+    const ZOOM_STEP = 0.25;
+    const MIN_SCALE = 0.5;
+    const MAX_SCALE = 3;
 
     onMounted(async () => {
       try {
@@ -366,6 +375,14 @@ export default {
       }
     };
 
+    const zoomPDF = (direction: 'in' | 'out') => {
+      if (direction === 'in') {
+        currentScale.value = Math.min(currentScale.value + ZOOM_STEP, MAX_SCALE);
+      } else if (direction === 'out') {
+        currentScale.value = Math.max(currentScale.value - ZOOM_STEP, MIN_SCALE);
+      }
+    }
+
     return {
       genID,
       pdfFile,
@@ -393,6 +410,8 @@ export default {
       closeModal,
       confirmSave,
       isConfirmOrWarning,
+      currentScale,
+      zoomPDF
     };
   },
 };
