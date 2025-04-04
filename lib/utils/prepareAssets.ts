@@ -4,21 +4,20 @@ interface Script {
   name: string;
   src: string;
 }
-const scripts: Script[] = [
+const scripts = [
   {
     name: "pdfjsLib",
-    src: `${import.meta.env.BASE_URL}library/pdf.min.js`,
+    src: new URL('./library/pdf.min.js', import.meta.url).href,
   },
   {
     name: "PDFLib",
-    src: `${import.meta.env.BASE_URL}library/pdf-lib.min.js`,
+    src: new URL('./library/pdf-lib.min.js', import.meta.url).href,
   },
   {
     name: "download",
-    src: `${import.meta.env.BASE_URL}library/downloadjs.js`,
-  },
+    src: new URL('./library/downloadjs.js', import.meta.url).href,
+  }
 ];
-
 interface Asset {
   [key: string]: Ref<unknown> | Promise<unknown>;
 }
@@ -26,7 +25,7 @@ interface Asset {
 const assets: Asset = {};
 
 export function getAsset(name: string): Ref<any> | Promise<any> {
-  console.log('JERE');
+  console.log('JERE222');
   
   if (assets[name]) return assets[name] as Ref<unknown>;
   const script = scripts.find((s) => s.name === name);

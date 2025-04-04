@@ -564,20 +564,20 @@ var DrawingCanvas = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_re
 const scripts = [
   {
     name: "pdfjsLib",
-    src: `${"/"}library/pdf.min.js`
+    src: new URL("./library/pdf.min.js", self.location).href
   },
   {
     name: "PDFLib",
-    src: `${"/"}library/pdf-lib.min.js`
+    src: new URL("./library/pdf-lib.min.js", self.location).href
   },
   {
     name: "download",
-    src: `${"/"}library/downloadjs.js`
+    src: new URL("./library/downloadjs.js", self.location).href
   }
 ];
 const assets = {};
 function getAsset(name) {
-  console.log("JERE");
+  console.log("JERE222");
   if (assets[name])
     return assets[name];
   const script = scripts.find((s) => s.name === name);

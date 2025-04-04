@@ -4,7 +4,8 @@
   "license": "MIT",
   "author": "Ramkumar R",
   "files": [
-    "dist"
+    "dist",
+    "lib/index.d.ts"
   ],
   "main": "./dist/draw-sign-pdf.umd.js",
   "module": "./dist/draw-sign-pdf.es.js",
