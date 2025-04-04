@@ -8,15 +8,15 @@ interface Script {
 const scripts: Script[] = [
   {
     name: "pdfjsLib",
-    src: "https://unpkg.com/pdfjs-dist@2.3.200/build/pdf.min.js",
+    src: "./library/pdf.min.js",
   },
   {
     name: "PDFLib",
-    src: "https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js",
+    src: "./library/pdf-lib.min.js",
   },
   {
     name: "download",
-    src: "https://unpkg.com/downloadjs@1.4.7",
+    src: "./library/downloadjs.js",
   },
 ];
 
@@ -27,6 +27,8 @@ interface Asset {
 const assets: Asset = {};
 
 export function getAsset(name: string): Ref<any> | Promise<any> {
+  console.log('JERE');
+  
   if (assets[name]) return assets[name] as Ref<unknown>;
   const script = scripts.find((s) => s.name === name);
   if (!script) throw new Error(`Script ${name} not exists.`);
