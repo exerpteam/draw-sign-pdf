@@ -4,19 +4,18 @@ interface Script {
   name: string;
   src: string;
 }
-
 const scripts: Script[] = [
   {
     name: "pdfjsLib",
-    src: "./library/pdf.min.js",
+    src: `${import.meta.env.BASE_URL}library/pdf.min.js`,
   },
   {
     name: "PDFLib",
-    src: "./library/pdf-lib.min.js",
+    src: `${import.meta.env.BASE_URL}library/pdf-lib.min.js`,
   },
   {
     name: "download",
-    src: "./library/downloadjs.js",
+    src: `${import.meta.env.BASE_URL}library/downloadjs.js`,
   },
 ];
 

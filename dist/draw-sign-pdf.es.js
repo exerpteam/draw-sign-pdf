@@ -564,15 +564,15 @@ var DrawingCanvas = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_re
 const scripts = [
   {
     name: "pdfjsLib",
-    src: "./library/pdf.min.js"
+    src: `${"/"}library/pdf.min.js`
   },
   {
     name: "PDFLib",
-    src: "./library/pdf-lib.min.js"
+    src: `${"/"}library/pdf-lib.min.js`
   },
   {
     name: "download",
-    src: "./library/downloadjs.js"
+    src: `${"/"}library/downloadjs.js`
   }
 ];
 const assets = {};
