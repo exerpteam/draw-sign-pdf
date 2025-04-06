@@ -12,10 +12,13 @@
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
+      "types": "./lib/index.d.ts",
       "import": "./dist/es/index.js",
       "require": "./dist/cjs/draw-sign-pdf.cjs.js",
-      "types": "./lib/index.d.ts"
-    }
+      "default": "./dist/es/index.js"
+    },
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
   },
   "sideEffects": false,
   "scripts": {
