@@ -26,7 +26,7 @@ const prodConfig = defineConfig({
     vue(),
     dts({
       include: ['lib/**/*.ts', 'lib/**/*.vue'],
-      outDir: 'dist/types',
+      outputDir: 'dist/types',
     }),
   ],
   build: {
@@ -51,11 +51,13 @@ const prodConfig = defineConfig({
           preserveModules: true,
           preserveModulesRoot: 'lib',
           dir: 'dist/es',
+          exports: 'named'
         },
         {
           format: 'cjs',
           entryFileNames: 'draw-sign-pdf.cjs.js',
           dir: 'dist/cjs',
+          exports: 'named'
         },
         {
           format: 'umd',
@@ -65,6 +67,7 @@ const prodConfig = defineConfig({
             vue: 'Vue',
           },
           dir: 'dist/umd',
+          exports: 'named'
         },
       ],
     },
