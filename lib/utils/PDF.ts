@@ -3,12 +3,10 @@ import { getAsset } from "./prepareAssets";
 export async function save(
   pdfFile: Blob,
   objects: any,
-  name: string,
-  isDownload = false
+  name: string
 ) {
   const PDFLib = await getAsset("PDFLib");
 
-  const download = await getAsset("download");
   let pdfDoc;
   try {
     pdfDoc = await PDFLib.value.PDFDocument.load(pdfFile);
@@ -65,10 +63,7 @@ export async function save(
     });
   await Promise.all(pagesProcesses);
   try {
-    const pdfBytes = await pdfDoc.save();
-    if (isDownload) {
-      download.value(pdfBytes, name, "application/pdf");
-    }
+    await pdfDoc.save();
     return await pdfDoc.saveAsBase64();
   } catch (e) {
     throw e;
