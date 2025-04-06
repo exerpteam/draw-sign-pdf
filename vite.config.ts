@@ -47,7 +47,7 @@ const prodConfig = defineConfig({
       output: [
         {
           format: 'es',
-          entryFileNames: 'draw-sign-pdf.es.js',
+          entryFileNames: 'index.js',
           preserveModules: true,
           preserveModulesRoot: 'lib',
           dir: 'dist/es',

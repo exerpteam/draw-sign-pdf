@@ -5,24 +5,18 @@
   "author": "Ramkumar R",
   "files": [
     "dist",
-    "lib",
-    "public"
+    "lib"
   ],
   "main": "./dist/cjs/draw-sign-pdf.cjs.js",
-  "module": "./dist/es/draw-sign-pdf.es.js",
+  "module": "./dist/es/index.js",
   "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/es/draw-sign-pdf.es.js",
+      "import": "./dist/es/index.js",
       "require": "./dist/cjs/draw-sign-pdf.cjs.js",
       "types": "./dist/types/index.d.ts"
-    },
-    "./lib/utils/prepareAssets": {
-      "import": "./lib/utils/prepareAssets.js",
-      "require": "./lib/utils/prepareAssets.js"
     }
   },
-  "typings": "lib/index.d.ts",
   "sideEffects": false,
   "scripts": {
     "prepare": "npm run build",
