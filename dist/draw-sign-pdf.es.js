@@ -979,7 +979,7 @@ const _hoisted_5 = {
   class: "w-full"
 };
 const _hoisted_6 = { key: 0 };
-const _hoisted_7 = ["onMousedown", "onTouchstart", "data-cy", "on:finishedRendering"];
+const _hoisted_7 = ["onMousedown", "onTouchstart", "data-cy"];
 const _hoisted_8 = {
   key: 2,
   class: "flex w-full flex-grow items-center justify-center"
@@ -1038,8 +1038,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               class: "flex w-full flex-col items-center overflow-hidden p-5",
               onMousedown: ($event) => $setup.selectPage(pIndex),
               onTouchstart: ($event) => $setup.selectPage(pIndex),
-              "data-cy": "page-" + pIndex,
-              "on:finishedRendering": ($event) => $setup.renderFinished(pIndex)
+              "data-cy": "page-" + pIndex
             }, [
               createElementVNode("div", {
                 class: normalizeClass(["relative shadow-lg", { "shadow-outline": pIndex === $setup.selectedPageIndex }])
@@ -1047,8 +1046,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 createVNode(_component_PDFPage, {
                   onMeasure: (e) => $setup.onMeasure(e, pIndex),
                   page,
-                  currentScale: $setup.currentScale
-                }, null, 8, ["onMeasure", "page", "currentScale"]),
+                  currentScale: $setup.currentScale,
+                  finishedRendering: $setup.renderFinished(pIndex)
+                }, null, 8, ["onMeasure", "page", "currentScale", "finishedRendering"]),
                 createElementVNode("div", {
                   class: "absolute left-0 top-0 origin-top-left transform",
                   style: normalizeStyle({
@@ -1088,7 +1088,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-0d2efc5b"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d9f4d416"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);

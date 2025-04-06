@@ -62,13 +62,17 @@
           @mousedown="selectPage(pIndex)"
           @touchstart="selectPage(pIndex)"
           :data-cy="'page-' + pIndex"
-          @finishedRendering="renderFinished(pIndex)"
         >
           <div
             class="relative shadow-lg"
             :class="{ 'shadow-outline': pIndex === selectedPageIndex }"
           >
-            <PDFPage @measure="(e: any) => onMeasure(e, pIndex)" :page="page" :currentScale="currentScale"/>
+            <PDFPage
+              @measure="(e: any) => onMeasure(e, pIndex)"
+              :page="page"
+              :currentScale="currentScale"
+              :finishedRendering="renderFinished(pIndex)"
+            />
             <div
               class="absolute left-0 top-0 origin-top-left transform"
               :style="{
