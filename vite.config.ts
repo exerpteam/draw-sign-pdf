@@ -27,6 +27,13 @@ const prodConfig = defineConfig({
     dts({
       include: ['lib/**/*.ts', 'lib/**/*.vue'],
       outputDir: 'dist/types',
+      beforeWriteFile: (filePath, content) => {
+        // Ensure index.d.ts gets created properly
+        return {
+          filePath,
+          content
+        };
+      }
     }),
   ],
   build: {

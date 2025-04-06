@@ -9,12 +9,12 @@
   ],
   "main": "./dist/cjs/draw-sign-pdf.cjs.js",
   "module": "./dist/es/index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/es/index.js",
       "require": "./dist/cjs/draw-sign-pdf.cjs.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./lib/index.d.ts"
     }
   },
   "sideEffects": false,
