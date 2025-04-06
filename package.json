@@ -5,7 +5,8 @@
   "author": "Ramkumar R",
   "files": [
     "dist",
-    "lib/index.d.ts"
+    "lib/index.d.ts",
+    "library"
   ],
   "main": "./dist/draw-sign-pdf.umd.js",
   "module": "./dist/draw-sign-pdf.es.js",

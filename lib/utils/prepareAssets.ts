@@ -7,15 +7,15 @@ interface Script {
 const scripts = [
   {
     name: "pdfjsLib",
-    src: new URL('./library/pdf.min.js', import.meta.url).href,
+    src: new URL('../library/pdf.min.js', import.meta.url).href,
   },
   {
     name: "PDFLib",
-    src: new URL('./library/pdf-lib.min.js', import.meta.url).href,
+    src: new URL('../library/pdf-lib.min.js', import.meta.url).href,
   },
   {
     name: "download",
-    src: new URL('./library/downloadjs.js', import.meta.url).href,
+    src: new URL('../library/downloadjs.js', import.meta.url).href,
   }
 ];
 interface Asset {
@@ -25,7 +25,7 @@ interface Asset {
 const assets: Asset = {};
 
 export function getAsset(name: string): Ref<any> | Promise<any> {
-  console.log('JERE222');
+  console.log('JERE232');
   
   if (assets[name]) return assets[name] as Ref<unknown>;
   const script = scripts.find((s) => s.name === name);
