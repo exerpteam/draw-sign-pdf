@@ -2,10 +2,6 @@
   <div>
     <canvas ref="canvas" id="canvas" class="max-w-full" :style="{ width: `${width}px` }" :width="width"
       :height="height" />
-    <div>
-      <button>Zoom +</button>
-      <button>Zoom -</button>
-    </div>
   </div>
 </template>
 

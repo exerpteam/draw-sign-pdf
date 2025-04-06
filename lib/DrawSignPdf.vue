@@ -51,7 +51,7 @@
         />
       </div>
       <div class="w-full" v-if="pages.length">
-        <div>
+        <div v-if="enableZoom">
           <button @click="zoomPDF('in')">Zoom in</button>
           <button @click="zoomPDF('out')">Zoom out</button>
         </div>
@@ -141,6 +141,10 @@ export default {
       type: Object,
       default: () => ({}),
     },
+    enableZoom: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     getTranslation() {
