@@ -1,6 +1,6 @@
 {
   "name": "draw-sign-pdf",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "license": "MIT",
   "author": "Ramkumar R",
   "files": [
@@ -43,8 +43,7 @@
   "peerDependencies": {
     "vue": "^3.0.0"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "@rollup/plugin-commonjs": "^25.0.7",
