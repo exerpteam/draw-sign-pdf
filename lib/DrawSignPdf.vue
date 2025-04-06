@@ -62,6 +62,7 @@
           @mousedown="selectPage(pIndex)"
           @touchstart="selectPage(pIndex)"
           :data-cy="'page-' + pIndex"
+          @finishedRendering="renderFinished(pIndex)"
         >
           <div
             class="relative shadow-lg"
@@ -144,7 +145,8 @@ export default {
     enableZoom: {
       type: Boolean,
       default: false
-    }
+    },
+    onPDFRendered: Function,
   },
   computed: {
     getTranslation() {
@@ -199,6 +201,7 @@ export default {
     const ZOOM_STEP = 0.25;
     const MIN_SCALE = 0.5;
     const MAX_SCALE = 3;
+    const pageRenderStatus = ref<boolean[]>([]);
 
     onMounted(async () => {
       try {
@@ -239,6 +242,7 @@ export default {
         );
         allObjects.value = Array(numPages).fill([]);
         pagesScale.value = Array(numPages).fill({ scale: 1 });
+        pageRenderStatus.value = Array(numPages).fill(false);
       } catch (e) {
         throw e;
       }
@@ -385,6 +389,15 @@ export default {
       } else if (direction === 'out') {
         currentScale.value = Math.max(currentScale.value - ZOOM_STEP, MIN_SCALE);
       }
+    };
+
+    const renderFinished = (index: number) => {
+      console.log('page index', index);
+      console.log('before update', pageRenderStatus)
+      pageRenderStatus.value[index] = true;
+      if(pageRenderStatus.value.every(Boolean)) {
+        props.onPDFRendered()
+      }
     }
 
     return {
@@ -415,7 +428,9 @@ export default {
       confirmSave,
       isConfirmOrWarning,
       currentScale,
-      zoomPDF
+      zoomPDF,
+      pageRenderStatus,
+      renderFinished
     };
   },
 };

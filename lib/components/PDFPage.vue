@@ -11,7 +11,8 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 export default {
   props: {
     page: Object,
-    currentScale: Number
+    currentScale: Number,
+    finishedRendering: Function
   },
   setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const canvas = ref<HTMLCanvasElement | null>(null);
@@ -38,6 +39,8 @@ export default {
           viewport,
         })
         .promise.then(function () {
+          console.log('rendering completed')
+          props.finishedRendering()
         });
       emit("measure", {
         scale: canvas.value!.clientWidth / width.value,

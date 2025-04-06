@@ -10,7 +10,8 @@ var _export_sfc = (sfc, props) => {
 const _sfc_main$4 = {
   props: {
     page: Object,
-    currentScale: Number
+    currentScale: Number,
+    finishedRendering: Function
   },
   setup(props, { emit }) {
     const canvas = ref(null);
@@ -33,6 +34,8 @@ const _sfc_main$4 = {
         canvasContext: context,
         viewport
       }).promise.then(function() {
+        console.log("rendering completed");
+        props.finishedRendering();
       });
       emit("measure", {
         scale: canvas.value.clientWidth / width.value
@@ -62,7 +65,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 12, _hoisted_1$4)
   ]);
 }
-var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-933286ec"]]);
+var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-62d12dc4"]]);
 var DrawingSignature_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$3 = defineComponent({
   props: {
@@ -709,7 +712,8 @@ const _sfc_main = {
     enableZoom: {
       type: Boolean,
       default: false
-    }
+    },
+    onPDFRendered: Function
   },
   computed: {
     getTranslation() {
@@ -757,6 +761,7 @@ const _sfc_main = {
     const ZOOM_STEP = 0.25;
     const MIN_SCALE = 0.5;
     const MAX_SCALE = 3;
+    const pageRenderStatus = ref([]);
     onMounted(async () => {
       try {
         getAsset("pdfjsLib");
@@ -794,6 +799,7 @@ const _sfc_main = {
         );
         allObjects.value = Array(numPages).fill([]);
         pagesScale.value = Array(numPages).fill({ scale: 1 });
+        pageRenderStatus.value = Array(numPages).fill(false);
       } catch (e) {
         throw e;
       }
@@ -913,6 +919,14 @@ const _sfc_main = {
         currentScale.value = Math.max(currentScale.value - ZOOM_STEP, MIN_SCALE);
       }
     };
+    const renderFinished = (index) => {
+      console.log("page index", index);
+      console.log("before update", pageRenderStatus);
+      pageRenderStatus.value[index] = true;
+      if (pageRenderStatus.value.every(Boolean)) {
+        props.onPDFRendered();
+      }
+    };
     return {
       genID,
       pdfFile,
@@ -941,7 +955,9 @@ const _sfc_main = {
       confirmSave,
       isConfirmOrWarning,
       currentScale,
-      zoomPDF
+      zoomPDF,
+      pageRenderStatus,
+      renderFinished
     };
   }
 };
@@ -963,7 +979,7 @@ const _hoisted_5 = {
   class: "w-full"
 };
 const _hoisted_6 = { key: 0 };
-const _hoisted_7 = ["onMousedown", "onTouchstart", "data-cy"];
+const _hoisted_7 = ["onMousedown", "onTouchstart", "data-cy", "on:finishedRendering"];
 const _hoisted_8 = {
   key: 2,
   class: "flex w-full flex-grow items-center justify-center"
@@ -1022,7 +1038,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               class: "flex w-full flex-col items-center overflow-hidden p-5",
               onMousedown: ($event) => $setup.selectPage(pIndex),
               onTouchstart: ($event) => $setup.selectPage(pIndex),
-              "data-cy": "page-" + pIndex
+              "data-cy": "page-" + pIndex,
+              "on:finishedRendering": ($event) => $setup.renderFinished(pIndex)
             }, [
               createElementVNode("div", {
                 class: normalizeClass(["relative shadow-lg", { "shadow-outline": pIndex === $setup.selectedPageIndex }])
@@ -1071,7 +1088,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7b33140e"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-0d2efc5b"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
