@@ -1,9 +1,5 @@
 import type { App, Plugin } from "vue";
 import DrawSignPdfComponent from "./DrawSignPdf.vue";
-import { getAsset } from "./utils/prepareAssets";
-
-// Initialize PDF.js
-getAsset("pdfjsLib");
 
 // Create a Vue plugin
 const DrawSignPdf = DrawSignPdfComponent as typeof DrawSignPdfComponent & { install: (app: App) => void };

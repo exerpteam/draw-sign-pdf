@@ -38,15 +38,17 @@
 </template>
 
 <script lang="ts">
+import { onMounted, onBeforeUnmount } from 'vue';
+
 export default {
   props: {
     translations: {
       type: Object,
-      default: () => ({})
+      default: () => ({}),
     },
     type: {
       type: String,
-      default: "warning"
+      default: "confirm"
     }
   },
   computed: {
@@ -67,8 +69,14 @@ export default {
       }
     }
   },
-  emits: ["finish", "cancel"],
-  setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
+  emits: ["cancel", "finish"],
+  setup(
+    props: Readonly<{
+      translations?: Record<string, string>;
+      type?: string;
+    }>,
+    { emit }: { emit: (event: 'cancel' | 'finish', ...args: any[]) => void }
+  ) {
 
     const closeModal = () => {
       emit('cancel');
@@ -76,11 +84,19 @@ export default {
     const finish = () => {
       emit('finish');
     }
-    const handleEscapeKey = (event) => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' || event.key === 'Esc') {
         closeModal();
       }
     }
+
+    onMounted(() => {
+      document.addEventListener('keydown', handleEscapeKey);
+    });
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    });
 
     return {
       finish,
