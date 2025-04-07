@@ -3,7 +3,6 @@
   "version": "1.1.0",
   "license": "MIT",
   "author": "Ramkumar R",
-  "type": "module",
   "files": [
     "dist",
     "lib"
@@ -11,12 +10,6 @@
   "main": "./dist/cjs/draw-sign-pdf.cjs.js",
   "module": "./dist/es/index.js",
   "types": "./lib/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/es/index.js",
-      "require": "./dist/cjs/draw-sign-pdf.cjs.js"
-    }
-  },
   "sideEffects": false,
   "scripts": {
     "prepare": "npm run build",
