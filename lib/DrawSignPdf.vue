@@ -128,10 +128,6 @@ export default {
   props: {
     pdfData: String,
     signatureData: Array as () => PdfSignatureData[],
-    isDownload: {
-      type: Boolean,
-      default: false,
-    },
     finish: Function,
     translations: {
       type: Object,
@@ -324,8 +320,7 @@ export default {
         const pdfData = await save(
           pdfFile.value,
           allObjects.value,
-          pdfName.value,
-          props.isDownload
+          pdfName.value
         );
 
         signedDocument.value = { type: "application/pdf", data: pdfData };
