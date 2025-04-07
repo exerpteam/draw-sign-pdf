@@ -106,8 +106,7 @@ import PDFPage from "./components/PDFPage.vue";
 import DrawingSignature from "./components/DrawingSignature.vue";
 import DialogBox from "./components/DialogBox.vue";
 import DrawingCanvas from "./components/DrawingCanvas.vue";
-import prepareAssets from "./utils/prepareAssets";
-import { getAsset } from "./utils/prepareAssets";
+import { initPdfWorker } from "./utils/pdfWorker";
 
 import {
   DrawingObject,
@@ -128,10 +127,6 @@ export default {
   props: {
     pdfData: String,
     signatureData: Array as () => PdfSignatureData[],
-    isDownload: {
-      type: Boolean,
-      default: false,
-    },
     finish: Function,
     translations: {
       type: Object,
@@ -156,6 +151,7 @@ export default {
           "The required signature is missing. Please sign to continue",
         warningClose: "Close",
         pdfLoading: "PDF will load here",
+        additionalTextField: "",
       };
 
       return { ...defaultTranslation, ...this.translations };
@@ -163,8 +159,13 @@ export default {
   },
   emits: ["finish"],
   setup(
-    props: Readonly<{ [key: string]: any }>,
-    { emit }: { emit: (event: string, ...args: any[]) => void }
+    props: Readonly<{
+      pdfData?: string;
+      signatureData?: PdfSignatureData[];
+      finish?: Function;
+      translations?: Record<string, string>;
+    }>,
+    { emit }: { emit: (event: 'finish', ...args: any[]) => void }
   ) {
     // Your reactive variables and methods
     const genID = ggID();
@@ -188,9 +189,8 @@ export default {
 
     onMounted(async () => {
       try {
-        getAsset("pdfjsLib");
         selectedPageIndex.value = 0;
-        prepareAssets();
+        initPdfWorker(); // Initialize PDF.js worker
         await addPDF(props.pdfData, "string");
         onAddDrawing();
         document.addEventListener("keydown", handleEscapeKey);
@@ -198,7 +198,7 @@ export default {
     });
 
     onBeforeUnmount(() => {
-      document.addEventListener("keydown", handleEscapeKey);
+      document.removeEventListener("keydown", handleEscapeKey);
     });
 
     const onUploadPDF = async (e: any) => {
@@ -215,6 +215,7 @@ export default {
     const addPDF = async (file: any, type: string) => {
       try {
         const pdf = await readAsPDF(file, type);
+        if (!pdf) return;
 
         pdfName.value = file.name;
         pdfFile.value = file;
@@ -250,7 +251,9 @@ export default {
       path: string
     ) => {
       allObjects.value = Array(allObjects.value.length).fill([]);
-      props.signatureData?.forEach((signData: PdfSignatureData) => {
+      if (!props.signatureData?.length) return;
+      
+      props.signatureData.forEach((signData: PdfSignatureData) => {
         const id = genID();
 
         const width = cmToPx(signData.width);
@@ -323,8 +326,7 @@ export default {
         const pdfData = await save(
           pdfFile.value,
           allObjects.value,
-          pdfName.value,
-          props.isDownload
+          pdfName.value
         );
 
         signedDocument.value = { type: "application/pdf", data: pdfData };
@@ -359,7 +361,7 @@ export default {
       closeModal();
     };
 
-    const handleEscapeKey = (event) => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
       if (event.key === "Escape" || event.key === "Esc") {
         closeModal();
       }

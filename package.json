@@ -1,22 +1,26 @@
 {
   "name": "draw-sign-pdf",
-  "version": "1.0.3",
+  "version": "1.0.0",
   "license": "MIT",
-  "author": "Ramkumar R",
+  "author": "WAT Team",
   "files": [
-    "dist"
+    "dist",
+    "lib"
   ],
-  "main": "./dist/draw-sign-pdf.umd.js",
-  "module": "./dist/draw-sign-pdf.es.js",
+  "main": "./dist/cjs/draw-sign-pdf.cjs.js",
+  "module": "./dist/umd/draw-sign-pdf.umd.js",
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/draw-sign-pdf.es.js",
-      "require": "./dist/draw-sign-pdf.umd.js"
+      "types": "./lib/index.d.ts",
+      "import": "./dist/umd/draw-sign-pdf.umd.js",
+      "require": "./dist/cjs/draw-sign-pdf.cjs.js",
+      "default": "./dist/umd/draw-sign-pdf.umd.js"
     }
   },
-  "types": "lib/index.d.ts",
-  "typings": "lib/index.d.ts",
+  "sideEffects": false,
   "scripts": {
+    "prepare": "npm run build",
     "dev": "vite",
     "start": "vite",
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
@@ -26,15 +30,23 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint --ext .ts,.vue --ignore-path .gitignore ./lib ./demo --fix",
-    "format": "prettier ./lib ./demo  -w -u"
+    "format": "prettier ./lib ./demo  -w -u",
+    "version:patch": "npm version patch && git push && git push --tags",
+    "version:minor": "npm version minor && git push && git push --tags",
+    "version:major": "npm version major && git push && git push --tags"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
   },
   "dependencies": {
-    "@fullhuman/postcss-purgecss": "^5.0.0",
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3"
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^2.16.105"
   },
   "devDependencies": {
+    "@fullhuman/postcss-purgecss": "^5.0.0",
     "@highlightjs/vue-plugin": "^2.1.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
     "@tailwindcss/forms": "^0.4.0",
     "@tailwindcss/typography": "^0.5.0",
     "@testing-library/user-event": "^14.0.0-beta",
@@ -54,8 +66,10 @@
     "prettier": "^2.5.1",
     "prettier-plugin-tailwindcss": "^0.1.4",
     "tailwindcss": "^3.0.15",
+    "terser": "^5.14.2",
     "typescript": "^4.4.4",
     "vite": "^2.7.2",
+    "vite-plugin-dts": "^1.4.1",
     "vitest": "^0.1.27",
     "vue": "^3.3.4",
     "vue-eslint-parser": "^8.2.0",

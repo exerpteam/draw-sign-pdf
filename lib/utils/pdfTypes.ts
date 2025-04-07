@@ -34,9 +34,9 @@ export interface TouchMoveData {
 }
 
 export interface PdfSignatureData {
+  page: number;
   top: number;
   left: number;
   width: number;
   height: number;
-  page: number;
 }

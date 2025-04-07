@@ -14,6 +14,7 @@ const translations = {
   saving: "Saving",
   drawLabel: "Draw the signature here",
   drawDone: "Done",
+  additionalTextField: "",
   drawCancel: "Cancel",
   confirmBoxTitle: "Confirm Saving",
   confirmBoxDesc: "Are you sure you want to save the signed document?",
@@ -23,8 +24,6 @@ const translations = {
 }
 
 const getSignedData = (signedDocumentData) => {
-  console.log(signedDocumentData);
-
   const imageData = 'data:image/png;base64, ' + encodeURI(signedDocumentData.signatureImage.data);
   const pdfData = signedDocumentData.signedDocument.data;
   const fullData = 'data:application/pdf;base64, ' + encodeURI(pdfData);

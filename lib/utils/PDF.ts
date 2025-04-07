@@ -1,20 +1,19 @@
 import { getAsset } from "./prepareAssets";
+import { PDFDocument, pushGraphicsState, setLineCap, popGraphicsState, setLineJoin, LineCapStyle, LineJoinStyle } from 'pdf-lib';
 
 export async function save(
   pdfFile: Blob,
   objects: any,
-  name: string,
-  isDownload = false
+  name: string
 ) {
-  const PDFLib = await getAsset("PDFLib");
-
-  const download = await getAsset("download");
   let pdfDoc;
   try {
-    pdfDoc = await PDFLib.value.PDFDocument.load(pdfFile);
+    // Load the PDF document directly
+    pdfDoc = await PDFDocument.load(await pdfFile.arrayBuffer());
   } catch (e) {
     throw e;
   }
+  
   const pagesProcesses = pdfDoc
     .getPages()
     .map(async (page: any, pageIndex: number) => {
@@ -34,14 +33,6 @@ export async function save(
           const centeredX = x + (width - scaledWidth) / 2;
           const centeredY = y + (height - scaledHeight) / 2;
 
-          const {
-            pushGraphicsState,
-            setLineCap,
-            popGraphicsState,
-            setLineJoin,
-            LineCapStyle,
-            LineJoinStyle,
-          } = PDFLib.value;
           return () => {
             page.pushOperators(
               pushGraphicsState(),
@@ -63,12 +54,11 @@ export async function save(
       const drawProcesses = await Promise.all(embedProcesses);
       drawProcesses.forEach((p) => p());
     });
+  
   await Promise.all(pagesProcesses);
+  
   try {
-    const pdfBytes = await pdfDoc.save();
-    if (isDownload) {
-      download.value(pdfBytes, name, "application/pdf");
-    }
+    await pdfDoc.save();
     return await pdfDoc.saveAsBase64();
   } catch (e) {
     throw e;
