@@ -75,7 +75,6 @@
                 <DrawingSignature
                   v-if="object.type === 'drawing'"
                   @update="(e: any) => updateObject(object.id, e)"
-                  @delete="() => deleteObject(object.id)"
                   :path="object.path"
                   :x="object.x"
                   :y="object.y"
@@ -301,14 +300,6 @@ export default {
       );
     };
 
-    const deleteObject = (objectId: number) => {
-      allObjects.value = allObjects.value.map((objects, pIndex) =>
-        pIndex == selectedPageIndex.value
-          ? objects.filter((object: DrawingObject) => object.id !== objectId)
-          : objects
-      );
-    };
-
     const onMeasure = (scale: number, i: number) => {
       pagesScale.value[i] = scale;
     };
@@ -386,7 +377,6 @@ export default {
       addDrawing,
       selectPage,
       updateObject,
-      deleteObject,
       onMeasure,
       savePDF,
       onFinishDrawing,

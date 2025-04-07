@@ -16,10 +16,6 @@
         class="absolute bottom-0 right-0 h-4 w-4 translate-x-1/2 translate-y-1/2 transform cursor-nwse-resize rounded-full bg-green-400 md:scale-25">
       </div>
     </div>
-    <div @click="onDelete"
-      class="absolute left-0 right-0 top-0 m-auto h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full bg-white md:scale-25">
-      <img class="h-full w-full" src="../assets/images/delete.svg" alt="delete" data-cy="delete-sign" />
-    </div>
     <svg ref="svg" width="100%" height="100%">
       <path stroke-width="5" stroke-linejoin="round" stroke-linecap="round" stroke="black" fill="none" :d="path" />
     </svg>
@@ -43,7 +39,7 @@ export default defineComponent({
     },
     path: String,
   },
-  emits: ["delete", "update"],
+  emits: ["update"],
   setup(
     props: Readonly<{
       originWidth?: number;
@@ -55,7 +51,7 @@ export default defineComponent({
       pageScale?: number;
       path?: string;
     }>,
-    { emit }: { emit: (event: 'delete' | 'update', ...args: any[]) => void }
+    { emit }: { emit: (event:'update', ...args: any[]) => void }
   ) {
     const dx = ref(0);
     const dy = ref(0);
@@ -66,10 +62,10 @@ export default defineComponent({
     const startY = ref(0);
     const svg = ref<SVGElement | null>(null);
 
-    const ratio = (props.originWidth || 1) / (props.originHeight || 1);
+    const ratio = props.originWidth / props.originHeight;
     onMounted(async () => {
       await nextTick();
-      if (svg.value && props.originWidth && props.originHeight) {
+      if (svg.value) {
         svg.value.setAttribute(
           "viewBox",
           `0 0 ${props.originWidth} ${props.originHeight}`
@@ -102,8 +98,8 @@ export default defineComponent({
           ? (event as MouseEvent).clientY
           : (event as TouchEvent).touches[0].clientY) - startY.value;
       if (operation.value === "move") {
-        dx.value = _dx / (props.pageScale || 1);
-        dy.value = _dy / (props.pageScale || 1);
+        dx.value = _dx / props.pageScale;
+        dy.value = _dy / props.pageScale;
       } else if (operation.value === "scale") {
         if (direction.value === "left-top") {
           const d = Math.min(_dx, _dy * ratio);
@@ -121,17 +117,17 @@ export default defineComponent({
     const handlePanEnd = () => {
       if (operation.value === "move") {
         emit("update", {
-          x: (props.x || 0) + dx.value,
-          y: (props.y || 0) + dy.value,
+          x: props.x + dx.value,
+          y: props.y + dy.value,
         });
         dx.value = 0;
         dy.value = 0;
       } else if (operation.value === "scale") {
         emit("update", {
-          x: (props.x || 0) + dx.value,
-          y: (props.y || 0) + dy.value,
-          width: (props.width || 0) + dw.value,
-          scale: ((props.width || 0) + dw.value) / (props.originWidth || 1),
+          x: props.x + dx.value,
+          y: props.y + dy.value,
+          width: props.width + dw.value,
+          scale: (props.width + dw.value) / props.originWidth,
         });
         dx.value = 0;
         dy.value = 0;
@@ -141,9 +137,6 @@ export default defineComponent({
       operation.value = "";
     }
 
-    const onDelete = () => {
-      emit("delete");
-    }
 
     return {
       dx,
@@ -158,7 +151,6 @@ export default defineComponent({
       handlePanStart,
       handlePanMove,
       handlePanEnd,
-      onDelete,
     };
   },
 });

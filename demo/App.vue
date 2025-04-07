@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DrawSignPdf :pdfData="pdfData" :signatureData="signatureData" :isDownload="false" @finish="getSignedData"
+    <DrawSignPdf :pdfData="pdfData" :signatureData="signatureData" @finish="getSignedData"
       :translations="translations" />
   </div>
 </template>
