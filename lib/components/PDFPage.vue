@@ -12,13 +12,7 @@ export default {
   props: {
     page: Object,
   },
-  emits: ["measure"],
-  setup(
-    props: Readonly<{
-      page: any;
-    }>,
-    { emit }: { emit: (event: 'measure', ...args: any[]) => void }
-  ) {
+  setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const canvas = ref<HTMLCanvasElement | null>(null);
     const width = ref(0);
     const height = ref(0);

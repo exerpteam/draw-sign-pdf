@@ -40,19 +40,7 @@ export default defineComponent({
     path: String,
   },
   emits: ["update"],
-  setup(
-    props: Readonly<{
-      originWidth?: number;
-      originHeight?: number;
-      width?: number;
-      height?: number;
-      x?: number;
-      y?: number;
-      pageScale?: number;
-      path?: string;
-    }>,
-    { emit }: { emit: (event:'update', ...args: any[]) => void }
-  ) {
+  setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const dx = ref(0);
     const dy = ref(0);
     const dw = ref(0);

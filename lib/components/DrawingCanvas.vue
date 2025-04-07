@@ -50,12 +50,7 @@ export default {
     }
   },
   emits: ["finish", "cancel"],
-  setup(
-    props: Readonly<{
-      translations?: Record<string, string>;
-    }>,
-    { emit }: { emit: (event: 'finish' | 'cancel', ...args: any[]) => void }
-  ) {
+  setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const signatureCanvas = ref();
     type PathElement = ['M' | 'L', number, number];
     const paths = ref<PathElement[]>([]);
