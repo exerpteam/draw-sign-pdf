@@ -8,8 +8,16 @@
     "lib"
   ],
   "main": "./dist/cjs/draw-sign-pdf.cjs.js",
-  "module": "./dist/es/index.js",
+  "module": "./dist/umd/draw-sign-pdf.umd.js",
   "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./dist/umd/draw-sign-pdf.umd.js",
+      "require": "./dist/cjs/draw-sign-pdf.cjs.js",
+      "default": "./dist/umd/draw-sign-pdf.umd.js"
+    }
+  },
   "sideEffects": false,
   "scripts": {
     "prepare": "npm run build",

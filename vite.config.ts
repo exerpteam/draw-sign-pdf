@@ -74,7 +74,8 @@ const prodConfig = defineConfig({
             vue: 'Vue',
           },
           dir: 'dist/umd',
-          exports: 'named'
+          exports: 'named',
+          inlineDynamicImports: true
         },
       ],
     },
