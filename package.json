@@ -1,8 +1,9 @@
 {
   "name": "draw-sign-pdf",
-  "version": "1.0.10",
+  "version": "1.0.9",
   "license": "MIT",
   "author": "Ramkumar R",
+  "type": "module",
   "files": [
     "dist",
     "lib"
@@ -12,13 +13,9 @@
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
       "import": "./dist/es/index.js",
-      "require": "./dist/cjs/draw-sign-pdf.cjs.js",
-      "default": "./dist/es/index.js"
-    },
-    "./dist/*": "./dist/*",
-    "./package.json": "./package.json"
+      "require": "./dist/cjs/draw-sign-pdf.cjs.js"
+    }
   },
   "sideEffects": false,
   "scripts": {
