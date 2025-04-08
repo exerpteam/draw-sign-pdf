@@ -3,18 +3,24 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "main": "dist/draw-sign-pdf.umd.js",
-  "module": "dist/draw-sign-pdf.es.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/draw-sign-pdf.umd.js",
+  "module": "./dist/draw-sign-pdf.es.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "lib"
   ],
+  "exports": {
+    ".": {
+      "import": "./dist/draw-sign-pdf.es.js",
+      "require": "./dist/draw-sign-pdf.umd.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
-    "dev": "vite",
+    "dev": "NODE_ENV=demo vite",
     "build": "vite build",
     "typecheck": "vue-tsc --noEmit",
-    "build:demo": "NODE_ENV=demo vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",

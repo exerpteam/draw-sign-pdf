@@ -1,16 +1,19 @@
-import { getAsset } from "./prepareAssets";
+import { getPDFDocument } from "./prepareAssets";
 
 export async function readAsPDF(file: any, type: string) {
-  const pdfjsLib = await getAsset("pdfjsLib");
   if (type === "arrayBuffer") {
     const blob = new Blob([file]);
-    const url = window.URL.createObjectURL(blob);
-    return pdfjsLib.value.getDocument(url).promise;
+    return getPDFDocument(new Uint8Array(await blob.arrayBuffer()));
   } else if (type === "string") {
-    const dataUri = "data:application/pdf;base64," + file;
-    return pdfjsLib.value.getDocument(dataUri).promise;
+    const base64 = atob(file);
+    const uint8Array = new Uint8Array(base64.length);
+    for (let i = 0; i < base64.length; i++) {
+      uint8Array[i] = base64.charCodeAt(i);
+    }
+    return getPDFDocument(uint8Array);
   }
 }
+
 export function ggID() {
   let id = 0;
   return function genId() {
