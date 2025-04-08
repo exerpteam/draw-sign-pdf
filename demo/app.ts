@@ -12,4 +12,6 @@ hljs.registerLanguage("html", html);
 hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("bash", bash);
 
-createApp(App).use(hljsVuePlugin).mount("#app");
+const app = createApp(App);
+app.use(hljsVuePlugin);
+app.mount("#app");
