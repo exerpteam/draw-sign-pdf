@@ -17,26 +17,32 @@
   <div>
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div
-        class="left-0 right-0 top-0 z-10 flex h-12 items-center justify-center"
+        class="left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 pt-2 bg-gray-100 sticky w-full"
       >
-        <button
-          @click="onAddDrawing"
-          class="btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-          data-cy="update-sign"
-        >
-          {{ getTranslation.updateSign }}
-        </button>
-        <button
-          @click="openModal"
-          class="btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-          :class="{
-            'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
-            'bg-blue-700': pages.length === 0 || saving || !pdfFile,
-          }"
-          data-cy="save-sign"
-        >
-          {{ saving ? getTranslation.saving : getTranslation.save }}
-        </button>
+        <div>
+          <button
+            @click="onAddDrawing"
+            class="btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
+            data-cy="update-sign"
+          >
+            {{ getTranslation.updateSign }}
+          </button>
+          <button
+            @click="openModal"
+            class="btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
+            :class="{
+              'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
+              'bg-blue-700': pages.length === 0 || saving || !pdfFile,
+            }"
+            data-cy="save-sign"
+          >
+            {{ saving ? getTranslation.saving : getTranslation.save }}
+          </button>
+        </div>
+        <div v-if="enableZoom" class="mt-2 flex gap-2">
+          <button @click="zoomPDF('out')" class="w-6"><MagnifyingGlassMinusIcon/></button>
+          <button @click="zoomPDF('in')" class="w-6"><MagnifyingGlassPlusIcon/></button>
+        </div>
       </div>
       <div
         class="sign-drawing-canvas fixed left-0 right-0 top-0 z-10 items-center justify-center border-b border-gray-300 bg-white shadow-lg"
@@ -49,12 +55,12 @@
           @cancel="addingDrawing = false"
           :translations="getTranslation"
         />
+        <div class="bg-gray-100 border-b border-gray-300 shadow-lg p-2 flex justify-center gap-2">
+          <button @click="zoomPDF('out')" class="w-6"><MagnifyingGlassMinusIcon/></button>
+          <button @click="zoomPDF('in')" class="w-6"><MagnifyingGlassPlusIcon/></button>
+        </div>
       </div>
       <div class="w-full" v-if="pages.length">
-        <div v-if="enableZoom">
-          <button @click="zoomPDF('in')">Zoom in</button>
-          <button @click="zoomPDF('out')">Zoom out</button>
-        </div>
         <div
           v-for="(page, pIndex) in pages"
           :key="pIndex + currentScale"
@@ -71,7 +77,7 @@
               @measure="(e: any) => onMeasure(e, pIndex)"
               :page="page"
               :currentScale="currentScale"
-              :finishedRendering="renderFinished(pIndex)"
+              @finishedRendering="() => renderFinished(pIndex)"
             />
             <div
               class="absolute left-0 top-0 origin-top-left transform"
@@ -117,6 +123,7 @@ import DialogBox from "./components/DialogBox.vue";
 import DrawingCanvas from "./components/DrawingCanvas.vue";
 import prepareAssets from "./utils/prepareAssets";
 import { getAsset } from "./utils/prepareAssets";
+import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from '@heroicons/vue/16/solid'
 
 import {
   DrawingObject,
@@ -133,6 +140,8 @@ export default {
     DrawingCanvas,
     DrawingSignature,
     DialogBox,
+    MagnifyingGlassMinusIcon,
+    MagnifyingGlassPlusIcon
   },
   props: {
     pdfData: String,
@@ -150,7 +159,6 @@ export default {
       type: Boolean,
       default: false
     },
-    onPDFRendered: Function,
   },
   computed: {
     getTranslation() {
@@ -176,7 +184,7 @@ export default {
       return { ...defaultTranslation, ...this.translations };
     },
   },
-  emits: ["finish"],
+  emits: ["finish", "onPDFRendered"],
   setup(
     props: Readonly<{ [key: string]: any }>,
     { emit }: { emit: (event: string, ...args: any[]) => void }
@@ -400,7 +408,7 @@ export default {
       console.log('before update', pageRenderStatus)
       pageRenderStatus.value[index] = true;
       if(pageRenderStatus.value.every(Boolean)) {
-        props.onPDFRendered()
+        emit("onPDFRendered")
       }
     }
 

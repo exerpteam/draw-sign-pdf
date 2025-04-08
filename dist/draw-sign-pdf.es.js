@@ -35,7 +35,7 @@ const _sfc_main$4 = {
         viewport
       }).promise.then(function() {
         console.log("rendering completed");
-        props.finishedRendering();
+        emit("finishedRendering");
       });
       emit("measure", {
         scale: canvas.value.clientWidth / width.value
@@ -65,7 +65,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 12, _hoisted_1$4)
   ]);
 }
-var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-62d12dc4"]]);
+var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-502c5fca"]]);
 var DrawingSignature_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$3 = defineComponent({
   props: {
@@ -276,7 +276,7 @@ const _hoisted_7$2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createEl
 ], -1));
 const _hoisted_8$2 = { class: "p-4 overflow-y-auto" };
 const _hoisted_9$1 = { class: "mt-1 text-gray-800" };
-const _hoisted_10 = { class: "flex justify-end items-center gap-x-2 py-3 px-4 border-t" };
+const _hoisted_10$1 = { class: "flex justify-end items-center gap-x-2 py-3 px-4 border-t" };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock(Fragment, null, [
     _hoisted_1$2,
@@ -296,7 +296,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
         createElementVNode("div", _hoisted_8$2, [
           createElementVNode("p", _hoisted_9$1, toDisplayString($options.getTranslation.desc), 1)
         ]),
-        createElementVNode("div", _hoisted_10, [
+        createElementVNode("div", _hoisted_10$1, [
           createElementVNode("button", {
             onClick: _cache[1] || (_cache[1] = (...args) => $setup.closeModal && $setup.closeModal(...args)),
             type: "button",
@@ -614,6 +614,38 @@ function prepareAsset({
 function prepareAssets() {
   scripts.forEach(prepareAsset);
 }
+function render$1(_ctx, _cache) {
+  return openBlock(), createElementBlock("svg", {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 16 16",
+    fill: "currentColor",
+    "aria-hidden": "true",
+    "data-slot": "icon"
+  }, [
+    createElementVNode("path", { d: "M8.75 6.25h-3.5a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5Z" }),
+    createElementVNode("path", {
+      "fill-rule": "evenodd",
+      d: "M7 12c1.11 0 2.136-.362 2.965-.974l2.755 2.754a.75.75 0 1 0 1.06-1.06l-2.754-2.755A5 5 0 1 0 7 12Zm0-1.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z",
+      "clip-rule": "evenodd"
+    })
+  ]);
+}
+function render(_ctx, _cache) {
+  return openBlock(), createElementBlock("svg", {
+    xmlns: "http://www.w3.org/2000/svg",
+    viewBox: "0 0 16 16",
+    fill: "currentColor",
+    "aria-hidden": "true",
+    "data-slot": "icon"
+  }, [
+    createElementVNode("path", { d: "M6.25 8.75v-1h-1a.75.75 0 0 1 0-1.5h1v-1a.75.75 0 0 1 1.5 0v1h1a.75.75 0 0 1 0 1.5h-1v1a.75.75 0 0 1-1.5 0Z" }),
+    createElementVNode("path", {
+      "fill-rule": "evenodd",
+      d: "M7 12c1.11 0 2.136-.362 2.965-.974l2.755 2.754a.75.75 0 1 0 1.06-1.06l-2.754-2.755A5 5 0 1 0 7 12Zm0-1.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z",
+      "clip-rule": "evenodd"
+    })
+  ]);
+}
 async function readAsPDF(file, type) {
   const pdfjsLib = await getAsset("pdfjsLib");
   if (type === "arrayBuffer") {
@@ -695,7 +727,9 @@ const _sfc_main = {
     PDFPage,
     DrawingCanvas,
     DrawingSignature,
-    DialogBox
+    DialogBox,
+    MagnifyingGlassMinusIcon: render$1,
+    MagnifyingGlassPlusIcon: render
   },
   props: {
     pdfData: String,
@@ -712,8 +746,7 @@ const _sfc_main = {
     enableZoom: {
       type: Boolean,
       default: false
-    },
-    onPDFRendered: Function
+    }
   },
   computed: {
     getTranslation() {
@@ -737,7 +770,7 @@ const _sfc_main = {
       return { ...defaultTranslation, ...this.translations };
     }
   },
-  emits: ["finish"],
+  emits: ["finish", "onPDFRendered"],
   setup(props, { emit }) {
     const genID = ggID();
     const pdfFile = ref(null);
@@ -924,7 +957,7 @@ const _sfc_main = {
       console.log("before update", pageRenderStatus);
       pageRenderStatus.value[index] = true;
       if (pageRenderStatus.value.every(Boolean)) {
-        props.onPDFRendered();
+        emit("onPDFRendered");
       }
     };
     return {
@@ -967,26 +1000,32 @@ const _hoisted_1 = {
   class: "fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-900 bg-opacity-60 px-4"
 };
 const _hoisted_2 = { class: "flex min-h-screen flex-col items-center bg-gray-100 py-5" };
-const _hoisted_3 = { class: "left-0 right-0 top-0 z-10 flex h-12 items-center justify-center" };
+const _hoisted_3 = { class: "left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 pt-2 bg-gray-100 sticky w-full" };
 const _hoisted_4 = {
+  key: 0,
+  class: "mt-2 flex gap-2"
+};
+const _hoisted_5 = {
   key: 0,
   class: "sign-drawing-canvas fixed left-0 right-0 top-0 z-10 items-center justify-center border-b border-gray-300 bg-white shadow-lg",
   style: { "height": "200px", "z-index": "60", "width": "100%" },
   "data-cy": "sign-drawing-canvas"
 };
-const _hoisted_5 = {
+const _hoisted_6 = { class: "bg-gray-100 border-b border-gray-300 shadow-lg p-2 flex justify-center gap-2" };
+const _hoisted_7 = {
   key: 1,
   class: "w-full"
 };
-const _hoisted_6 = { key: 0 };
-const _hoisted_7 = ["onMousedown", "onTouchstart", "data-cy"];
-const _hoisted_8 = {
+const _hoisted_8 = ["onMousedown", "onTouchstart", "data-cy"];
+const _hoisted_9 = {
   key: 2,
   class: "flex w-full flex-grow items-center justify-center"
 };
-const _hoisted_9 = { class: "text-3xl font-bold text-gray-500" };
+const _hoisted_10 = { class: "text-3xl font-bold text-gray-500" };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_DialogBox = resolveComponent("DialogBox");
+  const _component_MagnifyingGlassMinusIcon = resolveComponent("MagnifyingGlassMinusIcon");
+  const _component_MagnifyingGlassPlusIcon = resolveComponent("MagnifyingGlassPlusIcon");
   const _component_DrawingCanvas = resolveComponent("DrawingCanvas");
   const _component_PDFPage = resolveComponent("PDFPage");
   const _component_DrawingSignature = resolveComponent("DrawingSignature");
@@ -1002,36 +1041,58 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     createElementVNode("div", null, [
       createElementVNode("main", _hoisted_2, [
         createElementVNode("div", _hoisted_3, [
-          createElementVNode("button", {
-            onClick: _cache[0] || (_cache[0] = (...args) => $setup.onAddDrawing && $setup.onAddDrawing(...args)),
-            class: "btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4",
-            "data-cy": "update-sign"
-          }, toDisplayString($options.getTranslation.updateSign), 1),
-          createElementVNode("button", {
-            onClick: _cache[1] || (_cache[1] = (...args) => $setup.openModal && $setup.openModal(...args)),
-            class: normalizeClass(["btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4", {
-              "cursor-not-allowed": $setup.pages.length === 0 || $setup.saving || !$setup.pdfFile,
-              "bg-blue-700": $setup.pages.length === 0 || $setup.saving || !$setup.pdfFile
-            }]),
-            "data-cy": "save-sign"
-          }, toDisplayString($setup.saving ? $options.getTranslation.saving : $options.getTranslation.save), 3)
+          createElementVNode("div", null, [
+            createElementVNode("button", {
+              onClick: _cache[0] || (_cache[0] = (...args) => $setup.onAddDrawing && $setup.onAddDrawing(...args)),
+              class: "btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4",
+              "data-cy": "update-sign"
+            }, toDisplayString($options.getTranslation.updateSign), 1),
+            createElementVNode("button", {
+              onClick: _cache[1] || (_cache[1] = (...args) => $setup.openModal && $setup.openModal(...args)),
+              class: normalizeClass(["btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4", {
+                "cursor-not-allowed": $setup.pages.length === 0 || $setup.saving || !$setup.pdfFile,
+                "bg-blue-700": $setup.pages.length === 0 || $setup.saving || !$setup.pdfFile
+              }]),
+              "data-cy": "save-sign"
+            }, toDisplayString($setup.saving ? $options.getTranslation.saving : $options.getTranslation.save), 3)
+          ]),
+          $props.enableZoom ? (openBlock(), createElementBlock("div", _hoisted_4, [
+            createElementVNode("button", {
+              onClick: _cache[2] || (_cache[2] = ($event) => $setup.zoomPDF("out")),
+              class: "w-6"
+            }, [
+              createVNode(_component_MagnifyingGlassMinusIcon)
+            ]),
+            createElementVNode("button", {
+              onClick: _cache[3] || (_cache[3] = ($event) => $setup.zoomPDF("in")),
+              class: "w-6"
+            }, [
+              createVNode(_component_MagnifyingGlassPlusIcon)
+            ])
+          ])) : createCommentVNode("", true)
         ]),
-        $setup.addingDrawing ? (openBlock(), createElementBlock("div", _hoisted_4, [
+        $setup.addingDrawing ? (openBlock(), createElementBlock("div", _hoisted_5, [
           createVNode(_component_DrawingCanvas, {
             onFinish: $setup.onFinishDrawing,
-            onCancel: _cache[2] || (_cache[2] = ($event) => $setup.addingDrawing = false),
+            onCancel: _cache[4] || (_cache[4] = ($event) => $setup.addingDrawing = false),
             translations: $options.getTranslation
-          }, null, 8, ["onFinish", "translations"])
+          }, null, 8, ["onFinish", "translations"]),
+          createElementVNode("div", _hoisted_6, [
+            createElementVNode("button", {
+              onClick: _cache[5] || (_cache[5] = ($event) => $setup.zoomPDF("out")),
+              class: "w-6"
+            }, [
+              createVNode(_component_MagnifyingGlassMinusIcon)
+            ]),
+            createElementVNode("button", {
+              onClick: _cache[6] || (_cache[6] = ($event) => $setup.zoomPDF("in")),
+              class: "w-6"
+            }, [
+              createVNode(_component_MagnifyingGlassPlusIcon)
+            ])
+          ])
         ])) : createCommentVNode("", true),
-        $setup.pages.length ? (openBlock(), createElementBlock("div", _hoisted_5, [
-          $props.enableZoom ? (openBlock(), createElementBlock("div", _hoisted_6, [
-            createElementVNode("button", {
-              onClick: _cache[3] || (_cache[3] = ($event) => $setup.zoomPDF("in"))
-            }, "Zoom in"),
-            createElementVNode("button", {
-              onClick: _cache[4] || (_cache[4] = ($event) => $setup.zoomPDF("out"))
-            }, "Zoom out")
-          ])) : createCommentVNode("", true),
+        $setup.pages.length ? (openBlock(), createElementBlock("div", _hoisted_7, [
           (openBlock(true), createElementBlock(Fragment, null, renderList($setup.pages, (page, pIndex) => {
             return openBlock(), createElementBlock("div", {
               key: pIndex + $setup.currentScale,
@@ -1047,8 +1108,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   onMeasure: (e) => $setup.onMeasure(e, pIndex),
                   page,
                   currentScale: $setup.currentScale,
-                  finishedRendering: $setup.renderFinished(pIndex)
-                }, null, 8, ["onMeasure", "page", "currentScale", "finishedRendering"]),
+                  onFinishedRendering: () => $setup.renderFinished(pIndex)
+                }, null, 8, ["onMeasure", "page", "currentScale", "onFinishedRendering"]),
                 createElementVNode("div", {
                   class: "absolute left-0 top-0 origin-top-left transform",
                   style: normalizeStyle({
@@ -1079,16 +1140,16 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   }), 128))
                 ], 4)
               ], 2)
-            ], 40, _hoisted_7);
+            ], 40, _hoisted_8);
           }), 128))
-        ])) : (openBlock(), createElementBlock("div", _hoisted_8, [
-          createElementVNode("span", _hoisted_9, toDisplayString($options.getTranslation.pdfLoading), 1)
+        ])) : (openBlock(), createElementBlock("div", _hoisted_9, [
+          createElementVNode("span", _hoisted_10, toDisplayString($options.getTranslation.pdfLoading), 1)
         ]))
       ])
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d9f4d416"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-384db5fa"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);

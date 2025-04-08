@@ -40,7 +40,7 @@ export default {
         })
         .promise.then(function () {
           console.log('rendering completed')
-          props.finishedRendering()
+          emit("finishedRendering")
         });
       emit("measure", {
         scale: canvas.value!.clientWidth / width.value,
