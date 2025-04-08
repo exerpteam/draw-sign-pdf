@@ -1,44 +1,52 @@
-import { defineConfig } from 'vite'
+import { defineConfig, UserConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
-const resolvePath = (str: string) => resolve(__dirname, str)
+const isDemo = process.env.NODE_ENV === 'demo'
 
-const isProd = process.env.NODE_ENV === 'production'
+const resolvePath = (p: string) => resolve(__dirname, p)
 
-const devConfig = defineConfig({
-  root: './demo',
+const demoConfig: UserConfig = {
+  root: resolvePath('demo'),
+  base: '/',
   plugins: [vue()],
+  server: {
+    port: 3000,
+  },
   build: {
-    outDir: '../dist-demo',
+    outDir: 'dist-demo',
     emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'demo/index.html'),
-      },
+  },
+  resolve: {
+    alias: {
+      'draw-sign-pdf': isDemo ? resolvePath('lib') : resolvePath('dist'),
     },
   },
-})
+}
 
-const prodConfig = defineConfig({
+const prodConfig: UserConfig = {
+  root: resolvePath('lib'),
   plugins: [vue()],
   build: {
+    outDir: 'dist',
+    emptyOutDir: true,
     lib: {
-      entry: resolvePath("lib/index.ts"),
-      name: "draw-sign-pdf",
-      fileName: (format) => `draw-sign-pdf.${format}.js`,
+      entry: resolvePath('lib/index.ts'),
+      name: 'DrawSignPdf',
+      fileName: (format: string) => `draw-sign-pdf.${format}.js`,
+      formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ["vue"],
-
+      external: ['vue', 'pdfjs-dist'],
       output: {
-        exports: "named",
+        exports: 'named',
         globals: {
-          vue: "Vue",
+          vue: 'Vue',
+          'pdfjs-dist': 'pdfjsLib',
         },
       },
     },
   },
-});
+}
 
-export default isProd ? prodConfig : devConfig
+export default defineConfig(isDemo ? demoConfig : prodConfig)
