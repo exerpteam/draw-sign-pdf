@@ -1,53 +1,60 @@
 {
   "name": "draw-sign-pdf",
-  "version": "1.0.7",
-  "license": "MIT",
-  "author": "Ramkumar R",
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/draw-sign-pdf.umd.js",
-  "module": "./dist/draw-sign-pdf.es.js",
-  "types": "./lib/index.d.ts",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/draw-sign-pdf.umd.js",
+  "module": "dist/draw-sign-pdf.es.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "lib"
   ],
   "scripts": {
-    "dev": "NODE_ENV=demo vite",
+    "dev": "vite",
     "build": "vite build",
+    "typecheck": "vue-tsc --noEmit",
     "build:demo": "NODE_ENV=demo vite build",
     "preview": "vite preview",
     "test": "vitest",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest watch",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "pdfjs-dist": "^4.0.379",
-    "vue": "^3.4.15"
+    "downloadjs": "^1.4.7",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.0.379"
+  },
+  "peerDependencies": {
+    "vue": "^3.3.0"
   },
   "devDependencies": {
     "@highlightjs/vue-plugin": "^2.1.0",
     "@rushstack/eslint-patch": "^1.3.3",
     "@tailwindcss/typography": "^0.5.10",
     "@tsconfig/node18": "^18.2.2",
-    "@types/node": "^18.19.3",
-    "@vitejs/plugin-vue": "^5.0.3",
+    "@types/downloadjs": "^1.4.3",
+    "@types/jsdom": "^21.1.6",
+    "@types/node": "^20.11.0",
+    "@vitejs/plugin-vue": "^5.0.0",
     "@vue/eslint-config-prettier": "^8.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
-    "@vue/test-utils": "^2.4.4",
+    "@vue/test-utils": "^2.4.0",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.49.0",
     "eslint-plugin-vue": "^9.17.0",
     "highlight.js": "^11.9.0",
-    "jsdom": "^23.0.1",
+    "jsdom": "^24.0.0",
     "postcss": "^8.4.35",
     "prettier": "^3.0.3",
     "tailwindcss": "^3.4.1",
-    "typescript": "~5.3.0",
-    "vite": "^5.0.11",
-    "vitest": "^1.2.2",
-        "@heroicons/vue": "^2.2.0"
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^4.5.3",
+    "vitest": "^1.2.0",
+    "vue": "^3.3.0",
+    "vue-tsc": "1.8.22"
   }
 }
