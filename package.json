@@ -1,5 +1,6 @@
 {
   "name": "draw-sign-pdf",
+  "private": true,
   "version": "1.0.0",
   "type": "module",
   "main": "./dist/draw-sign-pdf.umd.js",
@@ -30,7 +31,7 @@
   "dependencies": {
     "downloadjs": "^1.4.7",
     "pdf-lib": "^1.17.1",
-    "pdfjs-dist": "^4.0.379"
+    "pdfjs-dist": "3.11.174"
   },
   "peerDependencies": {
     "vue": "^3.3.0"
