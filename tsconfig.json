@@ -1,18 +1,35 @@
 {
+  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES2020",
     "useDefineForClassFields": true,
-    "module": "esnext",
+    "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
     "moduleResolution": "node",
-    // "strict": true,
-    "sourceMap": true,
-    "baseUrl": "./",
     "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "preserve",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["node", "jsdom", "vitest/globals"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./lib/*"]
+    },
     "esModuleInterop": true,
-    "lib": ["esnext", "dom"],
-    "types": ["node", "vitest/globals"],
-    "experimentalDecorators": true,
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["vite.config.ts", "env.d.ts", "lib/**/*.ts", "demo/**/*.ts", "demo/**/*.vue"],
-  "exclude": ["node_modules","lib"]
+  "include": [
+    "lib/**/*.ts",
+    "lib/**/*.d.ts",
+    "lib/**/*.tsx",
+    "lib/**/*.vue",
+    "vite.config.ts"
+  ],
+  "exclude": ["node_modules"]
 }
