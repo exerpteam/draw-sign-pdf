@@ -1,4 +1,6 @@
 import { ref, Ref } from "vue";
+import download from 'downloadjs';
+import { getDocument } from 'pdfjs-dist';
 
 interface Script {
   name: string;
@@ -60,3 +62,35 @@ export function prepareAsset({
 export default function prepareAssets() {
   scripts.forEach(prepareAsset);
 }
+
+export const readAsPDF = async (file: File) => {
+  const arrayBuffer = await file.arrayBuffer();
+  const { PDFDocument } = await import('pdf-lib');
+  return PDFDocument.load(arrayBuffer);
+};
+
+export const downloadPDF = (pdfBytes: Uint8Array, filename: string): void => {
+  download(pdfBytes, filename, 'application/pdf');
+};
+
+export const getPDFDocument = async (pdfBytes: Uint8Array) => {
+  return getDocument(pdfBytes).promise;
+};
+
+export const getPDFPage = async (pdfDoc: any, pageNumber: number) => {
+  return pdfDoc.getPage(pageNumber);
+};
+
+export const renderPDFPage = async (page: any, canvas: HTMLCanvasElement) => {
+  const viewport = page.getViewport({ scale: 1.5 });
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('Could not get canvas context');
+
+  canvas.height = viewport.height;
+  canvas.width = viewport.width;
+
+  await page.render({
+    canvasContext: context,
+    viewport: viewport
+  }).promise;
+};
