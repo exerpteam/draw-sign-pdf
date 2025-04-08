@@ -1,8 +1,9 @@
 import type { App, Plugin } from "vue";
 import { DrawSignPdf } from "./main";
-import { getAsset } from "./utils/prepareAssets";
+import { initializePdfjs } from "./utils/pdfSetup";
 
-getAsset("pdfjsLib");
+// Initialize PDF.js
+initializePdfjs();
 
 const install = (app: App) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
@@ -11,5 +12,7 @@ const install = (app: App) => {
 // DrawSignPdf.install = install;
 (DrawSignPdf as any).install = install;
 
+// Export types
+export * from "./utils/pdfTypes";
 export { DrawSignPdf };
 export default DrawSignPdf as unknown as Plugin;

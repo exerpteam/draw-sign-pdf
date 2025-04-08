@@ -1,4 +1,4 @@
-import pdfjsLib from 'pdfjs-dist';
+import * as pdfjsLib from 'pdfjs-dist';
 
 export const initializePdfjs = () => {
   pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(

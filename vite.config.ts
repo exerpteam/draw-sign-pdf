@@ -36,7 +36,6 @@ const prodConfig = {
       include: ['lib/**/*.ts', 'lib/**/*.vue'],
       outDir: 'dist',
       staticImport: true,
-      skipDiagnostics: true,
       insertTypesEntry: true,
     }),
   ],
@@ -46,19 +45,18 @@ const prodConfig = {
     lib: {
       entry: resolvePath('lib/index.ts'),
       name: 'DrawSignPdf',
-      fileName: 'draw-sign-pdf',
+      fileName: (format) => `draw-sign-pdf.${format}.js`,
+      formats: ['es', 'umd'],
     },
     rollupOptions: {
       external: ['vue', 'pdfjs-dist', 'pdf-lib', 'downloadjs'],
       output: {
+        exports: 'named',
         globals: {
           vue: 'Vue',
           'pdfjs-dist': 'pdfjsLib',
           'pdf-lib': 'PDFLib',
           'downloadjs': 'download',
-        },
-        manualChunks: {
-          'pdf-lib': ['pdf-lib'],
         },
       },
     },
