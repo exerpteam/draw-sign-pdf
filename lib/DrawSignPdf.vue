@@ -406,8 +406,6 @@ export default {
     };
 
     const renderFinished = (index: number) => {
-      console.log('page index', index);
-      console.log('before update', pageRenderStatus)
       pageRenderStatus.value[index] = true;
       if(pageRenderStatus.value.every(Boolean)) {
         emit("onPDFRendered")

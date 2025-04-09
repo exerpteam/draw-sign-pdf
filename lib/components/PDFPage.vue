@@ -26,8 +26,6 @@ export default {
     };
 
     onMounted(async () => {
-      console.log('PDFPage component mount')
-      console.log('props to PDFPage component', props)
       const _page = await props.page;
       const context = canvas.value!.getContext("2d");
       const viewport = _page.getViewport({ scale: props.zoomScale || 1, rotation: 0 });
@@ -39,7 +37,6 @@ export default {
           viewport,
         })
         .promise.then(function () {
-          console.log('rendering completed')
           emit("finishedRendering")
         });
       emit("measure", {

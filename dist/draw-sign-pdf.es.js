@@ -23,8 +23,6 @@ const _sfc_main$4 = {
       });
     };
     onMounted(async () => {
-      console.log("PDFPage component mount");
-      console.log("props to PDFPage component", props);
       const _page = await props.page;
       const context = canvas.value.getContext("2d");
       const viewport = _page.getViewport({ scale: props.zoomScale || 1, rotation: 0 });
@@ -34,7 +32,6 @@ const _sfc_main$4 = {
         canvasContext: context,
         viewport
       }).promise.then(function() {
-        console.log("rendering completed");
         emit("finishedRendering");
       });
       emit("measure", {
@@ -65,7 +62,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 12, _hoisted_1$4)
   ]);
 }
-var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-9bc46ba6"]]);
+var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-4939dabc"]]);
 var DrawingSignature_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$3 = defineComponent({
   props: {
@@ -793,8 +790,8 @@ const _sfc_main = {
     const isConfirmOrWarning = ref("warning");
     const zoomScale = ref(1);
     const ZOOM_STEP = 0.25;
-    const MIN_SCALE = 0.5;
-    const MAX_SCALE = 3;
+    const MIN_ZOOM_SCALE = 0.5;
+    const MAX_ZOOM_SCALE = 3;
     const pageRenderStatus = ref([]);
     onMounted(async () => {
       try {
@@ -948,14 +945,12 @@ const _sfc_main = {
     };
     const zoomPDF = (direction) => {
       if (direction === "in") {
-        zoomScale.value = Math.min(zoomScale.value + ZOOM_STEP, MAX_SCALE);
+        zoomScale.value = Math.min(zoomScale.value + ZOOM_STEP, MAX_ZOOM_SCALE);
       } else if (direction === "out") {
-        zoomScale.value = Math.max(zoomScale.value - ZOOM_STEP, MIN_SCALE);
+        zoomScale.value = Math.max(zoomScale.value - ZOOM_STEP, MIN_ZOOM_SCALE);
       }
     };
     const renderFinished = (index) => {
-      console.log("page index", index);
-      console.log("before update", pageRenderStatus);
       pageRenderStatus.value[index] = true;
       if (pageRenderStatus.value.every(Boolean)) {
         emit("onPDFRendered");
@@ -1153,7 +1148,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3b13fa82"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-1ad9d2ec"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
