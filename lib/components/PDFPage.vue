@@ -11,6 +11,8 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 export default {
   props: {
     page: Object,
+    zoomScale: Number,
+    finishedRendering: Function
   },
   setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
     const canvas = ref<HTMLCanvasElement | null>(null);
@@ -26,7 +28,7 @@ export default {
     onMounted(async () => {
       const _page = await props.page;
       const context = canvas.value!.getContext("2d");
-      const viewport = _page.getViewport({ scale: 1, rotation: 0 });
+      const viewport = _page.getViewport({ scale: props.zoomScale || 1, rotation: 0 });
       width.value = viewport.width;
       height.value = viewport.height;
       await _page
@@ -35,6 +37,7 @@ export default {
           viewport,
         })
         .promise.then(function () {
+          emit("finishedRendering")
         });
       emit("measure", {
         scale: canvas.value!.clientWidth / width.value,

@@ -1,6 +1,6 @@
 {
   "name": "draw-sign-pdf",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "license": "MIT",
   "author": "Ramkumar R",
   "files": [
@@ -59,6 +59,7 @@
     "vitest": "^0.1.27",
     "vue": "^3.3.4",
     "vue-eslint-parser": "^8.2.0",
-    "vue-tsc": "^0.29.8"
+    "vue-tsc": "^0.29.8",
+    "@heroicons/vue": "^2.2.0"
   }
 }

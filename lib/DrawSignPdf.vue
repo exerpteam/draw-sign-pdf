@@ -17,26 +17,33 @@
   <div>
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div
-        class="left-0 right-0 top-0 z-10 flex h-12 items-center justify-center"
+        class="left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 py-2 bg-gray-100 sticky w-full"
+        v-if="!addingDrawing"
       >
-        <button
-          @click="onAddDrawing"
-          class="btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-          data-cy="update-sign"
-        >
-          {{ getTranslation.updateSign }}
-        </button>
-        <button
-          @click="openModal"
-          class="btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-          :class="{
-            'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
-            'bg-blue-700': pages.length === 0 || saving || !pdfFile,
-          }"
-          data-cy="save-sign"
-        >
-          {{ saving ? getTranslation.saving : getTranslation.save }}
-        </button>
+        <div>
+          <button
+            @click="onAddDrawing"
+            class="btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
+            data-cy="update-sign"
+          >
+            {{ getTranslation.updateSign }}
+          </button>
+          <button
+            @click="openModal"
+            class="btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
+            :class="{
+              'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
+              'bg-blue-700': pages.length === 0 || saving || !pdfFile,
+            }"
+            data-cy="save-sign"
+          >
+            {{ saving ? getTranslation.saving : getTranslation.save }}
+          </button>
+        </div>
+        <div v-if="enableZoom" class="mt-2 flex gap-2">
+          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out"><MagnifyingGlassMinusIcon/></button>
+          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in"><MagnifyingGlassPlusIcon/></button>
+        </div>
       </div>
       <div
         class="sign-drawing-canvas fixed left-0 right-0 top-0 z-10 items-center justify-center border-b border-gray-300 bg-white shadow-lg"
@@ -49,11 +56,16 @@
           @cancel="addingDrawing = false"
           :translations="getTranslation"
         />
+        <div class="bg-gray-100 border-b border-gray-300 shadow-lg p-2 flex justify-center gap-2" v-if="enableZoom">
+          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out-toolbar"><MagnifyingGlassMinusIcon/></button>
+          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in-toolbar"><MagnifyingGlassPlusIcon/></button>
+        </div>
       </div>
       <div class="w-full" v-if="pages.length">
+        <!-- adding zoomScale in key will rerender the PDF whenever it is changed by clicking the zoom buttons -->
         <div
           v-for="(page, pIndex) in pages"
-          :key="pIndex"
+          :key="pIndex + zoomScale"
           class="flex w-full flex-col items-center overflow-hidden p-5"
           @mousedown="selectPage(pIndex)"
           @touchstart="selectPage(pIndex)"
@@ -63,7 +75,12 @@
             class="relative shadow-lg"
             :class="{ 'shadow-outline': pIndex === selectedPageIndex }"
           >
-            <PDFPage @measure="(e: any) => onMeasure(e, pIndex)" :page="page" />
+            <PDFPage
+              @measure="(e: any) => onMeasure(e, pIndex)"
+              :page="page"
+              :zoomScale="zoomScale"
+              @finishedRendering="() => renderFinished(pIndex)"
+            />
             <div
               class="absolute left-0 top-0 origin-top-left transform"
               :style="{
@@ -85,6 +102,7 @@
                   :originHeight="object.originHeight"
                   :pageScale="pagesScale[pIndex]?.scale"
                   :data-cy="'sign-pos-' + object.id"
+                  :zoomScale="zoomScale"
                 />
               </div>
             </div>
@@ -108,6 +126,7 @@ import DialogBox from "./components/DialogBox.vue";
 import DrawingCanvas from "./components/DrawingCanvas.vue";
 import prepareAssets from "./utils/prepareAssets";
 import { getAsset } from "./utils/prepareAssets";
+import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from '@heroicons/vue/16/solid'
 
 import {
   DrawingObject,
@@ -124,6 +143,8 @@ export default {
     DrawingCanvas,
     DrawingSignature,
     DialogBox,
+    MagnifyingGlassMinusIcon,
+    MagnifyingGlassPlusIcon
   },
   props: {
     pdfData: String,
@@ -136,6 +157,10 @@ export default {
     translations: {
       type: Object,
       default: () => ({}),
+    },
+    enableZoom: {
+      type: Boolean,
+      default: false
     },
   },
   computed: {
@@ -162,7 +187,7 @@ export default {
       return { ...defaultTranslation, ...this.translations };
     },
   },
-  emits: ["finish"],
+  emits: ["finish", "onPDFRendered"],
   setup(
     props: Readonly<{ [key: string]: any }>,
     { emit }: { emit: (event: string, ...args: any[]) => void }
@@ -186,6 +211,12 @@ export default {
     });
     const isOpenConfirm = ref(false);
     const isConfirmOrWarning = ref("warning");
+
+    const zoomScale = ref(1);
+    const ZOOM_STEP = 0.25;
+    const MIN_ZOOM_SCALE = 0.5;
+    const MAX_ZOOM_SCALE = 3;
+    const pageRenderStatus = ref<boolean[]>([]);
 
     onMounted(async () => {
       try {
@@ -226,6 +257,7 @@ export default {
         );
         allObjects.value = Array(numPages).fill([]);
         pagesScale.value = Array(numPages).fill({ scale: 1 });
+        pageRenderStatus.value = Array(numPages).fill(false);
       } catch (e) {
         throw e;
       }
@@ -366,6 +398,21 @@ export default {
       }
     };
 
+    const zoomPDF = (direction: 'in' | 'out') => {
+      if (direction === 'in') {
+        zoomScale.value = Math.min(zoomScale.value + ZOOM_STEP, MAX_ZOOM_SCALE);
+      } else if (direction === 'out') {
+        zoomScale.value = Math.max(zoomScale.value - ZOOM_STEP, MIN_ZOOM_SCALE);
+      }
+    };
+
+    const renderFinished = (index: number) => {
+      pageRenderStatus.value[index] = true;
+      if(pageRenderStatus.value.every(Boolean)) {
+        emit("onPDFRendered")
+      }
+    }
+
     return {
       genID,
       pdfFile,
@@ -393,6 +440,10 @@ export default {
       closeModal,
       confirmSave,
       isConfirmOrWarning,
+      zoomScale,
+      zoomPDF,
+      pageRenderStatus,
+      renderFinished
     };
   },
 };
