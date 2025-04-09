@@ -18,6 +18,7 @@
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div
         class="left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 py-2 bg-gray-100 sticky w-full"
+        v-if="!addingDrawing"
       >
         <div>
           <button
@@ -40,8 +41,8 @@
           </button>
         </div>
         <div v-if="enableZoom" class="mt-2 flex gap-2">
-          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-in"><MagnifyingGlassMinusIcon/></button>
-          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-out"><MagnifyingGlassPlusIcon/></button>
+          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out"><MagnifyingGlassMinusIcon/></button>
+          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in"><MagnifyingGlassPlusIcon/></button>
         </div>
       </div>
       <div
@@ -55,13 +56,13 @@
           @cancel="addingDrawing = false"
           :translations="getTranslation"
         />
-        <div class="bg-gray-100 border-b border-gray-300 shadow-lg p-2 flex justify-center gap-2">
-          <button @click="zoomPDF('out')" class="w-6"><MagnifyingGlassMinusIcon/></button>
-          <button @click="zoomPDF('in')" class="w-6"><MagnifyingGlassPlusIcon/></button>
+        <div class="bg-gray-100 border-b border-gray-300 shadow-lg p-2 flex justify-center gap-2" v-if="enableZoom">
+          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out-toolbar"><MagnifyingGlassMinusIcon/></button>
+          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in-toolbar"><MagnifyingGlassPlusIcon/></button>
         </div>
       </div>
       <div class="w-full" v-if="pages.length">
-        <!-- adding zoomScale will rerender the PDF when ever it is changed by clicking the zoom buttons -->
+        <!-- adding zoomScale in key will rerender the PDF whenever it is changed by clicking the zoom buttons -->
         <div
           v-for="(page, pIndex) in pages"
           :key="pIndex + zoomScale"
