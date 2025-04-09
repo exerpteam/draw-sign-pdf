@@ -1,8 +1,8 @@
 <template>
   <div :style="{
-    width: `${width! + dw}px`,
-    height: `${(height! + dw)}px`,
-    transform: `translate(${x! + dx}px, ${y! + dy}px)`,
+    width: `${(width! + dw) * zoomScale}px`,
+    height: `${(height! + dw) * zoomScale}px`,
+    transform: `translate(${(x! + dx) * zoomScale}px, ${(y! + dy) * zoomScale}px)`,
   }" class="absolute left-0 top-0 select-none">
     <div class="absolute h-full w-full cursor-grab border border-dashed border-gray-400">
       <!-- 
@@ -47,6 +47,7 @@ export default defineComponent({
       default: 1,
     },
     path: String,
+    zoomScale: Number
   },
   emits: ["delete", "update"],
   setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {

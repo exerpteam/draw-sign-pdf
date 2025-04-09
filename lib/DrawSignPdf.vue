@@ -17,7 +17,7 @@
   <div>
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div
-        class="left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 pt-2 bg-gray-100 sticky w-full"
+        class="left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 py-2 bg-gray-100 sticky w-full"
       >
         <div>
           <button
@@ -40,8 +40,8 @@
           </button>
         </div>
         <div v-if="enableZoom" class="mt-2 flex gap-2">
-          <button @click="zoomPDF('out')" class="w-6"><MagnifyingGlassMinusIcon/></button>
-          <button @click="zoomPDF('in')" class="w-6"><MagnifyingGlassPlusIcon/></button>
+          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-in"><MagnifyingGlassMinusIcon/></button>
+          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-out"><MagnifyingGlassPlusIcon/></button>
         </div>
       </div>
       <div
@@ -61,9 +61,10 @@
         </div>
       </div>
       <div class="w-full" v-if="pages.length">
+        <!-- adding zoomScale will rerender the PDF when ever it is changed by clicking the zoom buttons -->
         <div
           v-for="(page, pIndex) in pages"
-          :key="pIndex + currentScale"
+          :key="pIndex + zoomScale"
           class="flex w-full flex-col items-center overflow-hidden p-5"
           @mousedown="selectPage(pIndex)"
           @touchstart="selectPage(pIndex)"
@@ -76,7 +77,7 @@
             <PDFPage
               @measure="(e: any) => onMeasure(e, pIndex)"
               :page="page"
-              :currentScale="currentScale"
+              :zoomScale="zoomScale"
               @finishedRendering="() => renderFinished(pIndex)"
             />
             <div
@@ -100,6 +101,7 @@
                   :originHeight="object.originHeight"
                   :pageScale="pagesScale[pIndex]?.scale"
                   :data-cy="'sign-pos-' + object.id"
+                  :zoomScale="zoomScale"
                 />
               </div>
             </div>
@@ -209,10 +211,10 @@ export default {
     const isOpenConfirm = ref(false);
     const isConfirmOrWarning = ref("warning");
 
-    const currentScale = ref(1);
+    const zoomScale = ref(1);
     const ZOOM_STEP = 0.25;
-    const MIN_SCALE = 0.5;
-    const MAX_SCALE = 3;
+    const MIN_ZOOM_SCALE = 0.5;
+    const MAX_ZOOM_SCALE = 3;
     const pageRenderStatus = ref<boolean[]>([]);
 
     onMounted(async () => {
@@ -397,9 +399,9 @@ export default {
 
     const zoomPDF = (direction: 'in' | 'out') => {
       if (direction === 'in') {
-        currentScale.value = Math.min(currentScale.value + ZOOM_STEP, MAX_SCALE);
+        zoomScale.value = Math.min(zoomScale.value + ZOOM_STEP, MAX_ZOOM_SCALE);
       } else if (direction === 'out') {
-        currentScale.value = Math.max(currentScale.value - ZOOM_STEP, MIN_SCALE);
+        zoomScale.value = Math.max(zoomScale.value - ZOOM_STEP, MIN_ZOOM_SCALE);
       }
     };
 
@@ -439,7 +441,7 @@ export default {
       closeModal,
       confirmSave,
       isConfirmOrWarning,
-      currentScale,
+      zoomScale,
       zoomPDF,
       pageRenderStatus,
       renderFinished

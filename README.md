@@ -39,7 +39,7 @@ use the below methods to import
 ``` vue
 <template>
   <div>
-    <DrawSignPdf :pdfData="pdfData" :signatureData="signatureData" :isDownload="false" @finish="getSignedData" :translations="translations" :enableZoom="true"/>
+    <DrawSignPdf :pdfData="pdfData" :signatureData="signatureData" :isDownload="false" @finish="getSignedData" :translations="translations" :enableZoom="true" @onPDFRendered="pdfRendered"/>
   </div>
 </template>
 <script setup>

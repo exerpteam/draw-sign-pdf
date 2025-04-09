@@ -10,7 +10,7 @@ var _export_sfc = (sfc, props) => {
 const _sfc_main$4 = {
   props: {
     page: Object,
-    currentScale: Number,
+    zoomScale: Number,
     finishedRendering: Function
   },
   setup(props, { emit }) {
@@ -27,7 +27,7 @@ const _sfc_main$4 = {
       console.log("props to PDFPage component", props);
       const _page = await props.page;
       const context = canvas.value.getContext("2d");
-      const viewport = _page.getViewport({ scale: props.currentScale || 1, rotation: 0 });
+      const viewport = _page.getViewport({ scale: props.zoomScale || 1, rotation: 0 });
       width.value = viewport.width;
       height.value = viewport.height;
       await _page.render({
@@ -65,7 +65,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 12, _hoisted_1$4)
   ]);
 }
-var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-502c5fca"]]);
+var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-9bc46ba6"]]);
 var DrawingSignature_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$3 = defineComponent({
   props: {
@@ -79,7 +79,8 @@ const _sfc_main$3 = defineComponent({
       type: Number,
       default: 1
     },
-    path: String
+    path: String,
+    zoomScale: Number
   },
   emits: ["delete", "update"],
   setup(props, { emit }) {
@@ -172,7 +173,7 @@ const _sfc_main$3 = defineComponent({
     };
   }
 });
-const _withScopeId$1 = (n) => (pushScopeId("data-v-08f91d4b"), n = n(), popScopeId(), n);
+const _withScopeId$1 = (n) => (pushScopeId("data-v-00f78c34"), n = n(), popScopeId(), n);
 const _hoisted_1$3 = /* @__PURE__ */ _withScopeId$1(() => /* @__PURE__ */ createElementVNode("div", { class: "absolute h-full w-full cursor-grab border border-dashed border-gray-400" }, null, -1));
 const _hoisted_2$3 = {
   ref: "svg",
@@ -183,9 +184,9 @@ const _hoisted_3$3 = ["d"];
 function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
     style: normalizeStyle({
-      width: `${_ctx.width + _ctx.dw}px`,
-      height: `${_ctx.height + _ctx.dw}px`,
-      transform: `translate(${_ctx.x + _ctx.dx}px, ${_ctx.y + _ctx.dy}px)`
+      width: `${(_ctx.width + _ctx.dw) * _ctx.zoomScale}px`,
+      height: `${(_ctx.height + _ctx.dw) * _ctx.zoomScale}px`,
+      transform: `translate(${(_ctx.x + _ctx.dx) * _ctx.zoomScale}px, ${(_ctx.y + _ctx.dy) * _ctx.zoomScale}px)`
     }),
     class: "absolute left-0 top-0 select-none"
   }, [
@@ -202,7 +203,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     ], 512))
   ], 4);
 }
-var DrawingSignature = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-08f91d4b"]]);
+var DrawingSignature = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-00f78c34"]]);
 var DialogBox_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$2 = {
   props: {
@@ -790,7 +791,7 @@ const _sfc_main = {
     });
     const isOpenConfirm = ref(false);
     const isConfirmOrWarning = ref("warning");
-    const currentScale = ref(1);
+    const zoomScale = ref(1);
     const ZOOM_STEP = 0.25;
     const MIN_SCALE = 0.5;
     const MAX_SCALE = 3;
@@ -947,9 +948,9 @@ const _sfc_main = {
     };
     const zoomPDF = (direction) => {
       if (direction === "in") {
-        currentScale.value = Math.min(currentScale.value + ZOOM_STEP, MAX_SCALE);
+        zoomScale.value = Math.min(zoomScale.value + ZOOM_STEP, MAX_SCALE);
       } else if (direction === "out") {
-        currentScale.value = Math.max(currentScale.value - ZOOM_STEP, MIN_SCALE);
+        zoomScale.value = Math.max(zoomScale.value - ZOOM_STEP, MIN_SCALE);
       }
     };
     const renderFinished = (index) => {
@@ -987,7 +988,7 @@ const _sfc_main = {
       closeModal,
       confirmSave,
       isConfirmOrWarning,
-      currentScale,
+      zoomScale,
       zoomPDF,
       pageRenderStatus,
       renderFinished
@@ -1000,7 +1001,7 @@ const _hoisted_1 = {
   class: "fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-900 bg-opacity-60 px-4"
 };
 const _hoisted_2 = { class: "flex min-h-screen flex-col items-center bg-gray-100 py-5" };
-const _hoisted_3 = { class: "left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 pt-2 bg-gray-100 sticky w-full" };
+const _hoisted_3 = { class: "left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 py-2 bg-gray-100 sticky w-full" };
 const _hoisted_4 = {
   key: 0,
   class: "mt-2 flex gap-2"
@@ -1059,13 +1060,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           $props.enableZoom ? (openBlock(), createElementBlock("div", _hoisted_4, [
             createElementVNode("button", {
               onClick: _cache[2] || (_cache[2] = ($event) => $setup.zoomPDF("out")),
-              class: "w-6"
+              class: "w-6",
+              "data-cy": "pdf-zoom-in"
             }, [
               createVNode(_component_MagnifyingGlassMinusIcon)
             ]),
             createElementVNode("button", {
               onClick: _cache[3] || (_cache[3] = ($event) => $setup.zoomPDF("in")),
-              class: "w-6"
+              class: "w-6",
+              "data-cy": "pdf-zoom-out"
             }, [
               createVNode(_component_MagnifyingGlassPlusIcon)
             ])
@@ -1095,7 +1098,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         $setup.pages.length ? (openBlock(), createElementBlock("div", _hoisted_7, [
           (openBlock(true), createElementBlock(Fragment, null, renderList($setup.pages, (page, pIndex) => {
             return openBlock(), createElementBlock("div", {
-              key: pIndex + $setup.currentScale,
+              key: pIndex + $setup.zoomScale,
               class: "flex w-full flex-col items-center overflow-hidden p-5",
               onMousedown: ($event) => $setup.selectPage(pIndex),
               onTouchstart: ($event) => $setup.selectPage(pIndex),
@@ -1107,9 +1110,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 createVNode(_component_PDFPage, {
                   onMeasure: (e) => $setup.onMeasure(e, pIndex),
                   page,
-                  currentScale: $setup.currentScale,
+                  zoomScale: $setup.zoomScale,
                   onFinishedRendering: () => $setup.renderFinished(pIndex)
-                }, null, 8, ["onMeasure", "page", "currentScale", "onFinishedRendering"]),
+                }, null, 8, ["onMeasure", "page", "zoomScale", "onFinishedRendering"]),
                 createElementVNode("div", {
                   class: "absolute left-0 top-0 origin-top-left transform",
                   style: normalizeStyle({
@@ -1134,8 +1137,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         originWidth: object.originWidth,
                         originHeight: object.originHeight,
                         pageScale: (_a = $setup.pagesScale[pIndex]) == null ? void 0 : _a.scale,
-                        "data-cy": "sign-pos-" + object.id
-                      }, null, 8, ["onUpdate", "onDelete", "path", "x", "y", "width", "height", "originWidth", "originHeight", "pageScale", "data-cy"])) : createCommentVNode("", true)
+                        "data-cy": "sign-pos-" + object.id,
+                        zoomScale: $setup.zoomScale
+                      }, null, 8, ["onUpdate", "onDelete", "path", "x", "y", "width", "height", "originWidth", "originHeight", "pageScale", "data-cy", "zoomScale"])) : createCommentVNode("", true)
                     ]);
                   }), 128))
                 ], 4)
@@ -1149,7 +1153,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-384db5fa"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3b13fa82"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
