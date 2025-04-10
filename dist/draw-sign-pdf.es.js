@@ -18,9 +18,11 @@ const _sfc_main$4 = {
     const width = ref(0);
     const height = ref(0);
     const measure = () => {
-      emit("measure", {
-        scale: canvas.value.clientWidth / width.value
-      });
+      if (canvas.value && canvas.value.clientWidth && width.value) {
+        emit("measure", {
+          scale: canvas.value.clientWidth / width.value
+        });
+      }
     };
     onMounted(async () => {
       const _page = await props.page;
@@ -33,9 +35,7 @@ const _sfc_main$4 = {
         viewport
       }).promise.then(function() {
         emit("finishedRendering");
-        emit("measure", {
-          scale: canvas.value.clientWidth / width.value
-        });
+        measure();
       });
       window.addEventListener("resize", measure);
     });
@@ -62,7 +62,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 12, _hoisted_1$4)
   ]);
 }
-var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-12c5d4e2"]]);
+var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-a3414eba"]]);
 var DrawingSignature_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$3 = defineComponent({
   props: {
