@@ -38,10 +38,10 @@ export default {
         })
         .promise.then(function () {
           emit("finishedRendering")
+          emit("measure", {
+            scale: canvas.value!.clientWidth / width.value,
+          });
         });
-      emit("measure", {
-        scale: canvas.value!.clientWidth / width.value,
-      });
       window.addEventListener("resize", measure);
     });
     onBeforeUnmount(() => {
