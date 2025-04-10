@@ -1,16 +1,8 @@
 <template>
   <!-- Modal -->
-  <div
-    v-if="isOpenConfirm"
-    id="modelConfirm"
-    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-900 bg-opacity-60 px-4"
-  >
-    <DialogBox
-      :translations="getTranslation"
-      :type="isConfirmOrWarning"
-      @cancel="closeModal"
-      @finish="confirmSave"
-    />
+  <div v-if="isOpenConfirm" id="modelConfirm"
+    class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-900 bg-opacity-60 px-4">
+    <DialogBox :translations="getTranslation" :type="isConfirmOrWarning" @cancel="closeModal" @finish="confirmSave" />
   </div>
   <!-- Modal end -->
 
@@ -18,90 +10,60 @@
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div
         class="left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 py-2 bg-gray-100 sticky w-full"
-        v-if="!addingDrawing"
-      >
-        <button
-          @click="onAddDrawing"
+        v-if="!addingDrawing">
+        <button @click="onAddDrawing"
           class="btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-          data-cy="update-sign"
-        >
+          data-cy="update-sign">
           {{ getTranslation.updateSign }}
         </button>
-        <button
-          @click="openModal"
+        <button @click="openModal"
           class="btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
           :class="{
             'cursor-not-allowed': pages.length === 0 || saving,
             'bg-blue-700': pages.length === 0 || saving,
-          }"
-          data-cy="save-sign"
-        >
+          }" data-cy="save-sign">
           {{ saving ? getTranslation.saving : getTranslation.save }}
         </button>
       </div>
       <div v-if="enableZoom" class="mt-2 flex gap-2">
-          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out"><MagnifyingGlassMinusIcon/></button>
-          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in"><MagnifyingGlassPlusIcon/></button>
-        </div>
+        <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out">
+          <MagnifyingGlassMinusIcon />
+        </button>
+        <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in">
+          <MagnifyingGlassPlusIcon />
+        </button>
+      </div>
       <div
         class="sign-drawing-canvas fixed left-0 right-0 top-0 z-10 items-center justify-center border-b border-gray-300 bg-white shadow-lg"
-        style="height: 200px; z-index: 60; width: 100%"
-        v-if="addingDrawing"
-        data-cy="sign-drawing-canvas"
-      >
-        <DrawingCanvas
-          @finish="onFinishDrawing"
-          @cancel="addingDrawing = false"
-          :translations="getTranslation"
-        />
+        style="height: 200px; z-index: 60; width: 100%" v-if="addingDrawing" data-cy="sign-drawing-canvas">
+        <DrawingCanvas @finish="onFinishDrawing" @cancel="addingDrawing = false" :translations="getTranslation" />
         <div class="bg-gray-100 border-b border-gray-300 shadow-lg p-2 flex justify-center gap-2" v-if="enableZoom">
-          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out-toolbar"><MagnifyingGlassMinusIcon/></button>
-          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in-toolbar"><MagnifyingGlassPlusIcon/></button>
+          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out-toolbar">
+            <MagnifyingGlassMinusIcon />
+          </button>
+          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in-toolbar">
+            <MagnifyingGlassPlusIcon />
+          </button>
         </div>
       </div>
       <div class="w-full" v-if="pages.length">
         <!-- adding zoomScale in key will rerender the PDF whenever it is changed by clicking the zoom buttons -->
-        <div
-          v-for="(page, pIndex) in pages"
-          :key="pIndex + zoomScale"
-          class="flex w-full flex-col items-center overflow-hidden p-5"
-          @mousedown="selectPage(pIndex)"
-          @touchstart="selectPage(pIndex)"
-          :data-cy="'page-' + pIndex"
-        >
-          <div
-            class="relative shadow-lg"
-            :class="{ 'shadow-outline': pIndex === selectedPageIndex }"
-          >
-            <PDFPage
-              @measure="(e: any) => onMeasure(e, pIndex)"
-              :page="page"
-              :zoomScale="zoomScale"
-              @finishedRendering="() => renderFinished(pIndex)"
-            />
-            <div
-              class="absolute left-0 top-0 origin-top-left transform"
-              :style="{
-                transform: `scale(${pagesScale[pIndex].scale})`,
-                touchAction: 'none',
-              }"
-            >
+        <div v-for="(page, pIndex) in pages" :key="pIndex + zoomScale"
+          class="flex w-full flex-col items-center overflow-hidden p-5" @mousedown="selectPage(pIndex)"
+          @touchstart="selectPage(pIndex)" :data-cy="'page-' + pIndex">
+          <div class="relative shadow-lg" :class="{ 'shadow-outline': pIndex === selectedPageIndex }">
+            <PDFPage @measure="(e: any) => onMeasure(e, pIndex)" :page="page" :zoomScale="zoomScale"
+              @finishedRendering="() => renderFinished(pIndex)" />
+            <div class="absolute left-0 top-0 origin-top-left transform" :style="{
+              transform: `scale(${pagesScale[pIndex].scale})`,
+              touchAction: 'none',
+            }">
               <div v-for="object in allObjects[pIndex]" :key="object.id">
-                <DrawingSignature
-                  v-if="object.type === 'drawing'"
-                  @update="(e: any) => updateObject(object.id, e)"
-                  @delete="() => deleteObject(object.id)"
-                  :path="object.path"
-                  :x="object.x"
-                  :y="object.y"
-                  :width="object.width"
-                  :height="object.height"
-                  :originWidth="object.originWidth"
-                  :originHeight="object.originHeight"
-                  :pageScale="pagesScale[pIndex]?.scale"
-                  :data-cy="'sign-pos-' + object.id"
-                  :zoomScale="zoomScale"
-                />
+                <DrawingSignature v-if="object.type === 'drawing'" @update="(e: any) => updateObject(object.id, e)"
+                  @delete="() => deleteObject(object.id)" :path="object.path" :x="object.x" :y="object.y"
+                  :width="object.width" :height="object.height" :originWidth="object.originWidth"
+                  :originHeight="object.originHeight" :pageScale="pagesScale[pIndex]?.scale"
+                  :data-cy="'sign-pos-' + object.id" :zoomScale="zoomScale" />
               </div>
             </div>
           </div>
@@ -118,6 +80,7 @@
 
 <script lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
+import { markRaw } from 'vue';
 import PDFPage from "./components/PDFPage.vue";
 import DrawingSignature from "./components/DrawingSignature.vue";
 import DialogBox from "./components/DialogBox.vue";
@@ -226,7 +189,7 @@ export default {
         console.log('Initializing PDF.js...');
         initializePdfjs();
         console.log('PDF.js initialized');
-        
+
         console.log('Checking pdfData:', props.pdfData);
         if (!props.pdfData) {
           console.error('No PDF data provided');
@@ -256,7 +219,7 @@ export default {
       try {
         await addPDF(file, "arrayBuffer");
         selectedPageIndex.value = 0;
-      } catch (e) {}
+      } catch (e) { }
     };
 
     const addPDF = async (pdfData: string, type: string) => {
@@ -264,15 +227,15 @@ export default {
         console.log('Starting addPDF with type:', type);
         const pdf = await readAsPDF(pdfData, type);
         console.log('PDF read successfully');
-        
+
         const document = await getPDFDocument(pdf);
         console.log('PDF document loaded, number of pages:', document.numPages);
-        
+
         const newPages: Promise<any>[] = [];
         const newPagesScale: any[] = [];
         const newAllObjects: any[] = [];
 
-        for (let i = 1; i <= document.numPages; i++) {
+        for (let i = 1; i <= document.numPages - 1; i++) {
           const page = await getPDFPage(document, i);
           console.log(`Loading page ${i}...`);
           const { page: pdfPage } = await renderPDFPage(page);
@@ -282,13 +245,16 @@ export default {
           newAllObjects.push([]);
         }
 
-        pages.value = Array.from({ length: document.numPages }).map(
-          async (_, i) => await pdf.getPage(i + 1)
-        );
+        const resolvedPages = [];
+        for (let i = 1; i <= document.numPages; i++) {
+          const page = await document.getPage(i);  // Only get the page
+          resolvedPages.push(markRaw(page));                // Push the real PDF.js page
+        }
+        pages.value = resolvedPages;
         allObjects.value = Array(document.numPages).fill([]);
         pagesScale.value = Array(document.numPages).fill({ scale: 1 });
         pageRenderStatus.value = Array(document.numPages).fill(false);
-        
+
         // Set pdfFile and pdfName even when loading from base64
         if (type === 'string') {
           // Convert base64 to Blob
@@ -301,7 +267,7 @@ export default {
           pdfFile.value = new File([blob], 'document.pdf', { type: 'application/pdf' });
           pdfName.value = 'document.pdf';
         }
-        
+
         console.log('All pages loaded and initialized');
       } catch (error) {
         console.error('Error in addPDF:', error);
@@ -371,8 +337,8 @@ export default {
       allObjects.value = allObjects.value.map((objects, pIndex) =>
         pIndex == selectedPageIndex.value
           ? objects.map((object: DrawingObject) =>
-              object.id === objectId ? { ...object, ...payload } : object
-            )
+            object.id === objectId ? { ...object, ...payload } : object
+          )
           : objects
       );
     };
@@ -462,7 +428,7 @@ export default {
 
     const renderFinished = (index: number) => {
       pageRenderStatus.value[index] = true;
-      if(pageRenderStatus.value.every(Boolean)) {
+      if (pageRenderStatus.value.every(Boolean)) {
         emit("onPDFRendered")
       }
     }
@@ -515,6 +481,7 @@ body.modal-active {
   overflow-x: hidden;
   overflow-y: visible !important;
 }
+
 .sign-drawing-canvas {
   width: 100% !important;
   z-index: 60 !important;

@@ -8,6 +8,7 @@
         :isDownload="false" 
         @finish="getSignedData"
         :translations="translations" 
+        :enableZoom="true" @onPDFRendered="pdfRendered"
       />
     </div>
   </div>
