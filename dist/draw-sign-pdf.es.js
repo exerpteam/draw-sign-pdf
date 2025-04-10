@@ -33,9 +33,9 @@ const _sfc_main$4 = {
         viewport
       }).promise.then(function() {
         emit("finishedRendering");
-      });
-      emit("measure", {
-        scale: canvas.value.clientWidth / width.value
+        emit("measure", {
+          scale: canvas.value.clientWidth / width.value
+        });
       });
       window.addEventListener("resize", measure);
     });
@@ -62,7 +62,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 12, _hoisted_1$4)
   ]);
 }
-var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-4939dabc"]]);
+var PDFPage = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-12c5d4e2"]]);
 var DrawingSignature_vue_vue_type_style_index_0_scoped_true_lang = "";
 const _sfc_main$3 = defineComponent({
   props: {
