@@ -18,7 +18,6 @@
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div
         class="left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 py-2 bg-gray-100 sticky w-full"
-        v-if="!addingDrawing"
       >
         <div>
           <button
