@@ -996,16 +996,13 @@ const _hoisted_1 = {
   class: "fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-900 bg-opacity-60 px-4"
 };
 const _hoisted_2 = { class: "flex min-h-screen flex-col items-center bg-gray-100 py-5" };
-const _hoisted_3 = {
-  key: 0,
-  class: "left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 py-2 bg-gray-100 sticky w-full"
-};
+const _hoisted_3 = { class: "left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 py-2 bg-gray-100 sticky w-full" };
 const _hoisted_4 = {
   key: 0,
   class: "mt-2 flex gap-2"
 };
 const _hoisted_5 = {
-  key: 1,
+  key: 0,
   class: "sign-drawing-canvas fixed left-0 right-0 top-0 z-10 items-center justify-center border-b border-gray-300 bg-white shadow-lg",
   style: { "height": "200px", "z-index": "60", "width": "100%" },
   "data-cy": "sign-drawing-canvas"
@@ -1015,12 +1012,12 @@ const _hoisted_6 = {
   class: "bg-gray-100 border-b border-gray-300 shadow-lg p-2 flex justify-center gap-2"
 };
 const _hoisted_7 = {
-  key: 2,
+  key: 1,
   class: "w-full"
 };
 const _hoisted_8 = ["onMousedown", "onTouchstart", "data-cy"];
 const _hoisted_9 = {
-  key: 3,
+  key: 2,
   class: "flex w-full flex-grow items-center justify-center"
 };
 const _hoisted_10 = { class: "text-3xl font-bold text-gray-500" };
@@ -1042,7 +1039,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : createCommentVNode("", true),
     createElementVNode("div", null, [
       createElementVNode("main", _hoisted_2, [
-        !$setup.addingDrawing ? (openBlock(), createElementBlock("div", _hoisted_3, [
+        createElementVNode("div", _hoisted_3, [
           createElementVNode("div", null, [
             createElementVNode("button", {
               onClick: _cache[0] || (_cache[0] = (...args) => $setup.onAddDrawing && $setup.onAddDrawing(...args)),
@@ -1074,7 +1071,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               createVNode(_component_MagnifyingGlassPlusIcon)
             ])
           ])) : createCommentVNode("", true)
-        ])) : createCommentVNode("", true),
+        ]),
         $setup.addingDrawing ? (openBlock(), createElementBlock("div", _hoisted_5, [
           createVNode(_component_DrawingCanvas, {
             onFinish: $setup.onFinishDrawing,
@@ -1156,7 +1153,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-c15da102"]]);
+var DrawSignPdf = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-79d08b42"]]);
 getAsset("pdfjsLib");
 const install = (app) => {
   app.component(DrawSignPdf.name, DrawSignPdf);
