@@ -20,9 +20,11 @@ export default {
     const height = ref(0);
 
     const measure = () => {
-      emit("measure", {
-        scale: canvas.value!.clientWidth / width.value,
-      });
+      if(canvas.value && canvas.value.clientWidth && width.value) {
+        emit("measure", {
+          scale: canvas.value!.clientWidth / width.value,
+        });
+      }
     };
 
     onMounted(async () => {
@@ -37,11 +39,9 @@ export default {
           viewport,
         })
         .promise.then(function () {
-          emit("finishedRendering")
+          emit("finishedRendering");
+          measure();
         });
-      emit("measure", {
-        scale: canvas.value!.clientWidth / width.value,
-      });
       window.addEventListener("resize", measure);
     });
     onBeforeUnmount(() => {
