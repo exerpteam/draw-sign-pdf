@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import DrawSignPdf from 'draw-sign-pdf';
-import 'draw-sign-pdf/dist/style.css';
+import '../dist/style.css';
 import { PdfSignatureData } from 'draw-sign-pdf';
 import { pdfData, signatureData } from "./pdfData";
 

@@ -79,8 +79,8 @@
 </template>
 
 <script lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
-import { markRaw } from 'vue';
+import { onBeforeUnmount, onMounted, ref, computed, markRaw } from "vue";
+import type { PDFPageProxy } from "pdfjs-dist";
 import PDFPage from "./components/PDFPage.vue";
 import DrawingSignature from "./components/DrawingSignature.vue";
 import DialogBox from "./components/DialogBox.vue";
@@ -90,8 +90,6 @@ import { initializePdfjs } from "./utils/pdfSetup";
 import {
   readAsPDF,
   getPDFDocument,
-  getPDFPage,
-  renderPDFPage
 } from "./utils/prepareAssets";
 
 import {
@@ -129,40 +127,12 @@ export default {
       default: false
     },
   },
-  computed: {
-    getTranslation() {
-      const defaultTranslation = {
-        updateSign: "Update Signature",
-        save: "Save",
-        saving: "Saving",
-        drawLabel: "Draw the signature here",
-        drawDone: "Done",
-        drawCancel: "Cancel",
-        confirmBoxTitle: "Confirm Saving",
-        confirmBoxDesc: "Are you sure you want to save the signed document?",
-        confirmBoxClose: "Close",
-        confirmBoxSaveChanges: "Save Changes",
-        warningTitle: "Missing Signature",
-        warningDesc:
-          "The required signature is missing. Please sign to continue",
-        warningClose: "Close",
-        pdfLoading: "PDF will load here",
-        additionalTextField: "",
-      };
-
-      return { ...defaultTranslation, ...this.translations };
-    },
-  },
   emits: ["finish", "onPDFRendered"],
-  setup(
-    props: Readonly<{ [key: string]: any }>,
-    { emit }: { emit: (event: string, ...args: any[]) => void }
-  ) {
-    // Your reactive variables and methods
+  setup(props, { emit }) {
     const genID = ggID();
     const pdfFile = ref<File | null>(null);
     const pdfName = ref("");
-    const pages = ref<Promise<any>[]>([]);
+    const pages = ref<PDFPageProxy[]>([]);
     const pagesScale = ref<any[]>([]);
     const allObjects = ref<any[]>([]);
     const currentFont = ref("Times-Roman");
@@ -176,7 +146,8 @@ export default {
       type: "application/pdf",
     });
     const isOpenConfirm = ref(false);
-    const isConfirmOrWarning = ref("warning");
+    type DialogBoxType = "warning" | "confirm";
+    const isConfirmOrWarning = ref<DialogBoxType>("warning");
 
     const zoomScale = ref(1);
     const ZOOM_STEP = 0.25;
@@ -184,32 +155,39 @@ export default {
     const MAX_ZOOM_SCALE = 3;
     const pageRenderStatus = ref<boolean[]>([]);
 
-    onMounted(async () => {
+    const getTranslation = computed(() => {
+      const defaultTranslation = {
+        updateSign: "Update Signature",
+        save: "Save",
+        saving: "Saving",
+        drawLabel: "Draw the signature here",
+        drawDone: "Done",
+        drawCancel: "Cancel",
+        confirmBoxTitle: "Confirm Saving",
+        confirmBoxDesc: "Are you sure you want to save the signed document?",
+        confirmBoxClose: "Close",
+        confirmBoxSaveChanges: "Save Changes",
+        warningTitle: "Missing Signature",
+        warningDesc: "The required signature is missing. Please sign to continue",
+        warningClose: "Close",
+        pdfLoading: "PDF will load here",
+        additionalTextField: "",
+      };
+      return { ...defaultTranslation, ...props.translations };
+    });
+
+    const onMountedCallback = async () => {
       try {
-        console.log('Initializing PDF.js...');
         initializePdfjs();
-        console.log('PDF.js initialized');
-
-        console.log('Checking pdfData:', props.pdfData);
-        if (!props.pdfData) {
-          console.error('No PDF data provided');
-          return;
-        }
-
+        if (!props.pdfData) return;
         selectedPageIndex.value = 0;
-        console.log('Starting PDF loading process...');
         await addPDF(props.pdfData, "string");
-        console.log('PDF loaded successfully');
         onAddDrawing();
         document.addEventListener("keydown", handleEscapeKey);
       } catch (error) {
-        console.error('Error in onMounted:', error);
+        console.error("onMounted error:", error);
       }
-    });
-
-    onBeforeUnmount(() => {
-      document.addEventListener("keydown", handleEscapeKey);
-    });
+    };
 
     const onUploadPDF = async (e: any) => {
       const files = e.target.files || (e.dataTransfer && e.dataTransfer.files);
@@ -219,89 +197,52 @@ export default {
       try {
         await addPDF(file, "arrayBuffer");
         selectedPageIndex.value = 0;
-      } catch (e) { }
+      } catch {}
     };
 
     const addPDF = async (pdfData: string, type: string) => {
-      try {
-        console.log('Starting addPDF with type:', type);
-        const pdf = await readAsPDF(pdfData, type);
-        console.log('PDF read successfully');
+      const pdf = await readAsPDF(pdfData, type);
+      const document = await getPDFDocument(pdf);
 
-        const document = await getPDFDocument(pdf);
-        console.log('PDF document loaded, number of pages:', document.numPages);
+      const resolvedPages: PDFPageProxy[] = [];
+      for (let i = 1; i <= document.numPages; i++) {
+        const page = await document.getPage(i);
+        resolvedPages.push(markRaw(page));
+      }
 
-        const newPages: Promise<any>[] = [];
-        const newPagesScale: any[] = [];
-        const newAllObjects: any[] = [];
+      pages.value = resolvedPages;
+      allObjects.value = Array(document.numPages).fill([]);
+      pagesScale.value = Array(document.numPages).fill({ scale: 1 });
+      pageRenderStatus.value = Array(document.numPages).fill(false);
 
-        for (let i = 1; i <= document.numPages - 1; i++) {
-          const page = await getPDFPage(document, i);
-          console.log(`Loading page ${i}...`);
-          const { page: pdfPage } = await renderPDFPage(page);
-          console.log(`Page ${i} rendered`);
-          newPages.push(Promise.resolve(pdfPage));
-          newPagesScale.push({ scale: 1 });
-          newAllObjects.push([]);
+      if (type === 'string') {
+        const binaryString = atob(pdfData);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
         }
-
-        const resolvedPages = [];
-        for (let i = 1; i <= document.numPages; i++) {
-          const page = await document.getPage(i);  // Only get the page
-          resolvedPages.push(markRaw(page));                // Push the real PDF.js page
-        }
-        pages.value = resolvedPages;
-        allObjects.value = Array(document.numPages).fill([]);
-        pagesScale.value = Array(document.numPages).fill({ scale: 1 });
-        pageRenderStatus.value = Array(document.numPages).fill(false);
-
-        // Set pdfFile and pdfName even when loading from base64
-        if (type === 'string') {
-          // Convert base64 to Blob
-          const binaryString = atob(pdfData);
-          const bytes = new Uint8Array(binaryString.length);
-          for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-          }
-          const blob = new Blob([bytes], { type: 'application/pdf' });
-          pdfFile.value = new File([blob], 'document.pdf', { type: 'application/pdf' });
-          pdfName.value = 'document.pdf';
-        }
-
-        console.log('All pages loaded and initialized');
-      } catch (error) {
-        console.error('Error in addPDF:', error);
-        throw error;
+        const blob = new Blob([bytes], { type: 'application/pdf' });
+        pdfFile.value = new File([blob], 'document.pdf', { type: 'application/pdf' });
+        pdfName.value = 'document.pdf';
       }
     };
 
     const onFinishDrawing = async (e: any) => {
       signatureImageData.value = e.signatureImageData;
-
-      const { originWidth, originHeight, path } = e;
-      await addDrawing(originWidth, originHeight, path);
+      await addDrawing(e.originWidth, e.originHeight, e.path);
       addingDrawing.value = false;
     };
 
     const onAddDrawing = () => {
-      if (selectedPageIndex.value >= 0) {
-        addingDrawing.value = true;
-      }
+      if (selectedPageIndex.value >= 0) addingDrawing.value = true;
     };
 
-    const addDrawing = (
-      originWidth: number,
-      originHeight: number,
-      path: string
-    ) => {
+    const addDrawing = (originWidth: number, originHeight: number, path: string) => {
       allObjects.value = Array(allObjects.value.length).fill([]);
       props.signatureData?.forEach((signData: PdfSignatureData) => {
         const id = genID();
-
         const width = cmToPx(signData.width);
         const height = cmToPx(signData.height);
-
-        // Calculate the scale to fit the drawing within the predefined square
         const scaleX = width / originWidth;
         const scaleY = height / originHeight;
         const finalScale = Math.min(scaleX, scaleY);
@@ -317,14 +258,9 @@ export default {
           height,
           scale: finalScale,
         };
-        // Append to the specific page rather than resetting all pages
         const pageIndex = signData.page - 1;
-        // Ensure the page exists in allObjects
         if (allObjects.value[pageIndex]) {
-          allObjects.value[pageIndex] = [
-            ...allObjects.value[pageIndex],
-            object,
-          ];
+          allObjects.value[pageIndex] = [...allObjects.value[pageIndex], object];
         }
       });
     };
@@ -337,8 +273,8 @@ export default {
       allObjects.value = allObjects.value.map((objects, pIndex) =>
         pIndex == selectedPageIndex.value
           ? objects.map((object: DrawingObject) =>
-            object.id === objectId ? { ...object, ...payload } : object
-          )
+              object.id === objectId ? { ...object, ...payload } : object
+            )
           : objects
       );
     };
@@ -355,49 +291,27 @@ export default {
       pagesScale.value[i] = scale;
     };
 
-    const cmToPx = (cm: number) => {
-      const pointsPerInch = 72;
-      const centimetersPerInch = 2.54;
-      return (cm * pointsPerInch) / centimetersPerInch;
-    };
+    const cmToPx = (cm: number) => (cm * 72) / 2.54;
 
     const savePDF = async () => {
-      if (!pdfFile.value || saving.value || !pages.value.length) {
-        console.error('Cannot save: missing pdfFile or pages, or already saving');
-        return;
-      }
+      if (!pdfFile.value || saving.value || !pages.value.length) return;
       saving.value = true;
       try {
-        console.log('Starting PDF save process...');
-        const pdfData = await save(
-          pdfFile.value,
-          allObjects.value,
-          pdfName.value,
-          props.isDownload
-        );
-        console.log('PDF saved successfully');
-
+        const pdfData = await save(pdfFile.value, allObjects.value, pdfName.value, props.isDownload);
         signedDocument.value = { type: "application/pdf", data: pdfData };
-
         emit("finish", {
           signedDocument: signedDocument.value,
           signatureImage: signatureImageData.value,
         });
-        console.log('Finish event emitted');
       } catch (error) {
-        console.error('Error saving PDF:', error);
-        // You might want to show an error message to the user here
+        console.error("Error saving PDF:", error);
       } finally {
         saving.value = false;
       }
     };
 
     const openModal = () => {
-      if (signatureImageData.value !== "") {
-        isConfirmOrWarning.value = "confirm";
-      } else {
-        isConfirmOrWarning.value = "warning";
-      }
+      isConfirmOrWarning.value = signatureImageData.value !== "" ? "confirm" : "warning";
       isOpenConfirm.value = true;
       document.body.classList.add("overflow-y-hidden");
     };
@@ -412,28 +326,29 @@ export default {
       closeModal();
     };
 
-    const handleEscapeKey = (event) => {
-      if (event.key === "Escape" || event.key === "Esc") {
-        closeModal();
-      }
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" || event.key === "Esc") closeModal();
     };
 
     const zoomPDF = (direction: 'in' | 'out') => {
-      if (direction === 'in') {
-        zoomScale.value = Math.min(zoomScale.value + ZOOM_STEP, MAX_ZOOM_SCALE);
-      } else if (direction === 'out') {
-        zoomScale.value = Math.max(zoomScale.value - ZOOM_STEP, MIN_ZOOM_SCALE);
-      }
+      zoomScale.value = direction === 'in'
+        ? Math.min(zoomScale.value + ZOOM_STEP, MAX_ZOOM_SCALE)
+        : Math.max(zoomScale.value - ZOOM_STEP, MIN_ZOOM_SCALE);
     };
 
     const renderFinished = (index: number) => {
       pageRenderStatus.value[index] = true;
-      if (pageRenderStatus.value.every(Boolean)) {
-        emit("onPDFRendered")
-      }
-    }
+      if (pageRenderStatus.value.every(Boolean)) emit("onPDFRendered");
+    };
+
+    onMounted(onMountedCallback);
+
+    onBeforeUnmount(() => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    });
 
     return {
+      getTranslation,
       genID,
       pdfFile,
       pdfName,
@@ -463,9 +378,9 @@ export default {
       zoomScale,
       zoomPDF,
       pageRenderStatus,
-      renderFinished
+      renderFinished,
     };
-  },
+  }
 };
 </script>
 <style scoped>

@@ -6,7 +6,7 @@ import { initializePdfjs } from "./utils/pdfSetup";
 initializePdfjs();
 
 const install = (app: App) => {
-  app.component(DrawSignPdf.name, DrawSignPdf);
+  app.component(DrawSignPdf.name || 'DrawSignPdf', DrawSignPdf);
 };
 
 // DrawSignPdf.install = install;
