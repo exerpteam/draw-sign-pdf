@@ -29,7 +29,7 @@ const demoConfig = {
 }
 
 const prodConfig = {
-  root: resolvePath('lib'),
+  root: resolvePath('.'),
   plugins: [
     vue(),
     dts({
