@@ -31,7 +31,7 @@
   "dependencies": {
     "downloadjs": "^1.4.7",
     "pdf-lib": "^1.17.1",
-    "pdfjs-dist": "^4.0.379"
+    "pdfjs-dist": "3.11.174"
   },
   "peerDependencies": {
     "vue": "^3.3.0"
