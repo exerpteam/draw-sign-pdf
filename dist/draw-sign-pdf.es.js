@@ -1,5 +1,5 @@
-import { ref as g, onMounted as J, onBeforeUnmount as ae, createElementBlock as w, openBlock as v, createElementVNode as i, normalizeStyle as oe, defineComponent as se, nextTick as be, normalizeClass as ne, computed as ie, Fragment as V, toDisplayString as T, createCommentVNode as I, reactive as xe, markRaw as Pe, resolveComponent as H, createVNode as $, renderList as de, createBlock as De } from "vue";
-import * as ce from "pdfjs-dist";
+import { ref as g, onMounted as J, onBeforeUnmount as ae, createElementBlock as w, openBlock as v, createElementVNode as i, normalizeStyle as oe, defineComponent as se, nextTick as we, normalizeClass as ne, computed as ie, Fragment as V, toDisplayString as T, createCommentVNode as I, reactive as be, markRaw as xe, resolveComponent as R, createVNode as $, renderList as de, createBlock as Pe } from "vue";
+import * as De from "pdfjs-dist";
 import { getDocument as Me } from "pdfjs-dist";
 import Se from "downloadjs";
 import { PDFDocument as Ce, rgb as ke } from "pdf-lib";
@@ -65,7 +65,7 @@ const Ee = /* @__PURE__ */ q(Te, [["render", ze], ["__scopeId", "data-v-fc4cca72
   setup(e, { emit: t }) {
     const d = g(0), a = g(0), l = g(0), r = g(""), o = g(""), n = g(0), x = g(0), P = g(null), y = e.originWidth / e.originHeight;
     return J(async () => {
-      await be(), P.value && P.value.setAttribute(
+      await we(), P.value && P.value.setAttribute(
         "viewBox",
         `0 0 ${e.originWidth} ${e.originHeight}`
       );
@@ -205,7 +205,7 @@ const Oe = /* @__PURE__ */ q(Be, [["render", Ae], ["__scopeId", "data-v-9fe1a5ff
       finish: () => t("finish")
     };
   }
-}), Ie = { class: "confirm-modal relative top-40 mx-auto shadow-xl rounded-md bg-white max-w-md mt-40" }, _e = { class: "flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto" }, We = { class: "flex justify-between items-center py-3 px-4 border-b" }, Ne = { class: "font-bold text-gray-800" }, je = { class: "sr-only" }, He = { class: "p-4 overflow-y-auto" }, Re = { class: "mt-1 text-gray-800" }, Ze = { class: "flex justify-end items-center gap-x-2 py-3 px-4 border-t" };
+}), Ie = { class: "confirm-modal relative top-40 mx-auto shadow-xl rounded-md bg-white max-w-md mt-40" }, _e = { class: "flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto" }, We = { class: "flex justify-between items-center py-3 px-4 border-b" }, Ne = { class: "font-bold text-gray-800" }, je = { class: "sr-only" }, Re = { class: "p-4 overflow-y-auto" }, He = { class: "mt-1 text-gray-800" }, Ze = { class: "flex justify-end items-center gap-x-2 py-3 px-4 border-t" };
 function qe(e, t, d, a, l, r) {
   return v(), w(V, null, [
     t[4] || (t[4] = i("div", {
@@ -241,8 +241,8 @@ function qe(e, t, d, a, l, r) {
             ], -1))
           ])
         ]),
-        i("div", He, [
-          i("p", Re, T(e.getTranslation.desc), 1)
+        i("div", Re, [
+          i("p", He, T(e.getTranslation.desc), 1)
         ]),
         i("div", Ze, [
           i("button", {
@@ -263,7 +263,7 @@ function qe(e, t, d, a, l, r) {
     ])
   ], 64);
 }
-const Ge = /* @__PURE__ */ q($e, [["render", qe], ["__scopeId", "data-v-a1ca1473"]]), Ue = se({
+const Ue = /* @__PURE__ */ q($e, [["render", qe], ["__scopeId", "data-v-a1ca1473"]]), Ge = se({
   name: "DrawingCanvas",
   props: {
     translations: {
@@ -281,7 +281,7 @@ const Ge = /* @__PURE__ */ q($e, [["render", qe], ["__scopeId", "data-v-a1ca1473
     }, a = ie(() => ({
       ...d,
       ...e.translations
-    })), l = g(null), r = g([]), o = g(""), n = xe({
+    })), l = g(null), r = g([]), o = g(""), n = be({
       drawing: !1,
       x: 0,
       y: 0,
@@ -302,10 +302,10 @@ const Ge = /* @__PURE__ */ q($e, [["render", qe], ["__scopeId", "data-v-a1ca1473
     }, E = () => {
       var W;
       if (!r.value.length) return;
-      const s = -(n.minX - 10), u = -(n.minY - 10), p = n.maxX - n.minX + 20, L = n.maxY - n.minY + 20, _ = r.value.reduce((R, Y) => R + Y[0] + (Y[1] + s) + "," + (Y[2] + u), ""), B = document.getElementById("signature-path-data");
+      const s = -(n.minX - 10), u = -(n.minY - 10), p = n.maxX - n.minX + 20, L = n.maxY - n.minY + 20, _ = r.value.reduce((H, Y) => H + Y[0] + (Y[1] + s) + "," + (Y[2] + u), ""), B = document.getElementById("signature-path-data");
       if (B) {
         B.style.display = "none", B.removeAttribute("viewBox"), (W = B.querySelector("path")) == null || W.setAttribute("d", _);
-        const R = new XMLSerializer().serializeToString(B), Y = btoa(R), N = new Image();
+        const H = new XMLSerializer().serializeToString(B), Y = btoa(H), N = new Image();
         N.src = "data:image/svg+xml;base64," + Y, N.onload = () => {
           const A = document.createElement("canvas");
           A.style.display = "none", A.width = p, A.height = L;
@@ -424,7 +424,7 @@ function on(e, t, d, a, l, r) {
     ], 544)
   ]);
 }
-const sn = /* @__PURE__ */ q(Ue, [["render", on]]);
+const sn = /* @__PURE__ */ q(Ge, [["render", on]]);
 function ln(e, t) {
   return v(), w("svg", {
     xmlns: "http://www.w3.org/2000/svg",
@@ -457,9 +457,8 @@ function rn(e, t) {
     })
   ]);
 }
-const ue = () => {
-  const e = ce.version || "4.8.69";
-  ce.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${e}/build/pdf.worker.min.js`;
+const ce = () => {
+  De.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.js", import.meta.url).toString();
 }, dn = async (e, t = "string") => {
   let d;
   if (t === "string" && typeof e == "string") {
@@ -530,7 +529,7 @@ const fn = {
     PDFPage: Ee,
     DrawingCanvas: sn,
     DrawingSignature: Oe,
-    DialogBox: Ge,
+    DialogBox: Ue,
     MagnifyingGlassMinusIcon: ln,
     MagnifyingGlassPlusIcon: rn
   },
@@ -574,7 +573,7 @@ const fn = {
       additionalTextField: ""
     }, ...e.translations })), _ = async () => {
       try {
-        if (ue(), !e.pdfData) return;
+        if (ce(), !e.pdfData) return;
         y.value = 0, await W(e.pdfData, "string"), Y(), document.addEventListener("keydown", re);
       } catch (c) {
         console.error("onMounted error:", c);
@@ -592,35 +591,35 @@ const fn = {
       const S = await dn(c, M), C = await un(S), k = [];
       for (let X = 1; X <= C.numPages; X++) {
         const O = await C.getPage(X);
-        k.push(Pe(O));
+        k.push(xe(O));
       }
       if (r.value = k, n.value = Array(C.numPages).fill([]), o.value = Array(C.numPages).fill({ scale: 1 }), p.value = Array(C.numPages).fill(!1), M === "string") {
         const X = atob(c), O = new Uint8Array(X.length);
         for (let j = 0; j < X.length; j++)
           O[j] = X.charCodeAt(j);
-        const U = new Blob([O], { type: "application/pdf" });
-        a.value = new File([U], "document.pdf", { type: "application/pdf" }), l.value = "document.pdf";
+        const G = new Blob([O], { type: "application/pdf" });
+        a.value = new File([G], "document.pdf", { type: "application/pdf" }), l.value = "document.pdf";
       }
-    }, R = async (c) => {
+    }, H = async (c) => {
       b.value = c.signatureImageData, await N(c.originWidth, c.originHeight, c.path), m.value = !1;
     }, Y = () => {
       y.value >= 0 && (m.value = !0);
     }, N = (c, M, S) => {
       var C;
       n.value = Array(n.value.length).fill([]), (C = e.signatureData) == null || C.forEach((k) => {
-        const X = d(), O = G(k.width), U = G(k.height), j = O / c, ye = U / M, pe = Math.min(j, ye), we = {
+        const X = d(), O = U(k.width), G = U(k.height), j = O / c, ve = G / M, ye = Math.min(j, ve), pe = {
           id: X,
           path: S,
           type: "drawing",
-          x: G(k.left),
-          y: G(k.top),
+          x: U(k.left),
+          y: U(k.top),
           originWidth: c,
           originHeight: M,
           width: O,
-          height: U,
-          scale: pe
+          height: G,
+          scale: ye
         }, ee = k.page - 1;
-        n.value[ee] && (n.value[ee] = [...n.value[ee], we]);
+        n.value[ee] && (n.value[ee] = [...n.value[ee], pe]);
       });
     }, A = (c) => {
       y.value = c;
@@ -634,9 +633,9 @@ const fn = {
       n.value = n.value.map(
         (M, S) => S == y.value ? M.filter((C) => C.id !== c) : M
       );
-    }, ge = (c, M) => {
+    }, ue = (c, M) => {
       o.value[M] = c;
-    }, G = (c) => c * 72 / 2.54, le = async () => {
+    }, U = (c) => c * 72 / 2.54, le = async () => {
       if (!(!a.value || E.value || !r.value.length)) {
         E.value = !0;
         try {
@@ -651,17 +650,17 @@ const fn = {
           E.value = !1;
         }
       }
-    }, he = () => {
+    }, ge = () => {
       D.value = b.value !== "" ? "confirm" : "warning", h.value = !0, document.body.classList.add("overflow-y-hidden");
     }, Q = () => {
       h.value = !1, document.body.classList.remove("overflow-y-hidden");
-    }, fe = () => {
+    }, he = () => {
       le(), Q();
     }, re = (c) => {
       (c.key === "Escape" || c.key === "Esc") && Q();
-    }, me = (c) => {
+    }, fe = (c) => {
       F.value = c === "in" ? Math.min(F.value + z, u) : Math.max(F.value - z, s);
-    }, ve = (c) => {
+    }, me = (c) => {
       p.value[c] = !0, p.value.every(Boolean) && t("onPDFRendered");
     };
     return J(_), ae(() => {
@@ -687,17 +686,17 @@ const fn = {
       selectPage: A,
       updateObject: Z,
       deleteObject: K,
-      onMeasure: ge,
+      onMeasure: ue,
       savePDF: le,
-      onFinishDrawing: R,
-      openModal: he,
+      onFinishDrawing: H,
+      openModal: ge,
       closeModal: Q,
-      confirmSave: fe,
+      confirmSave: he,
       isConfirmOrWarning: D,
       zoomScale: F,
-      zoomPDF: me,
+      zoomPDF: fe,
       pageRenderStatus: p,
-      renderFinished: ve
+      renderFinished: me
     };
   }
 }, mn = {
@@ -726,7 +725,7 @@ const fn = {
   class: "flex w-full flex-grow items-center justify-center"
 }, Mn = { class: "text-3xl font-bold text-gray-500" };
 function Sn(e, t, d, a, l, r) {
-  const o = H("DialogBox"), n = H("MagnifyingGlassMinusIcon"), x = H("MagnifyingGlassPlusIcon"), P = H("DrawingCanvas"), y = H("PDFPage"), E = H("DrawingSignature");
+  const o = R("DialogBox"), n = R("MagnifyingGlassMinusIcon"), x = R("MagnifyingGlassPlusIcon"), P = R("DrawingCanvas"), y = R("PDFPage"), E = R("DrawingSignature");
   return v(), w(V, null, [
     a.isOpenConfirm ? (v(), w("div", mn, [
       $(o, {
@@ -821,7 +820,7 @@ function Sn(e, t, d, a, l, r) {
                   return v(), w("div", {
                     key: f.id
                   }, [
-                    f.type === "drawing" ? (v(), De(E, {
+                    f.type === "drawing" ? (v(), Pe(E, {
                       key: 0,
                       onUpdate: (D) => a.updateObject(f.id, D),
                       onDelete: () => a.deleteObject(f.id),
@@ -849,7 +848,7 @@ function Sn(e, t, d, a, l, r) {
   ], 64);
 }
 const te = /* @__PURE__ */ q(fn, [["render", Sn], ["__scopeId", "data-v-477f5e9a"]]);
-ue();
+ce();
 const Cn = (e) => {
   e.component(te.name || "DrawSignPdf", te);
 };
