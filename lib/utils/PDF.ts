@@ -7,59 +7,54 @@ export async function save(
   name: string,
   isDownload = false
 ) {
-  let pdfDoc;
+  const arrayBuffer = await pdfFile.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
+
+  // ✅ Remove all form fields (flattening step)
   try {
-    const arrayBuffer = await pdfFile.arrayBuffer();
-    pdfDoc = await PDFDocument.load(arrayBuffer);
-  } catch (e) {
-    console.error('Error loading PDF:', e);
-    throw e;
-  }
-
-  const pagesProcesses = pdfDoc
-    .getPages()
-    .map(async (page: any, pageIndex: number) => {
-      const pageObjects = objects[pageIndex] || [];
-      // 'y' starts from bottom in PDFLib, use this to calculate y
-      const pageHeight = page.getHeight();
-      const embedProcesses = pageObjects.map(async (object: any) => {
-        if (object.type === "drawing") {
-          const { x, y, path, originWidth, originHeight, width, height, scale } =
-            object;
-
-          // Calculate the actual width and height after scaling
-          const scaledWidth = originWidth * scale;
-          const scaledHeight = originHeight * scale;
-
-          // Center the drawing within the desired square
-          const centeredX = x + (width - scaledWidth) / 2;
-          const centeredY = y + (height - scaledHeight) / 2;
-
-          // Draw the path using drawSvgPath
-          page.drawSvgPath(path, {
-            x: centeredX,
-            y: pageHeight - centeredY,
-            scale: scale,
-            borderWidth: 5,
-            borderColor: rgb(0, 0, 0),
-            borderLineCap: 'Round',
-            borderLineJoin: 'Round'
-          });
-        }
-      });
-      // embed objects in order
-      const drawProcesses = await Promise.all(embedProcesses);
-      drawProcesses.forEach((p) => p && p());
+    const form = pdfDoc.getForm();
+    form.getFields().forEach((field) => {
+      form.removeField(field);
     });
-  await Promise.all(pagesProcesses);
-  try {
-    const pdfBytes = await pdfDoc.save();
-    if (isDownload) {
-      downloadPDF(pdfBytes, name);
-    }
-    return await pdfDoc.saveAsBase64();
   } catch (e) {
-    console.error('Error saving PDF:', e);
-    throw e;
+    console.warn('No AcroForm found or already removed:', e);
   }
+
+  // ✅ Draw each object (e.g., signature)
+  const pagesProcesses = pdfDoc.getPages().map(async (page, pageIndex) => {
+    const pageObjects = objects[pageIndex] || [];
+    const pageHeight = page.getHeight();
+
+    const drawOps = pageObjects.map(async (object: any) => {
+      if (object.type === "drawing") {
+        const { x, y, path, originWidth, originHeight, width, height, scale } = object;
+        const scaledWidth = originWidth * scale;
+        const scaledHeight = originHeight * scale;
+        const centeredX = x + (width - scaledWidth) / 2;
+        const centeredY = y + (height - scaledHeight) / 2;
+
+        page.drawSvgPath(path, {
+          x: centeredX,
+          y: pageHeight - centeredY - scaledHeight, // flipped for PDF y-axis
+          scale: scale,
+          borderWidth: 5,
+          borderColor: rgb(0, 0, 0),
+          borderLineCap: 'Round',
+          borderLineJoin: 'Round'
+        });
+      }
+    });
+
+    await Promise.all(drawOps);
+  });
+
+  await Promise.all(pagesProcesses);
+
+  // ✅ Save and download or return
+  const pdfBytes = await pdfDoc.save();
+  if (isDownload) {
+    downloadPDF(pdfBytes, name);
+  }
+
+  return await pdfDoc.saveAsBase64();
 }
