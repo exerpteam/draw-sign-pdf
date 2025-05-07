@@ -29,7 +29,8 @@
     "lib/**/*.d.ts",
     "lib/**/*.tsx",
     "lib/**/*.vue",
-    "vite.config.ts"
+    "vite.config.ts",
+    "env.d.ts",
   ],
   "exclude": ["node_modules"]
 }

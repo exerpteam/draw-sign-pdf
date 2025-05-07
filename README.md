@@ -160,14 +160,6 @@ To build the component for production:
 npm run build
 ```
 
-## Testing
-
-Run the test suite:
-
-```bash
-npm run test
-```
-
 ## License
 
 MIT

@@ -1,13 +1,13 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
-import dts from 'vite-plugin-dts'
+import { defineConfig, type UserConfigExport } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { resolve } from 'path';
+import dts from 'vite-plugin-dts';
 
-const isDemo = process.env.NODE_ENV === 'demo'
+const isDemo = process.env.NODE_ENV === 'demo';
 
-const resolvePath = (p: string) => resolve(__dirname, p)
+const resolvePath = (p: string) => resolve(__dirname, p);
 
-const demoConfig = {
+const demoConfig: UserConfigExport = {
   root: resolvePath('demo'),
   base: '/',
   plugins: [vue()],
@@ -26,9 +26,9 @@ const demoConfig = {
   optimizeDeps: {
     include: ['pdfjs-dist', 'pdf-lib', 'downloadjs'],
   },
-}
+};
 
-const prodConfig = {
+const prodConfig: UserConfigExport = {
   root: resolvePath('.'),
   plugins: [
     vue(),
@@ -51,7 +51,7 @@ const prodConfig = {
     rollupOptions: {
       external: ['vue', 'pdfjs-dist', 'pdf-lib', 'downloadjs'],
       output: {
-        exports: 'named',
+        exports: 'named' as const, // 👈 key fix here
         globals: {
           vue: 'Vue',
           'pdfjs-dist': 'pdfjsLib',
@@ -64,6 +64,6 @@ const prodConfig = {
   optimizeDeps: {
     include: ['pdfjs-dist', 'pdf-lib', 'downloadjs'],
   },
-}
+};
 
-export default defineConfig(isDemo ? demoConfig : prodConfig)
+export default defineConfig(isDemo ? demoConfig : prodConfig);
