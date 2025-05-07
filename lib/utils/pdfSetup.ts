@@ -1,4 +1,5 @@
 import * as pdfjsLib from 'pdfjs-dist';
 export const initializePdfjs = () => {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`
+  const version = pdfjsLib.version || '4.8.69' // fallback if needed
+  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.js`
 };

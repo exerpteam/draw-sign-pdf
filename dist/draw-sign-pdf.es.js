@@ -205,7 +205,7 @@ const Oe = /* @__PURE__ */ q(Be, [["render", Ae], ["__scopeId", "data-v-9fe1a5ff
       finish: () => t("finish")
     };
   }
-}), Ie = { class: "confirm-modal relative top-40 mx-auto shadow-xl rounded-md bg-white max-w-md mt-40" }, _e = { class: "flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto" }, We = { class: "flex justify-between items-center py-3 px-4 border-b" }, je = { class: "font-bold text-gray-800" }, Ne = { class: "sr-only" }, He = { class: "p-4 overflow-y-auto" }, Re = { class: "mt-1 text-gray-800" }, Ze = { class: "flex justify-end items-center gap-x-2 py-3 px-4 border-t" };
+}), Ie = { class: "confirm-modal relative top-40 mx-auto shadow-xl rounded-md bg-white max-w-md mt-40" }, _e = { class: "flex flex-col bg-white border shadow-sm rounded-xl pointer-events-auto" }, We = { class: "flex justify-between items-center py-3 px-4 border-b" }, Ne = { class: "font-bold text-gray-800" }, je = { class: "sr-only" }, He = { class: "p-4 overflow-y-auto" }, Re = { class: "mt-1 text-gray-800" }, Ze = { class: "flex justify-end items-center gap-x-2 py-3 px-4 border-t" };
 function qe(e, t, d, a, l, r) {
   return v(), w(V, null, [
     t[4] || (t[4] = i("div", {
@@ -217,13 +217,13 @@ function qe(e, t, d, a, l, r) {
     i("div", Ie, [
       i("div", _e, [
         i("div", We, [
-          i("h3", je, T(e.getTranslation.title), 1),
+          i("h3", Ne, T(e.getTranslation.title), 1),
           i("button", {
             onClick: t[0] || (t[0] = (...o) => e.closeModal && e.closeModal(...o)),
             type: "button",
             class: "flex justify-center items-center size-7 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
           }, [
-            i("span", Ne, T(e.getTranslation.close), 1),
+            i("span", je, T(e.getTranslation.close), 1),
             t[3] || (t[3] = i("svg", {
               class: "flex-shrink-0 size-4",
               xmlns: "http://www.w3.org/2000/svg",
@@ -305,12 +305,12 @@ const Ge = /* @__PURE__ */ q($e, [["render", qe], ["__scopeId", "data-v-a1ca1473
       const s = -(n.minX - 10), u = -(n.minY - 10), p = n.maxX - n.minX + 20, L = n.maxY - n.minY + 20, _ = r.value.reduce((R, Y) => R + Y[0] + (Y[1] + s) + "," + (Y[2] + u), ""), B = document.getElementById("signature-path-data");
       if (B) {
         B.style.display = "none", B.removeAttribute("viewBox"), (W = B.querySelector("path")) == null || W.setAttribute("d", _);
-        const R = new XMLSerializer().serializeToString(B), Y = btoa(R), j = new Image();
-        j.src = "data:image/svg+xml;base64," + Y, j.onload = () => {
+        const R = new XMLSerializer().serializeToString(B), Y = btoa(R), N = new Image();
+        N.src = "data:image/svg+xml;base64," + Y, N.onload = () => {
           const A = document.createElement("canvas");
           A.style.display = "none", A.width = p, A.height = L;
           const Z = A.getContext("2d");
-          Z == null || Z.drawImage(j, 0, 0);
+          Z == null || Z.drawImage(N, 0, 0);
           let K = A.toDataURL("image/png").replace("data:image/png;base64,", "");
           A.remove(), B.innerHTML = "", r.value = [], t("finish", {
             originWidth: p,
@@ -458,7 +458,8 @@ function rn(e, t) {
   ]);
 }
 const ue = () => {
-  ce.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${ce.version}/pdf.worker.min.js`;
+  const e = ce.version || "4.8.69";
+  ce.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${e}/build/pdf.worker.min.js`;
 }, dn = async (e, t = "string") => {
   let d;
   if (t === "string" && typeof e == "string") {
@@ -595,19 +596,19 @@ const fn = {
       }
       if (r.value = k, n.value = Array(C.numPages).fill([]), o.value = Array(C.numPages).fill({ scale: 1 }), p.value = Array(C.numPages).fill(!1), M === "string") {
         const X = atob(c), O = new Uint8Array(X.length);
-        for (let N = 0; N < X.length; N++)
-          O[N] = X.charCodeAt(N);
+        for (let j = 0; j < X.length; j++)
+          O[j] = X.charCodeAt(j);
         const U = new Blob([O], { type: "application/pdf" });
         a.value = new File([U], "document.pdf", { type: "application/pdf" }), l.value = "document.pdf";
       }
     }, R = async (c) => {
-      b.value = c.signatureImageData, await j(c.originWidth, c.originHeight, c.path), m.value = !1;
+      b.value = c.signatureImageData, await N(c.originWidth, c.originHeight, c.path), m.value = !1;
     }, Y = () => {
       y.value >= 0 && (m.value = !0);
-    }, j = (c, M, S) => {
+    }, N = (c, M, S) => {
       var C;
       n.value = Array(n.value.length).fill([]), (C = e.signatureData) == null || C.forEach((k) => {
-        const X = d(), O = G(k.width), U = G(k.height), N = O / c, ye = U / M, pe = Math.min(N, ye), we = {
+        const X = d(), O = G(k.width), U = G(k.height), j = O / c, ye = U / M, pe = Math.min(j, ye), we = {
           id: X,
           path: S,
           type: "drawing",
@@ -682,7 +683,7 @@ const fn = {
       onUploadPDF: B,
       addPDF: W,
       onAddDrawing: Y,
-      addDrawing: j,
+      addDrawing: N,
       selectPage: A,
       updateObject: Z,
       deleteObject: K,
