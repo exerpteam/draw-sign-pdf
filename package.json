@@ -1,7 +1,7 @@
 {
   "name": "draw-sign-pdf",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "main": "./dist/draw-sign-pdf.umd.js",
   "module": "./dist/draw-sign-pdf.es.js",
