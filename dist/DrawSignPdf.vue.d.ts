@@ -310,9 +310,6 @@ declare const _default: DefineComponent<ExtractPropTypes<{
         startY: Ref<number, number>;
         svg: Ref<SVGSVGElement | null, SVGSVGElement | null>;
         ratio: number;
-        handlePanStart: (event: MouseEvent | TouchEvent) => void;
-        handlePanMove: (event: MouseEvent | TouchEvent) => void;
-        handlePanEnd: () => void;
         onDelete: () => void;
     }, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, ("delete" | "update")[], "delete" | "update", PublicProps, Readonly< ExtractPropTypes<{
         originWidth: {
