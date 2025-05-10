@@ -60,7 +60,7 @@
             }">
               <div v-for="object in allObjects[pIndex]" :key="object.id">
                 <DrawingSignature v-if="object.type === 'drawing'" @update="(e: any) => updateObject(object.id, e)"
-                  @delete="() => deleteObject(object.id)" :path="object.path" :x="object.x" :y="object.y"
+                  :path="object.path" :x="object.x" :y="object.y"
                   :width="object.width" :height="object.height" :originWidth="object.originWidth"
                   :originHeight="object.originHeight" :pageScale="pagesScale[pIndex]?.scale"
                   :data-cy="'sign-pos-' + object.id" :zoomScale="zoomScale" />
@@ -279,14 +279,6 @@ export default {
       );
     };
 
-    const deleteObject = (objectId: number) => {
-      allObjects.value = allObjects.value.map((objects, pIndex) =>
-        pIndex == selectedPageIndex.value
-          ? objects.filter((object: DrawingObject) => object.id !== objectId)
-          : objects
-      );
-    };
-
     const onMeasure = (scale: number, i: number) => {
       pagesScale.value[i] = scale;
     };
@@ -367,7 +359,6 @@ export default {
       addDrawing,
       selectPage,
       updateObject,
-      deleteObject,
       onMeasure,
       savePDF,
       onFinishDrawing,

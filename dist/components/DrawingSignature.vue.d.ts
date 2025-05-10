@@ -46,8 +46,7 @@ declare const _default: DefineComponent<ExtractPropTypes<{
     startY: Ref<number, number>;
     svg: Ref<SVGSVGElement | null, SVGSVGElement | null>;
     ratio: number;
-    onDelete: () => void;
-}, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, ("delete" | "update")[], "delete" | "update", PublicProps, Readonly< ExtractPropTypes<{
+}, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, "update"[], "update", PublicProps, Readonly< ExtractPropTypes<{
     originWidth: {
         type: NumberConstructor;
         required: true;
@@ -85,7 +84,6 @@ declare const _default: DefineComponent<ExtractPropTypes<{
         required: true;
     };
 }>> & Readonly<{
-    onDelete?: ((...args: any[]) => any) | undefined;
     onUpdate?: ((...args: any[]) => any) | undefined;
 }>, {
     pageScale: number;
