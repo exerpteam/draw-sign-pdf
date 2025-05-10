@@ -1,130 +1,183 @@
-# Note
-For updating the package with new changes we need to do the following :
-  1. npm build to create dist files with changes
-  2. update the version in package.json
-  3. Merge and add the new commit hash to the project that uses this
-  4. npm install
-     
-# draw-sign-pdf
-A description of your new library.
+# PDF Signature Drawing Component
 
-# How to run TEST and use In Webapps
+A Vue.js component that allows users to draw signatures on PDF documents. This component provides a user-friendly interface for adding signatures to PDF files and saving the modified documents.
 
-Install package
-```
-yarn 
-````
-Link package before run 
-```
-yarn link
-cd demo 
-yarn link 'draw-sign-pdf'
-cd ../
-```
+## Features
 
-Run Demo
-```
-yarn build
-yarn dev
+- Load and display PDF documents
+- Draw signatures directly on PDF pages
+- Support for multiple pages
+- Responsive design
+- Customizable translations
+- Download or save signed PDFs
+- Zoom/Zoom out PDFa
+
+## Installation
+
+### Using GitHub Releases
+
+Add the package to your project's `package.json` with a specific version tag:
+
+```json
+{
+  "dependencies": {
+    "draw-sign-pdf": "github:your-username/draw-sign-pdf#v1.0.0"
+  }
+}
 ```
 
-You can see the components imported in the App.vue file under the demo folder.
+Then install the dependencies:
 
-If you want to add this package in any other project locally the use yarn linking 
-```
-yarn link 'draw-sign-pdf'
+```bash
+npm install
 ```
 
-use the below methods to import 
-``` vue
+Or using yarn:
+
+```bash
+yarn add github:your-username/draw-sign-pdf#v1.0.0
+```
+
+### Using Latest Release
+
+To use the latest release:
+
+```json
+{
+  "dependencies": {
+    "draw-sign-pdf": "github:your-username/draw-sign-pdf"
+  }
+}
+```
+
+```bash
+npm install github:your-username/draw-sign-pdf
+# or
+yarn add github:your-username/draw-sign-pdf
+```
+
+### Using a Specific Branch
+
+To use a specific branch:
+
+```json
+{
+  "dependencies": {
+    "draw-sign-pdf": "github:your-username/draw-sign-pdf#branch-name"
+  }
+}
+```
+
+```bash
+npm install github:your-username/draw-sign-pdf#branch-name
+# or
+yarn add github:your-username/draw-sign-pdf#branch-name
+```
+
+Note: Replace `your-username` with the actual GitHub username and `v1.0.0` with the desired version tag.
+
+## Usage
+
+```vue
 <template>
-  <div>
-    <DrawSignPdf :pdfData="pdfData" :signatureData="signatureData" :isDownload="false" @finish="getSignedData" :translations="translations" :enableZoom="true" @onPDFRendered="pdfRendered"/>
-  </div>
+  <DrawSignPdf
+    :pdfData="pdfBase64String"
+    :signatureData="[]"
+    :isDownload="true"
+    :translations="customTranslations"
+    @finish="handleFinish"
+    :enableZoom="true" 
+    @onPDFRendered="pdfRendered"
+  />
 </template>
-<script setup>
-import { Options, Vue } from 'vue-class-component';
-import DrawSignPdf from "draw-sign-pdf";
-import { pdfData, signatureData } from "./pdfData";
 
-//optional
-const translations = {
+<script setup>
+import { DrawSignPdf } from 'draw-sign-pdf';
+
+const pdfBase64String = '...'; // Your PDF as base64 string
+const customTranslations = {
   updateSign: "Update Signature",
   save: "Save",
   saving: "Saving",
   drawLabel: "Draw the signature here",
   drawDone: "Done",
-  additionalTextField: "", // Appears near Done button while signing
   drawCancel: "Cancel",
   confirmBoxTitle: "Confirm Saving",
   confirmBoxDesc: "Are you sure you want to save the signed document?",
   confirmBoxClose: "Close",
   confirmBoxSaveChanges: "Save Changes",
-  pdfLoading: "PDF will load here"
-}
+  warningTitle: "Missing Signature",
+  warningDesc: "The required signature is missing. Please sign to continue",
+  warningClose: "Close",
+  pdfLoading: "PDF will load here",
+  additionalTextField: "",
+};
 
-@Options({
-  components: {
-    DrawSignPdf,
-  },
-})
-
-const getSignedData = (SignedDocumentData) => {
-  console.log(SignedDocumentData, "SignedDocumentData");
-}
+const handleFinish = (data) => {
+  console.log('Signed document:', data.signedDocument);
+  console.log('Signature image:', data.signatureImage);
+};
 </script>
-<style scoped>
-</style>
-
 ```
 
+## Props
 
-## Install
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| pdfData | String | Yes | - | PDF file as base64 string |
+| signatureData | Array | No | [] | Array of signature data objects |
+| isDownload | Boolean | No | false | Whether to download the PDF after signing |
+| translations | Object | No | {} | Custom translations for UI text |
+
+## Events
+
+| Event | Payload | Description |
+|-------|---------|-------------|
+| finish | { signedDocument: { type: string, data: string }, signatureImage: string } | Emitted when the PDF is saved, contains the signed PDF and signature image |
+
+## Dependencies
+
+- Vue.js
+- pdf-lib
+- pdfjs-dist
+
+## Development
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Building
+
+To build the component for production:
 
 ```bash
-$ npm install draw-sign-pdf --save
-# or...
-$ yarn add draw-sign-pdf
+npm run build
 ```
-
-_or_
-
-Use the UMD build from [Unpkg](https://unpkg.com/draw-sign-pdf), available as `MyLib` in the global scope.
-
-```html
-<script src="/vendor/vue.js" />
-<script src="https://unpkg.com/draw-sign-pdf" />
-```
-
-### Globally
-
-Import and register the module as a plugin.
-
-```javascript
-import { createApp } from 'vue'
-import App from './App.vue'
-import MyLib from 'draw-sign-pdf'
-
-createApp(App).use(MyLib).mount('#app')
-```
-
-### Per-component
-
-```javascript
-import { MyLib } from 'draw-sign-pdf'
-
-export default {
-  components: { MyLib },
-  setup() {
-    ...
-  },
-}
-```
-
-## Usage
-
-Usage instructions here.
 
 ## License
 
-MIT © 
+MIT
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request 
+
+### Internal Release Process
+
+1. **Update Version**:
+   - Update the `version` field in `package.json` using semantic versioning (`MAJOR.MINOR.PATCH`).
+
+2. **Build the Package**:
+   ```bash
+   npm run build

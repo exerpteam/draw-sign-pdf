@@ -1,3 +1,4 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   mode: 'jit',
   content: [
@@ -60,5 +61,7 @@ module.exports = {
   variants: {
     margin: ['responsive', 'hover', 'focus'],
   },
-  plugins: [require('@tailwindcss/typography')],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }

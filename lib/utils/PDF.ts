@@ -1,76 +1,73 @@
-import { getAsset } from "./prepareAssets";
+import { downloadPDF } from "./prepareAssets";
+import { PDFDocument, rgb, LineCapStyle} from 'pdf-lib';
 
 export async function save(
-  pdfFile: Blob,
+  pdfFile: File | Blob,
   objects: any,
   name: string,
   isDownload = false
 ) {
-  const PDFLib = await getAsset("PDFLib");
+  const arrayBuffer = await pdfFile.arrayBuffer();
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
 
-  const download = await getAsset("download");
-  let pdfDoc;
+  // ✅ Remove all form fields (flattening step)
   try {
-    pdfDoc = await PDFLib.value.PDFDocument.load(pdfFile);
-  } catch (e) {
-    throw e;
-  }
-  const pagesProcesses = pdfDoc
-    .getPages()
-    .map(async (page: any, pageIndex: number) => {
-      const pageObjects = objects[pageIndex];
-      // 'y' starts from bottom in PDFLib, use this to calculate y
-      const pageHeight = page.getHeight();
-      const embedProcesses = pageObjects.map(async (object: any) => {
-        if (object.type === "drawing") {
-          const { x, y, path, originWidth, originHeight, width, height, scale } =
-            object;
-
-          // Calculate the actual width and height after scaling
-          const scaledWidth = originWidth * scale;
-          const scaledHeight = originHeight * scale;
-
-          // Center the drawing within the desired square
-          const centeredX = x + (width - scaledWidth) / 2;
-          const centeredY = y + (height - scaledHeight) / 2;
-
-          const {
-            pushGraphicsState,
-            setLineCap,
-            popGraphicsState,
-            setLineJoin,
-            LineCapStyle,
-            LineJoinStyle,
-          } = PDFLib.value;
-          return () => {
-            page.pushOperators(
-              pushGraphicsState(),
-              setLineCap(LineCapStyle.Round),
-              setLineJoin(LineJoinStyle.Round)
-            );
-
-            page.drawSvgPath(path, {
-              borderWidth: 5,
-              scale,
-              x: centeredX,
-              y: pageHeight - centeredY,
-            });
-            page.pushOperators(popGraphicsState());
-          };
-        }
-      });
-      // embed objects in order
-      const drawProcesses = await Promise.all(embedProcesses);
-      drawProcesses.forEach((p) => p());
+    const form = pdfDoc.getForm();
+    form.getFields().forEach((field) => {
+      form.removeField(field);
     });
-  await Promise.all(pagesProcesses);
-  try {
-    const pdfBytes = await pdfDoc.save();
-    if (isDownload) {
-      download.value(pdfBytes, name, "application/pdf");
-    }
-    return await pdfDoc.saveAsBase64();
   } catch (e) {
-    throw e;
+    console.warn('No AcroForm found or already removed:', e);
   }
+
+  // ✅ Embed drawings (signatures, etc.)
+  const pages = pdfDoc.getPages();
+  for (let pageIndex = 0; pageIndex < pages.length; pageIndex++) {
+    const page = pages[pageIndex];
+    const pageHeight = page.getHeight();
+    const pageObjects = objects[pageIndex] || [];
+
+    for (const object of pageObjects) {
+      if (object.type === "drawing") {
+        const {
+          x,
+          y,
+          path,
+          originWidth,
+          originHeight,
+          width,
+          height,
+        } = object;
+        
+        // Derive separate scale factors
+        const scaleX = width / originWidth;
+        const scaleY = height / originHeight;
+        
+        // Use the smaller scale to preserve aspect ratio
+        const scale = Math.min(scaleX, scaleY);
+        
+        // Recalculate actual drawn dimensions
+        const scaledWidth = originWidth * scale;
+        // Center drawing within target box
+        const centeredX = x + (width - scaledWidth) / 2;
+        
+        page.drawSvgPath(path, {
+          x: centeredX,
+          y: pageHeight - y, // align bottom of signature to Vue's top position
+          scale,
+          borderWidth: 5,
+          borderColor: rgb(0, 0, 0),
+          borderLineCap: LineCapStyle.Round,
+        });
+      }
+    }
+  }
+
+  // ✅ Save and download or return
+  const pdfBytes = await pdfDoc.save();
+  if (isDownload) {
+    downloadPDF(pdfBytes, name);
+  }
+
+  return await pdfDoc.saveAsBase64();
 }

@@ -1,44 +1,69 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import { defineConfig, type UserConfigExport } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { resolve } from 'path';
+import dts from 'vite-plugin-dts';
 
-const resolvePath = (str: string) => resolve(__dirname, str)
+const isDemo = process.env.NODE_ENV === 'demo';
 
-const isProd = process.env.NODE_ENV === 'production'
+const resolvePath = (p: string) => resolve(__dirname, p);
 
-const devConfig = defineConfig({
-  root: './demo',
+const demoConfig: UserConfigExport = {
+  root: resolvePath('demo'),
+  base: '/',
   plugins: [vue()],
+  server: {
+    port: 3000,
+  },
   build: {
-    outDir: '../dist-demo',
+    outDir: 'dist-demo',
     emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'demo/index.html'),
-      },
+  },
+  resolve: {
+    alias: {
+      'draw-sign-pdf': resolvePath('lib'),
     },
   },
-})
+  optimizeDeps: {
+    include: ['pdfjs-dist', 'pdf-lib', 'downloadjs'],
+  },
+};
 
-const prodConfig = defineConfig({
-  plugins: [vue()],
+const prodConfig: UserConfigExport = {
+  root: resolvePath('.'),
+  plugins: [
+    vue(),
+    dts({
+      include: ['lib/**/*.ts', 'lib/**/*.vue'],
+      outDir: 'dist',
+      staticImport: true,
+      insertTypesEntry: true,
+    }),
+  ],
   build: {
+    outDir: 'dist',
+    emptyOutDir: true,
     lib: {
-      entry: resolvePath("lib/index.ts"),
-      name: "draw-sign-pdf",
+      entry: resolvePath('lib/index.ts'),
+      name: 'DrawSignPdf',
       fileName: (format) => `draw-sign-pdf.${format}.js`,
+      formats: ['es', 'umd'],
     },
     rollupOptions: {
-      external: ["vue"],
-
+      external: ['vue', 'pdfjs-dist', 'pdf-lib', 'downloadjs'],
       output: {
-        exports: "named",
+        exports: 'named' as const, // 👈 key fix here
         globals: {
-          vue: "Vue",
+          vue: 'Vue',
+          'pdfjs-dist': 'pdfjsLib',
+          'pdf-lib': 'PDFLib',
+          'downloadjs': 'download',
         },
       },
     },
   },
-});
+  optimizeDeps: {
+    include: ['pdfjs-dist', 'pdf-lib', 'downloadjs'],
+  },
+};
 
-export default isProd ? prodConfig : devConfig
+export default defineConfig(isDemo ? demoConfig : prodConfig);
