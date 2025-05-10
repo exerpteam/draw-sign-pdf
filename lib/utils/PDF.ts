@@ -1,5 +1,5 @@
 import { downloadPDF } from "./prepareAssets";
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, rgb, LineCapStyle} from 'pdf-lib';
 
 export async function save(
   pdfFile: File | Blob,
@@ -57,8 +57,7 @@ export async function save(
           scale,
           borderWidth: 5,
           borderColor: rgb(0, 0, 0),
-          borderLineCap: 'Round',
-          borderLineJoin: 'Round',
+          borderLineCap: LineCapStyle.Round,
         });
       }
     }

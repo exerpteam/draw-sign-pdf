@@ -188,7 +188,6 @@ declare const _default: DefineComponent<ExtractPropTypes<{
     addDrawing: (originWidth: number, originHeight: number, path: string) => void;
     selectPage: (index: number) => void;
     updateObject: (objectId: number, payload: DrawingPayload) => void;
-    deleteObject: (objectId: number) => void;
     onMeasure: (scale: number, i: number) => void;
     savePDF: () => Promise<void>;
     onFinishDrawing: (e: any) => Promise<void>;
@@ -310,8 +309,7 @@ declare const _default: DefineComponent<ExtractPropTypes<{
         startY: Ref<number, number>;
         svg: Ref<SVGSVGElement | null, SVGSVGElement | null>;
         ratio: number;
-        onDelete: () => void;
-    }, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, ("delete" | "update")[], "delete" | "update", PublicProps, Readonly< ExtractPropTypes<{
+    }, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, "update"[], "update", PublicProps, Readonly< ExtractPropTypes<{
         originWidth: {
             type: NumberConstructor;
             required: true;
@@ -349,7 +347,6 @@ declare const _default: DefineComponent<ExtractPropTypes<{
             required: true;
         };
     }>> & Readonly<{
-        onDelete?: ((...args: any[]) => any) | undefined;
         onUpdate?: ((...args: any[]) => any) | undefined;
     }>, {
         pageScale: number;

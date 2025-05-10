@@ -30,18 +30,6 @@
       ></div>
     </div>
 
-    <div
-      @click="onDelete"
-      class="absolute left-0 right-0 top-0 m-auto h-4 w-4 -translate-y-1/2 transform cursor-pointer rounded-full bg-white md:scale-25"
-    >
-      <img
-        class="h-full w-full"
-        src="../assets/images/delete.svg"
-        alt="delete"
-        data-cy="delete-sign"
-      />
-    </div>
-
     <svg ref="svg" width="100%" height="100%">
       <path
         stroke-width="5"
@@ -70,8 +58,8 @@ export default defineComponent({
     path: { type: String, required: true },
     zoomScale: { type: Number, required: true },
   },
-  emits: ["delete", "update"],
-  setup(props, { emit }) {
+  emits: ["update"],
+  setup(props, {}) {
     const dx = ref(0);
     const dy = ref(0);
     const dw = ref(0);
@@ -160,11 +148,6 @@ export default defineComponent({
     //   }
     //   operation.value = "";
     // };
-
-    const onDelete = () => {
-      emit("delete");
-    };
-
     return {
       dx,
       dy,
@@ -178,7 +161,6 @@ export default defineComponent({
       // handlePanStart,
       // handlePanMove,
       // handlePanEnd,
-      onDelete,
     };
   },
 });

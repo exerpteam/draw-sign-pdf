@@ -10,6 +10,7 @@ A Vue.js component that allows users to draw signatures on PDF documents. This c
 - Responsive design
 - Customizable translations
 - Download or save signed PDFs
+- Zoom/Zoom out PDFa
 
 ## Installation
 
@@ -171,3 +172,12 @@ MIT
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request 
+
+### Internal Release Process
+
+1. **Update Version**:
+   - Update the `version` field in `package.json` using semantic versioning (`MAJOR.MINOR.PATCH`).
+
+2. **Build the Package**:
+   ```bash
+   npm run build
