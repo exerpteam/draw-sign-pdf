@@ -20,35 +20,49 @@ export async function save(
     console.warn('No AcroForm found or already removed:', e);
   }
 
-  // ✅ Draw each object (e.g., signature)
-  const pagesProcesses = pdfDoc.getPages().map(async (page, pageIndex) => {
-    const pageObjects = objects[pageIndex] || [];
+  // ✅ Embed drawings (signatures, etc.)
+  const pages = pdfDoc.getPages();
+  for (let pageIndex = 0; pageIndex < pages.length; pageIndex++) {
+    const page = pages[pageIndex];
     const pageHeight = page.getHeight();
+    const pageObjects = objects[pageIndex] || [];
 
-    const drawOps = pageObjects.map(async (object: any) => {
+    for (const object of pageObjects) {
       if (object.type === "drawing") {
-        const { x, y, path, originWidth, originHeight, width, height, scale } = object;
+        const {
+          x,
+          y,
+          path,
+          originWidth,
+          originHeight,
+          width,
+          height,
+        } = object;
+        
+        // Derive separate scale factors
+        const scaleX = width / originWidth;
+        const scaleY = height / originHeight;
+        
+        // Use the smaller scale to preserve aspect ratio
+        const scale = Math.min(scaleX, scaleY);
+        
+        // Recalculate actual drawn dimensions
         const scaledWidth = originWidth * scale;
-        const scaledHeight = originHeight * scale;
+        // Center drawing within target box
         const centeredX = x + (width - scaledWidth) / 2;
-        const centeredY = y + (height - scaledHeight) / 2;
-
+        
         page.drawSvgPath(path, {
           x: centeredX,
-          y: pageHeight - centeredY - scaledHeight, // flipped for PDF y-axis
-          scale: scale,
+          y: pageHeight - y, // align bottom of signature to Vue's top position
+          scale,
           borderWidth: 5,
           borderColor: rgb(0, 0, 0),
           borderLineCap: 'Round',
-          borderLineJoin: 'Round'
+          borderLineJoin: 'Round',
         });
       }
-    });
-
-    await Promise.all(drawOps);
-  });
-
-  await Promise.all(pagesProcesses);
+    }
+  }
 
   // ✅ Save and download or return
   const pdfBytes = await pdfDoc.save();
