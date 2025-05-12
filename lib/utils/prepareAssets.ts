@@ -1,62 +1,58 @@
-import { ref, Ref } from "vue";
+import download from 'downloadjs';
+import { getDocument } from 'pdfjs-dist';
 
-interface Script {
-  name: string;
-  src: string;
-}
+export const readAsPDF = async (input: string | File, type: string = 'string') => {
+  let arrayBuffer: ArrayBuffer;
+  
+  if (type === 'string' && typeof input === 'string') {
+    // Convert base64 string to ArrayBuffer
+    const binaryString = atob(input);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    arrayBuffer = bytes.buffer;
+  } else if (input instanceof File) {
+    arrayBuffer = await input.arrayBuffer();
+  } else {
+    throw new Error('Invalid input type for readAsPDF');
+  }
 
-const scripts: Script[] = [
-  {
-    name: "pdfjsLib",
-    src: "https://unpkg.com/pdfjs-dist@2.3.200/build/pdf.min.js",
-  },
-  {
-    name: "PDFLib",
-    src: "https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js",
-  },
-  {
-    name: "download",
-    src: "https://unpkg.com/downloadjs@1.4.7",
-  },
-];
+  const { PDFDocument } = await import('pdf-lib');
+  const pdfDoc = await PDFDocument.load(arrayBuffer);
+  return pdfDoc;
+};
 
-interface Asset {
-  [key: string]: Ref<unknown> | Promise<unknown>;
-}
+export const downloadPDF = (pdfBytes: Uint8Array, filename: string): void => {
+  download(pdfBytes, filename, 'application/pdf');
+};
 
-const assets: Asset = {};
+export const getPDFDocument = async (pdfDoc: any) => {
+  // Save the PDF document to get its bytes
+  const pdfBytes = await pdfDoc.save();
+  // Pass the bytes directly to getDocument
+  const loadingTask = getDocument({ data: pdfBytes });
+  return loadingTask.promise;
+};
 
-export function getAsset(name: string): Ref<any> | Promise<any> {
-  if (assets[name]) return assets[name] as Ref<unknown>;
-  const script = scripts.find((s) => s.name === name);
-  if (!script) throw new Error(`Script ${name} not exists.`);
-  return prepareAsset(script);
-}
+export const getPDFPage = async (pdfDoc: any, pageNumber: number) => {
+  return pdfDoc.getPage(pageNumber);
+};
 
-export function prepareAsset({
-  name,
-  src,
-}: Script): Ref<unknown> | Promise<unknown> {
-  if (assets[name]) return assets[name] as Ref<unknown>;
-  const scriptRef = ref<unknown | null>(null);
-  assets[name] = new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = src;
-    script.onload = () => {
-      scriptRef.value = window[name as keyof Window];
-      resolve(scriptRef);
-    };
-    script.onerror = () => {
-      reject(`The script ${name} didn't load correctly.`);
-      // alert(
-      //   `Some scripts did not load correctly. Please reload and try again.`
-      // );
-    };
-    document.body.appendChild(script);
-  });
-  return scriptRef;
-}
+export const renderPDFPage = async (page: any) => {
+  // Create a canvas element
+  const canvas = document.createElement('canvas');
+  const viewport = page.getViewport({ scale: 1.5 });
+  const context = canvas.getContext('2d');
+  if (!context) throw new Error('Could not get canvas context');
 
-export default function prepareAssets() {
-  scripts.forEach(prepareAsset);
-}
+  canvas.height = viewport.height;
+  canvas.width = viewport.width;
+
+  await page.render({
+    canvasContext: context,
+    viewport: viewport
+  }).promise;
+
+  return { page, canvas };
+};

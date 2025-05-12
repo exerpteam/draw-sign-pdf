@@ -18,30 +18,33 @@
     <main class="flex min-h-screen flex-col items-center bg-gray-100 py-5">
       <div
         class="left-0 right-0 top-0 z-10 flex items-center justify-center flex-col gap-2 py-2 bg-gray-100 sticky w-full"
+        v-if="!addingDrawing"
       >
-        <div>
-          <button
-            @click="onAddDrawing"
-            class="btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-            data-cy="update-sign"
-          >
-            {{ getTranslation.updateSign }}
-          </button>
-          <button
-            @click="openModal"
-            class="btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
-            :class="{
-              'cursor-not-allowed': pages.length === 0 || saving || !pdfFile,
-              'bg-blue-700': pages.length === 0 || saving || !pdfFile,
-            }"
-            data-cy="save-sign"
-          >
-            {{ saving ? getTranslation.saving : getTranslation.save }}
-          </button>
-        </div>
+        <button
+          @click="onAddDrawing"
+          class="btn-positive ml-3 mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
+          data-cy="update-sign"
+        >
+          {{ getTranslation.updateSign }}
+        </button>
+        <button
+          @click="openModal"
+          class="btn-positive mr-3 rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-700 md:mr-4 md:px-4"
+          :class="{
+            'cursor-not-allowed': pages.length === 0 || saving,
+            'bg-blue-700': pages.length === 0 || saving,
+          }"
+          data-cy="save-sign"
+        >
+          {{ saving ? getTranslation.saving : getTranslation.save }}
+        </button>
         <div v-if="enableZoom" class="mt-2 flex gap-2">
-          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out"><MagnifyingGlassMinusIcon/></button>
-          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in"><MagnifyingGlassPlusIcon/></button>
+          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out">
+            <MagnifyingGlassMinusIcon />
+          </button>
+          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in">
+            <MagnifyingGlassPlusIcon />
+          </button>
         </div>
       </div>
       <div
@@ -55,9 +58,24 @@
           @cancel="addingDrawing = false"
           :translations="getTranslation"
         />
-        <div class="bg-gray-100 border-b border-gray-300 shadow-lg p-2 flex justify-center gap-2" v-if="enableZoom">
-          <button @click="zoomPDF('out')" class="w-6" data-cy="pdf-zoom-out-toolbar"><MagnifyingGlassMinusIcon/></button>
-          <button @click="zoomPDF('in')" class="w-6" data-cy="pdf-zoom-in-toolbar"><MagnifyingGlassPlusIcon/></button>
+        <div
+          class="bg-gray-100 border-b border-gray-300 shadow-lg p-2 flex justify-center gap-2"
+          v-if="enableZoom"
+        >
+          <button
+            @click="zoomPDF('out')"
+            class="w-6"
+            data-cy="pdf-zoom-out-toolbar"
+          >
+            <MagnifyingGlassMinusIcon />
+          </button>
+          <button
+            @click="zoomPDF('in')"
+            class="w-6"
+            data-cy="pdf-zoom-in-toolbar"
+          >
+            <MagnifyingGlassPlusIcon />
+          </button>
         </div>
       </div>
       <div class="w-full" v-if="pages.length">
@@ -91,7 +109,6 @@
                 <DrawingSignature
                   v-if="object.type === 'drawing'"
                   @update="(e: any) => updateObject(object.id, e)"
-                  @delete="() => deleteObject(object.id)"
                   :path="object.path"
                   :x="object.x"
                   :y="object.y"
@@ -118,21 +135,25 @@
 </template>
 
 <script lang="ts">
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { onBeforeUnmount, onMounted, ref, computed, markRaw } from "vue";
+import type { PDFPageProxy } from "pdfjs-dist";
 import PDFPage from "./components/PDFPage.vue";
 import DrawingSignature from "./components/DrawingSignature.vue";
 import DialogBox from "./components/DialogBox.vue";
 import DrawingCanvas from "./components/DrawingCanvas.vue";
-import prepareAssets from "./utils/prepareAssets";
-import { getAsset } from "./utils/prepareAssets";
-import { MagnifyingGlassMinusIcon, MagnifyingGlassPlusIcon } from '@heroicons/vue/16/solid'
+import {
+  MagnifyingGlassMinusIcon,
+  MagnifyingGlassPlusIcon,
+} from "@heroicons/vue/16/solid";
+import { initializePdfjs } from "./utils/pdfSetup";
+import { readAsPDF, getPDFDocument } from "./utils/prepareAssets";
 
 import {
   DrawingObject,
   DrawingPayload,
   PdfSignatureData,
 } from "./utils/pdfTypes";
-import { readAsPDF, ggID } from "./utils/asyncReader";
+import { ggID } from "./utils/asyncReader";
 import { save } from "./utils/PDF";
 
 export default {
@@ -143,7 +164,7 @@ export default {
     DrawingSignature,
     DialogBox,
     MagnifyingGlassMinusIcon,
-    MagnifyingGlassPlusIcon
+    MagnifyingGlassPlusIcon,
   },
   props: {
     pdfData: String,
@@ -159,11 +180,38 @@ export default {
     },
     enableZoom: {
       type: Boolean,
-      default: false
+      default: false,
     },
   },
-  computed: {
-    getTranslation() {
+  emits: ["finish", "onPDFRendered"],
+  setup(props, { emit }) {
+    const genID = ggID();
+    const pdfFile = ref<File | null>(null);
+    const pdfName = ref("");
+    const pages = ref<PDFPageProxy[]>([]);
+    const pagesScale = ref<any[]>([]);
+    const allObjects = ref<any[]>([]);
+    const currentFont = ref("Times-Roman");
+    const focusId = ref(null);
+    const selectedPageIndex = ref(-1);
+    const saving = ref(false);
+    const addingDrawing = ref(false);
+    const signatureImageData = ref("");
+    const signedDocument = ref<{ data: string; type: string }>({
+      data: "",
+      type: "application/pdf",
+    });
+    const isOpenConfirm = ref(false);
+    type DialogBoxType = "warning" | "confirm";
+    const isConfirmOrWarning = ref<DialogBoxType>("warning");
+
+    const zoomScale = ref(1);
+    const ZOOM_STEP = 0.25;
+    const MIN_ZOOM_SCALE = 0.5;
+    const MAX_ZOOM_SCALE = 3;
+    const pageRenderStatus = ref<boolean[]>([]);
+
+    const getTranslation = computed(() => {
       const defaultTranslation = {
         updateSign: "Update Signature",
         save: "Save",
@@ -182,55 +230,21 @@ export default {
         pdfLoading: "PDF will load here",
         additionalTextField: "",
       };
-
-      return { ...defaultTranslation, ...this.translations };
-    },
-  },
-  emits: ["finish", "onPDFRendered"],
-  setup(
-    props: Readonly<{ [key: string]: any }>,
-    { emit }: { emit: (event: string, ...args: any[]) => void }
-  ) {
-    // Your reactive variables and methods
-    const genID = ggID();
-    const pdfFile = ref<File | null>(null);
-    const pdfName = ref("");
-    const pages = ref<Promise<any>[]>([]);
-    const pagesScale = ref<any[]>([]);
-    const allObjects = ref<any[]>([]);
-    const currentFont = ref("Times-Roman");
-    const focusId = ref(null);
-    const selectedPageIndex = ref(-1);
-    const saving = ref(false);
-    const addingDrawing = ref(false);
-    const signatureImageData = ref("");
-    const signedDocument = ref<{ data: string; type: string }>({
-      data: "",
-      type: "application/pdf",
+      return { ...defaultTranslation, ...props.translations };
     });
-    const isOpenConfirm = ref(false);
-    const isConfirmOrWarning = ref("warning");
 
-    const zoomScale = ref(1);
-    const ZOOM_STEP = 0.25;
-    const MIN_ZOOM_SCALE = 0.5;
-    const MAX_ZOOM_SCALE = 3;
-    const pageRenderStatus = ref<boolean[]>([]);
-
-    onMounted(async () => {
+    const onMountedCallback = async () => {
       try {
-        getAsset("pdfjsLib");
+        initializePdfjs();
+        if (!props.pdfData) return;
         selectedPageIndex.value = 0;
-        prepareAssets();
         await addPDF(props.pdfData, "string");
         onAddDrawing();
         document.addEventListener("keydown", handleEscapeKey);
-      } catch (e) {}
-    });
-
-    onBeforeUnmount(() => {
-      document.addEventListener("keydown", handleEscapeKey);
-    });
+      } catch (error) {
+        console.error("onMounted error:", error);
+      }
+    };
 
     const onUploadPDF = async (e: any) => {
       const files = e.target.files || (e.dataTransfer && e.dataTransfer.files);
@@ -240,40 +254,46 @@ export default {
       try {
         await addPDF(file, "arrayBuffer");
         selectedPageIndex.value = 0;
-      } catch (e) {}
+      } catch {}
     };
 
-    const addPDF = async (file: any, type: string) => {
-      try {
-        const pdf = await readAsPDF(file, type);
+    const addPDF = async (pdfData: string, type: string) => {
+      const pdf = await readAsPDF(pdfData, type);
+      const document = await getPDFDocument(pdf);
 
-        pdfName.value = file.name;
-        pdfFile.value = file;
-        const numPages = pdf.numPages;
+      const resolvedPages: PDFPageProxy[] = [];
+      for (let i = 1; i <= document.numPages; i++) {
+        const page = await document.getPage(i);
+        resolvedPages.push(markRaw(page));
+      }
 
-        pages.value = Array.from({ length: numPages }).map(
-          async (_, i) => await pdf.getPage(i + 1)
-        );
-        allObjects.value = Array(numPages).fill([]);
-        pagesScale.value = Array(numPages).fill({ scale: 1 });
-        pageRenderStatus.value = Array(numPages).fill(false);
-      } catch (e) {
-        throw e;
+      pages.value = resolvedPages;
+      allObjects.value = Array(document.numPages).fill([]);
+      pagesScale.value = Array(document.numPages).fill({ scale: 1 });
+      pageRenderStatus.value = Array(document.numPages).fill(false);
+
+      if (type === "string") {
+        const binaryString = atob(pdfData);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: "application/pdf" });
+        pdfFile.value = new File([blob], "document.pdf", {
+          type: "application/pdf",
+        });
+        pdfName.value = "document.pdf";
       }
     };
 
     const onFinishDrawing = async (e: any) => {
       signatureImageData.value = e.signatureImageData;
-
-      const { originWidth, originHeight, path } = e;
-      await addDrawing(originWidth, originHeight, path);
+      await addDrawing(e.originWidth, e.originHeight, e.path);
       addingDrawing.value = false;
     };
 
     const onAddDrawing = () => {
-      if (selectedPageIndex.value >= 0) {
-        addingDrawing.value = true;
-      }
+      if (selectedPageIndex.value >= 0) addingDrawing.value = true;
     };
 
     const addDrawing = (
@@ -284,11 +304,8 @@ export default {
       allObjects.value = Array(allObjects.value.length).fill([]);
       props.signatureData?.forEach((signData: PdfSignatureData) => {
         const id = genID();
-
         const width = cmToPx(signData.width);
         const height = cmToPx(signData.height);
-
-        // Calculate the scale to fit the drawing within the predefined square
         const scaleX = width / originWidth;
         const scaleY = height / originHeight;
         const finalScale = Math.min(scaleX, scaleY);
@@ -304,9 +321,7 @@ export default {
           height,
           scale: finalScale,
         };
-        // Append to the specific page rather than resetting all pages
         const pageIndex = signData.page - 1;
-        // Ensure the page exists in allObjects
         if (allObjects.value[pageIndex]) {
           allObjects.value[pageIndex] = [
             ...allObjects.value[pageIndex],
@@ -330,23 +345,11 @@ export default {
       );
     };
 
-    const deleteObject = (objectId: number) => {
-      allObjects.value = allObjects.value.map((objects, pIndex) =>
-        pIndex == selectedPageIndex.value
-          ? objects.filter((object: DrawingObject) => object.id !== objectId)
-          : objects
-      );
-    };
-
     const onMeasure = (scale: number, i: number) => {
       pagesScale.value[i] = scale;
     };
 
-    const cmToPx = (cm: number) => {
-      const pointsPerInch = 72;
-      const centimetersPerInch = 2.54;
-      return (cm * pointsPerInch) / centimetersPerInch;
-    };
+    const cmToPx = (cm: number) => (cm * 72) / 2.54;
 
     const savePDF = async () => {
       if (!pdfFile.value || saving.value || !pages.value.length) return;
@@ -358,25 +361,21 @@ export default {
           pdfName.value,
           props.isDownload
         );
-
         signedDocument.value = { type: "application/pdf", data: pdfData };
-
         emit("finish", {
           signedDocument: signedDocument.value,
           signatureImage: signatureImageData.value,
         });
-      } catch (e) {
+      } catch (error) {
+        console.error("Error saving PDF:", error);
       } finally {
         saving.value = false;
       }
     };
 
     const openModal = () => {
-      if (signatureImageData.value !== "") {
-        isConfirmOrWarning.value = "confirm";
-      } else {
-        isConfirmOrWarning.value = "warning";
-      }
+      isConfirmOrWarning.value =
+        signatureImageData.value !== "" ? "confirm" : "warning";
       isOpenConfirm.value = true;
       document.body.classList.add("overflow-y-hidden");
     };
@@ -391,28 +390,30 @@ export default {
       closeModal();
     };
 
-    const handleEscapeKey = (event) => {
-      if (event.key === "Escape" || event.key === "Esc") {
-        closeModal();
-      }
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" || event.key === "Esc") closeModal();
     };
 
-    const zoomPDF = (direction: 'in' | 'out') => {
-      if (direction === 'in') {
-        zoomScale.value = Math.min(zoomScale.value + ZOOM_STEP, MAX_ZOOM_SCALE);
-      } else if (direction === 'out') {
-        zoomScale.value = Math.max(zoomScale.value - ZOOM_STEP, MIN_ZOOM_SCALE);
-      }
+    const zoomPDF = (direction: "in" | "out") => {
+      zoomScale.value =
+        direction === "in"
+          ? Math.min(zoomScale.value + ZOOM_STEP, MAX_ZOOM_SCALE)
+          : Math.max(zoomScale.value - ZOOM_STEP, MIN_ZOOM_SCALE);
     };
 
     const renderFinished = (index: number) => {
       pageRenderStatus.value[index] = true;
-      if(pageRenderStatus.value.every(Boolean)) {
-        emit("onPDFRendered")
-      }
-    }
+      if (pageRenderStatus.value.every(Boolean)) emit("onPDFRendered");
+    };
+
+    onMounted(onMountedCallback);
+
+    onBeforeUnmount(() => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    });
 
     return {
+      getTranslation,
       genID,
       pdfFile,
       pdfName,
@@ -431,7 +432,6 @@ export default {
       addDrawing,
       selectPage,
       updateObject,
-      deleteObject,
       onMeasure,
       savePDF,
       onFinishDrawing,
@@ -442,7 +442,7 @@ export default {
       zoomScale,
       zoomPDF,
       pageRenderStatus,
-      renderFinished
+      renderFinished,
     };
   },
 };
@@ -460,6 +460,7 @@ body.modal-active {
   overflow-x: hidden;
   overflow-y: visible !important;
 }
+
 .sign-drawing-canvas {
   width: 100% !important;
   z-index: 60 !important;

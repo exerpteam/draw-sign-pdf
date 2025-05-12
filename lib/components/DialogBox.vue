@@ -38,58 +38,51 @@
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent, computed } from 'vue';
+
+export default defineComponent({
+  name: 'DialogBox',
   props: {
     translations: {
-      type: Object,
-      default: () => ({})
+      type: Object as () => Record<string, string>,
+      default: () => ({}),
     },
     type: {
-      type: String,
-      default: "warning"
-    }
+      type: String as () => 'warning' | 'confirm',
+      default: 'warning',
+    },
   },
-  computed: {
-    getTranslation() {
-      if (this.type === 'warning') {
+  emits: ['finish', 'cancel'],
+  setup(props, { emit }) {
+    const getTranslation = computed(() => {
+      const t = props.translations;
+      if (props.type === 'warning') {
         return {
-          title: this.translations.warningTitle,
-          desc: this.translations.warningDesc,
-          close: this.translations.warningClose,
-        }
+          title: t.warningTitle,
+          desc: t.warningDesc,
+          close: t.warningClose,
+        };
       } else {
         return {
-          title: this.translations.confirmBoxTitle,
-          desc: this.translations.confirmBoxDesc,
-          close: this.translations.confirmBoxClose,
-          saveChanges: this.translations.confirmBoxSaveChanges,
-        }
+          title: t.confirmBoxTitle,
+          desc: t.confirmBoxDesc,
+          close: t.confirmBoxClose,
+          saveChanges: t.confirmBoxSaveChanges,
+        };
       }
-    }
-  },
-  emits: ["finish", "cancel"],
-  setup(props: Readonly<{ [key: string]: any }>, { emit }: { emit: (event: string, ...args: any[]) => void }) {
+    });
 
-    const closeModal = () => {
-      emit('cancel');
-    }
-    const finish = () => {
-      emit('finish');
-    }
-    const handleEscapeKey = (event) => {
-      if (event.key === 'Escape' || event.key === 'Esc') {
-        closeModal();
-      }
-    }
+    const closeModal = () => emit('cancel');
+    const finish = () => emit('finish');
 
     return {
+      getTranslation,
+      closeModal,
       finish,
-      closeModal
     };
   },
-};
+});
 </script>
-
 <style scoped>
 body.modal-active {
   overflow-x: hidden;
