@@ -1,28 +1,28 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2020",
     "useDefineForClassFields": true,
+    "target": "ES2020",
     "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "moduleResolution": "Node",
+    "lib": ["ES2020", "DOM"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
-    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
     "types": ["node", "jsdom"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./lib/*"]
     },
-    "esModuleInterop": true,
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true
+    "allowJs": true
   },
   "include": [
     "lib/**/*.ts",
@@ -31,6 +31,7 @@
     "lib/**/*.vue",
     "vite.config.ts",
     "env.d.ts",
+    "lib/types/pdfjs-dist.d.ts"
   ],
   "exclude": ["node_modules"]
 }

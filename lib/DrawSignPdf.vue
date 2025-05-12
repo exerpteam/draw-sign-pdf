@@ -136,7 +136,7 @@
 
 <script lang="ts">
 import { onBeforeUnmount, onMounted, ref, computed, markRaw } from "vue";
-import type { PDFPageProxy } from "pdfjs-dist";
+import type { PDFPageProxy } from "pdfjs-dist/types/src/display/api";
 import PDFPage from "./components/PDFPage.vue";
 import DrawingSignature from "./components/DrawingSignature.vue";
 import DialogBox from "./components/DialogBox.vue";

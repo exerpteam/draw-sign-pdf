@@ -1,5 +1,5 @@
 import download from 'downloadjs';
-import { getDocument } from 'pdfjs-dist';
+import { getDocument } from './pdfSetup';
 
 export const readAsPDF = async (input: string | File, type: string = 'string') => {
   let arrayBuffer: ArrayBuffer;

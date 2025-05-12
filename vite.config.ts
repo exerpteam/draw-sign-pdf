@@ -14,6 +14,9 @@ const demoConfig: UserConfigExport = {
   server: {
     port: 3000,
   },
+  worker: {
+    format: 'es',
+  },
   build: {
     outDir: 'dist-demo',
     emptyOutDir: true,

@@ -1,7 +1,9 @@
-import * as pdfjsLib from 'pdfjs-dist';
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf';
 // @ts-ignore
-import workerSrc from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+import workerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url';
 
 export const initializePdfjs = () => {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
+  GlobalWorkerOptions.workerSrc = workerSrc;
 };
+
+export { getDocument, GlobalWorkerOptions };

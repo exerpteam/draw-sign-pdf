@@ -1,6 +1,6 @@
+import { PDFPageProxy, GetViewportParameters, GetAnnotationsParameters, RenderParameters, RenderTask, GetOperatorListParameters, PDFOperatorList, getTextContentParameters, TextContent, StructTreeNode } from 'pdfjs-dist/types/src/display/api';
 import { DrawingPayload, PdfSignatureData, TouchEventDetails, TouchMoveData } from './utils/pdfTypes';
 import { DefineComponent, ExtractPropTypes, ComputedRef, Ref, ComponentOptionsMixin, PublicProps, ComponentProvideOptions, FunctionalComponent, HTMLAttributes, VNodeProps } from 'vue';
-import { GetViewportParameters, GetAnnotationsParameters, RenderParameters, RenderTask, GetOperatorListParameters, PDFOperatorList, getTextContentParameters, TextContent, StructTreeNode, PDFPageProxy } from 'pdfjs-dist/types/src/display/api';
 import { PageViewport } from 'pdfjs-dist/types/src/display/display_utils';
 declare const _default: DefineComponent<ExtractPropTypes<{
     pdfData: StringConstructor;
@@ -64,6 +64,7 @@ declare const _default: DefineComponent<ExtractPropTypes<{
     pages: Ref<{
         _pageIndex: any;
         _pageInfo: any;
+        _ownerDocument: any;
         _transport: any;
         _stats: {
             started: any;
@@ -78,17 +79,18 @@ declare const _default: DefineComponent<ExtractPropTypes<{
             has: (objId: string) => boolean;
             resolve: (objId: string, data?: any) => void;
             clear: () => void;
-            [Symbol.iterator]: () => Generator<any[], void, unknown>;
         };
         objs: {
             get: (objId: string, callback?: Function | undefined) => any;
             has: (objId: string) => boolean;
             resolve: (objId: string, data?: any) => void;
             clear: () => void;
-            [Symbol.iterator]: () => Generator<any[], void, unknown>;
         };
-        _maybeCleanupAfterRender: boolean;
+        _bitmaps: Set<any> & Omit<Set<any>, keyof Set<any>>;
+        cleanupAfterRender: boolean;
+        pendingCleanup: boolean;
         _intentStates: Map<any, any> & Omit<Map<any, any>, keyof Map<any, any>>;
+        _annotationPromises: Map<any, any> & Omit<Map<any, any>, keyof Map<any, any>>;
         destroyed: boolean;
         readonly pageNumber: number;
         readonly rotate: number;
@@ -99,27 +101,22 @@ declare const _default: DefineComponent<ExtractPropTypes<{
         readonly userUnit: number;
         readonly view: number[];
         getViewport: ({ scale, rotation, offsetX, offsetY, dontFlip, }?: GetViewportParameters) => PageViewport;
-        getAnnotations: ({ intent }?: GetAnnotationsParameters | undefined) => Promise<Array<any>>;
+        getAnnotations: ({ intent }?: GetAnnotationsParameters) => Promise<Array<any>>;
         getJSActions: () => Promise<Object>;
-        readonly filterFactory: Object;
-        readonly isPureXfa: boolean;
         getXfa: () => Promise<Object | null>;
-        render: ({ canvasContext, viewport, intent, annotationMode, transform, background, optionalContentConfigPromise, annotationCanvasMap, pageColors, printAnnotationStorage, isEditing, }: RenderParameters) => RenderTask;
-        getOperatorList: ({ intent, annotationMode, printAnnotationStorage, isEditing, }?: GetOperatorListParameters) => Promise< PDFOperatorList>;
-        streamTextContent: ({ includeMarkedContent, disableNormalization, }?: getTextContentParameters) => ReadableStream;
+        render: ({ canvasContext, viewport, intent, annotationMode, transform, imageLayer, canvasFactory, background, optionalContentConfigPromise, annotationCanvasMap, pageColors, printAnnotationStorage, }: RenderParameters, ...args: any[]) => RenderTask;
+        getOperatorList: ({ intent, annotationMode, printAnnotationStorage, }?: GetOperatorListParameters) => Promise< PDFOperatorList>;
+        streamTextContent: ({ disableCombineTextItems, includeMarkedContent, }?: getTextContentParameters) => ReadableStream;
         getTextContent: (params?: getTextContentParameters) => Promise< TextContent>;
         getStructTree: () => Promise< StructTreeNode>;
+        _jsActionsPromise: any;
+        _structTreePromise: any;
         cleanup: (resetStats?: boolean | undefined) => boolean;
-        readonly stats: {
-            started: any;
-            times: any[];
-            time: (name: any) => void;
-            timeEnd: (name: any) => void;
-            toString: () => string;
-        } | null;
+        readonly stats: Object;
     }[], PDFPageProxy[] | {
         _pageIndex: any;
         _pageInfo: any;
+        _ownerDocument: any;
         _transport: any;
         _stats: {
             started: any;
@@ -134,17 +131,18 @@ declare const _default: DefineComponent<ExtractPropTypes<{
             has: (objId: string) => boolean;
             resolve: (objId: string, data?: any) => void;
             clear: () => void;
-            [Symbol.iterator]: () => Generator<any[], void, unknown>;
         };
         objs: {
             get: (objId: string, callback?: Function | undefined) => any;
             has: (objId: string) => boolean;
             resolve: (objId: string, data?: any) => void;
             clear: () => void;
-            [Symbol.iterator]: () => Generator<any[], void, unknown>;
         };
-        _maybeCleanupAfterRender: boolean;
+        _bitmaps: Set<any> & Omit<Set<any>, keyof Set<any>>;
+        cleanupAfterRender: boolean;
+        pendingCleanup: boolean;
         _intentStates: Map<any, any> & Omit<Map<any, any>, keyof Map<any, any>>;
+        _annotationPromises: Map<any, any> & Omit<Map<any, any>, keyof Map<any, any>>;
         destroyed: boolean;
         readonly pageNumber: number;
         readonly rotate: number;
@@ -155,24 +153,18 @@ declare const _default: DefineComponent<ExtractPropTypes<{
         readonly userUnit: number;
         readonly view: number[];
         getViewport: ({ scale, rotation, offsetX, offsetY, dontFlip, }?: GetViewportParameters) => PageViewport;
-        getAnnotations: ({ intent }?: GetAnnotationsParameters | undefined) => Promise<Array<any>>;
+        getAnnotations: ({ intent }?: GetAnnotationsParameters) => Promise<Array<any>>;
         getJSActions: () => Promise<Object>;
-        readonly filterFactory: Object;
-        readonly isPureXfa: boolean;
         getXfa: () => Promise<Object | null>;
-        render: ({ canvasContext, viewport, intent, annotationMode, transform, background, optionalContentConfigPromise, annotationCanvasMap, pageColors, printAnnotationStorage, isEditing, }: RenderParameters) => RenderTask;
-        getOperatorList: ({ intent, annotationMode, printAnnotationStorage, isEditing, }?: GetOperatorListParameters) => Promise< PDFOperatorList>;
-        streamTextContent: ({ includeMarkedContent, disableNormalization, }?: getTextContentParameters) => ReadableStream;
+        render: ({ canvasContext, viewport, intent, annotationMode, transform, imageLayer, canvasFactory, background, optionalContentConfigPromise, annotationCanvasMap, pageColors, printAnnotationStorage, }: RenderParameters, ...args: any[]) => RenderTask;
+        getOperatorList: ({ intent, annotationMode, printAnnotationStorage, }?: GetOperatorListParameters) => Promise< PDFOperatorList>;
+        streamTextContent: ({ disableCombineTextItems, includeMarkedContent, }?: getTextContentParameters) => ReadableStream;
         getTextContent: (params?: getTextContentParameters) => Promise< TextContent>;
         getStructTree: () => Promise< StructTreeNode>;
+        _jsActionsPromise: any;
+        _structTreePromise: any;
         cleanup: (resetStats?: boolean | undefined) => boolean;
-        readonly stats: {
-            started: any;
-            times: any[];
-            time: (name: any) => void;
-            timeEnd: (name: any) => void;
-            toString: () => string;
-        } | null;
+        readonly stats: Object;
     }[]>;
     pagesScale: Ref<any[], any[]>;
     allObjects: Ref<any[], any[]>;
