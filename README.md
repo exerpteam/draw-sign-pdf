@@ -1,3 +1,8 @@
+# ⚠️ Deprecation Notice ⚠️ 
+
+This package is deprecated.
+Please use the new package [vue-pdf-signer](https://github.com/exerpteam/vue-pdf-signer) instead.
+
 # PDF Signature Drawing Component
 
 A Vue.js component that allows users to draw signatures on PDF documents. This component provides a user-friendly interface for adding signatures to PDF files and saving the modified documents.
